@@ -12,6 +12,6 @@ module.exports.loop = function() {
             global.Originator = new Originator();
             global.INITIALIZED = true;
         }
-        global.Originiator.refresh();
+        global.Originator.refresh();
     });
 }

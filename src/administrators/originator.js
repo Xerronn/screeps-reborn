@@ -25,8 +25,10 @@ class Originator {
 
     refresh() {
         //refresh the live game object reference for every object we have
-        for (gameObj of this.proletariats.concat(this.constructs)) {
-            gameObj.update();
+        for (var type of Object.keys(this.proletariats)) {
+            for (var pro of this.proletariats[type]) {
+                pro.update();
+            }
         }
     }
 }
