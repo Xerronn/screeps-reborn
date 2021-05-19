@@ -9,7 +9,8 @@ class GameObj {
     //this should be called once per tick
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
-            this.liveObj = Game.getObjectById(id);
+            this.updateTick = Game.time;
+            this.liveObj = Game.getObjectById(this.id);
             this.pos = this.liveObj.pos;
             this.room = this.liveObj.room;
             this.hits = this.liveObj.hits;
@@ -17,28 +18,8 @@ class GameObj {
         }
     }
 
-    get liveObj() {
-        return this.liveObj;
-    }
-
-    get pos() {
-        return this.pos;
-    }
-
-    get room() {
-        return this.room;
-    }
-
-    get hits() {
-        return this.hits;
-    }
-
-    get maxHits() {
-        return this.maxHits;
-    }
-
     info() {
-        console.log("Game Object <" + this.id + "> last updated on tick" + this.updateTick)
+        return this.constructor.name + "<" + this.id + "> last updated on tick " + this.updateTick;
     }
 }
 
