@@ -26,7 +26,8 @@ for subdir, dirs, files in os.walk("./src"):
             fileList.append(filepath.replace("src_", ""))
 
 #remove old files and remake the directory
-shutil.rmtree("./dist")
+if os.path.isdir("./dist"):
+    shutil.rmtree("./dist")
 os.mkdir("./dist")
 
 #copy all the files we found in the src folder to the dist folder
