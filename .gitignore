@@ -1,0 +1,3 @@
+config/credentials.json
+/env
+/dist
