@@ -2,17 +2,39 @@
 class GameObj {
     constructor(id) {
         this.id = id;
-        this.liveObj = Game.getObjectById(id);
         this.updateTick = Game.time;
+        this.update(true);
+    }
+
+    //this should be called once per tick
+    update(force=false) {
+        if (this.updateTick != Game.time || force == true) {
+            this.liveObj = Game.getObjectById(id);
+            this.pos = this.liveObj.pos;
+            this.room = this.liveObj.room;
+            this.hits = this.liveObj.hits;
+            this.maxHits = this.liveObj.hitsMax;
+        }
     }
 
     get liveObj() {
-        if (this.updateTick == Game.time) {
-            return this.liveObj;
-        } else {
-            this.liveObj = Game.getObjectByID(this.id);
-            return this.liveObj;
-        }
+        return this.liveObj;
+    }
+
+    get pos() {
+        return this.pos;
+    }
+
+    get room() {
+        return this.room;
+    }
+
+    get hits() {
+        return this.hits;
+    }
+
+    get maxHits() {
+        return this.maxHits;
     }
 
     info() {
