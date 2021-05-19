@@ -10,11 +10,12 @@ class Originator {
 
     initialize() {
         //initialize all creeps to their respective classes
-        for (var creep of Game.creeps) {
+        for (var name in Game.creeps) {
+            var creep = Game.creeps[name];
             switch (creep.memory.type) {
                 case "archon":
                     //init the list in the dictionary if it doesn't exist
-                    !("archon" in this.proletariats) && (this.proletariats["archon" = {}]);
+                    !("archon" in this.proletariats) && (this.proletariats["archon"] = {});
                     this.proletariats["archon"].push(new Archon(creep.id));
                     break;
             }
@@ -29,3 +30,5 @@ class Originator {
         }
     }
 }
+
+module.exports = Originator;

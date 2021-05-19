@@ -9,8 +9,9 @@ profiler.enable();
 module.exports.loop = function() {
     profiler.wrap(function() {
         if (!global.INITIALIZED) {
-            const Originiator = new Originiator();
+            global.Originator = new Originator();
+            global.INITIALIZED = true;
         }
-        Originiator.refresh();
+        global.Originiator.refresh();
     });
 }
