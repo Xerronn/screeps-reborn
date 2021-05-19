@@ -1,7 +1,7 @@
 const GameObj = require("../gameObj");
 
 //the parent creep definition
-class Proletariat extends GameObj {
+class Proletarian extends GameObj {
     constructor(creepId) {
         super(creepId);
         this.update(true);
@@ -16,4 +16,4 @@ class Proletariat extends GameObj {
     }
 }
 
-module.exports = Proletariat;
+module.exports = Proletarian;

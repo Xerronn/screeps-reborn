@@ -1,7 +1,7 @@
 const Archon = require("../proletariat/archon");
 const Nexus = require("../constructs/nexus");
 
-//entity that initializes and refreshes our objects
+//entity that initializes and refreshes our objects every tick
 class Originator {
     constructor() {
         this.proletarian = {};

@@ -1,4 +1,4 @@
-const Proletarian = require("./proletariat");
+const Proletarian = require("./proletarian");
 
 //creep tasked with harvesting sources
 class Archon extends Proletarian {
