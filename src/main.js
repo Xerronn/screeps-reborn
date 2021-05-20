@@ -1,15 +1,19 @@
 // Any modules that you use that modify the game's prototypes should be require'd
 // before you require the profiler.
-const executive = require("./administrators/executive");
-const Originator = require("./administrators/originator");
-const Illustrator = require("./administrators/illustrator")
-const profiler = require("./administrators/profiler");
-global.Originator = new Originator();
+const Executive = require("./administrators/executive");
+const Imperator = require("./administrators/imperator");
+const Initiator = require("./administrators/initiator");
+
+//init higher level entities
+global.Imperator = new Imperator();
+global.Executive = new Executive();
+global.Initiator = new Initiator();
+console.log("<b>--------Global Reset--------</b>");
 
 // This line monkey patches the global prototypes.
-profiler.enable();
+
 module.exports.loop = function() {
-    profiler.wrap(function() {
-        global.Originator.refresh();
-    });
+    let startcpu = Game.cpu.getUsed();
+    global.Imperator.refresh();
+    console.log(Game.cpu.getUsed() - startcpu);
 }

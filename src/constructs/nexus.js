@@ -4,6 +4,7 @@ const Construct = require("./construct");
 class Nexus extends Construct {
     constructor(spawnId) {
         super(spawnId);
+
         //attributes that will not change from tick to tick
         this.name = this.liveObj.name;
 
@@ -12,9 +13,10 @@ class Nexus extends Construct {
 
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
-            super.update(force);
+            if (!super.update(force)) return false;
             this.spawning = this.liveObj.spawning;
         }
+        return true;
     }
 
     spawnCreep(body, type) {

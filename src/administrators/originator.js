@@ -1,18 +1,22 @@
 const Archon = require("../proletariat/archon");
 const Nexus = require("../constructs/nexus");
 
-//entity that initializes and refreshes our objects every tick
+//entity that initializes and refreshes room objects every tick
 class Originator {
-    constructor() {
+    constructor(room) {
+        this.room = room;
         this.proletarian = {};
         this.constructs = {};
         this.initialize();
     }
 
+    /**
+     * Function that initializes the Originator with all GameObj
+     */
     initialize() {
-        //initialize all creeps to their respective classes
-        for (var name in Game.creeps) {
-            var creep = Game.creeps[name];
+        let thisRoom = Game.rooms[this.room];
+        //initialize all creeps in the room to their respective classes
+        for (var creep of thisRoom.find(FIND_MY_CREEPS)) {
             switch(creep.memory.type) {
                 case "archon":
                     //init the list in the dictionary if it doesn't exist
@@ -22,9 +26,8 @@ class Originator {
             }
         }
 
-        //initialize all structures to their respective classes
-        for (var id of Object.keys(Game.structures)) {
-            var struc = Game.structures[id];
+        //initialize all structures in the room to their respective classes
+        for (var struc of thisRoom.find(FIND_MY_STRUCTURES)) {
             switch(struc.structureType) {
                 case STRUCTURE_SPAWN:
                     //init the list in the dictionary if it doesn't exist
@@ -33,9 +36,12 @@ class Originator {
                     break;
             }
         }
-        console.log("done")
     }
 
+    /**
+     * Function that updates all stored GameObj with live references.
+     * Should be run each tick in the main loop
+     */
     refresh() {
         //refresh the live game object reference for every creep
         for (var type of Object.keys(this.proletarian)) {

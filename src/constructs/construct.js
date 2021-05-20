@@ -17,12 +17,13 @@ class Construct extends GameObj {
 
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
-            super.update(force);
+            if (!super.update(force)) return false;
 
             if (this.hasStore) {
                 this.store = this.liveObj.store;
             }
         }
+        return true;
     }
 }
 
