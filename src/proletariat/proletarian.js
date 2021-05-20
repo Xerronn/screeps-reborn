@@ -20,7 +20,7 @@ class Proletarian extends GameObj {
         if (this.updateTick != Game.time || force == true) {
             //stop if you're dead
             if (!super.update(force)) return false;
-            this.body = this.liveObj.body;
+            this.body = this.liveObj.body.map(b => b.type);
             this.fatigue = this.liveObj.fatigue;   
         }
         return true;

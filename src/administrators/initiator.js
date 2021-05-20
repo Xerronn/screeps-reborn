@@ -1,4 +1,3 @@
-
 //entity that manages creep spawning
 class Initiator {
     constructor() {
@@ -10,10 +9,20 @@ class Initiator {
      */
     initiate(deadCreep=null) {
         if (deadCreep) {
+            let originator = global.Imperator.originators[deadCreep.room];
+            //loop through the spawns until an available one is found
+            for (var nexus of originator.constructs["nexus"]) {
+                if (!nexus.spawning) {
+                    console.log(nexus.info());
+                    console.log(nexus.spawnCreep(deadCreep.body, deadCreep.type));
+                    break;
+                }
+            }
+
             //lastly, remove the object referencing the dead creep
-            let origArr = global.Imperator.originators[deadCreep.room].proletarian[deadCreep.type];
+            let origArr = originator.proletarian[deadCreep.type];
             let index = origArr.indexOf(deadCreep);
-            origArr.splice(index, 1)
+            origArr.splice(index, 1);
         }
     }
 }

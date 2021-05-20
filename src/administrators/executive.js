@@ -19,7 +19,9 @@ class Executive {
      * If it has, it will set references to the memory pathway, if not it will create it.
      */
     initScheduler() {
-        
+        if (!Memory.scheduler) {
+            Memory.scheduler = {};
+        }
     }
     
     /**
