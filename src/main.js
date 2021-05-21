@@ -2,12 +2,12 @@
 // before you require the profiler.
 const Executive = require("./administrators/executive");
 const Imperator = require("./administrators/imperator");
-const Initiator = require("./administrators/initiator");
+const Archivist = require("./administrators/archivist");
 
 //init higher level entities
 global.Imperator = new Imperator();
 global.Executive = new Executive();
-global.Initiator = new Initiator();
+global.Archivist = new Archivist();
 console.log("<b>--------Global Reset--------</b>");
 
 // This line monkey patches the global prototypes.
