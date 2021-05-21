@@ -19,10 +19,12 @@ class Nexus extends Construct {
         return true;
     }
 
-    spawnCreep(body, type) {
+    spawnCreep(body, type, memory=null) {
         let name = type + " <" + Game.time + ">"
-        let memory = {
-            "type": type
+        if (!memory) {
+            memory = {
+                "type": type
+            }
         }
         return this.liveObj.spawnCreep(body, name, {memory: memory})
     }
