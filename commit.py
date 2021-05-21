@@ -55,7 +55,15 @@ for subdir, dirs, files in os.walk("./dist"):
                     else:
                         new = new.replace("./", "")
                 if "../" in new[0:4]:
-                    new = new.replace("../", "")
+                    directory = file.split("_")
+                    
+                    if len(directory) > 2:
+                        fullPath = ""
+                        for i in range(len(directory) - 2):
+                            fullPath += directory[i] + "/"
+                        new = new.replace("../", fullPath)
+                    else:
+                        new = new.replace("../", "")
                 new = new.replace("/", "_")
 
                 contents = contents.replace(path, new)
@@ -66,8 +74,6 @@ for subdir, dirs, files in os.walk("./dist"):
         
         data["modules"][filepath.split('\\')[-1][:-3]] = contents
             
-
-
 
 r = requests.post(
     url = url, 
