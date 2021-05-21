@@ -23,12 +23,38 @@ class Executive {
             Memory.scheduler = {};
         }
     }
+
+    /**
+     * Function that schedules task on tick referencing objects in objArr if needed
+     * @param {Number} tick 
+     * @param {String} task 
+     * @param {Array} objArr 
+     */
+    schedule(tick, task, objArr=null) {
+        if (!Memory.scheduler[tick.toString()]) {
+            Memory.scheduler[tick.toString()] = [];
+        }
+        let taskObj = {
+            "script": task,
+            "objArr": objArr
+        };
+        Memory.scheduler[tick.toString()].push(taskObj);
+    }
     
     /**
-     * Function that executes tasks for all Game objects in the Originator
+     * Function that executes tasks for all Game objects in the Originator and the schedule
      */
     execute() {
-
+        //execute scheduler code
+        for (var tick of Object.keys(Memory.scheduler)) {
+            if (parseInt(tick) <= Game.time) {
+                for (var task of Memory.scheduler[tick]) {
+                    let objArr = task.objArr;
+                    eval(task.script);
+                }
+                delete Memory.scheduler[tick];
+            }
+        }
     }
 }
 

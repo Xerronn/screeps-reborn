@@ -13,16 +13,16 @@ class Initiator {
             //loop through the spawns until an available one is found
             for (var nexus of originator.constructs["nexus"]) {
                 if (!nexus.spawning) {
-                    console.log(nexus.info());
                     console.log(nexus.spawnCreep(deadCreep.body, deadCreep.type));
                     break;
                 }
             }
 
-            //lastly, remove the object referencing the dead creep
+            //lastly, remove the object referencing the dead creep and memory object
             let origArr = originator.proletarian[deadCreep.type];
             let index = origArr.indexOf(deadCreep);
             origArr.splice(index, 1);
+            delete Memory.creeps[deadCreep.name];
         }
     }
 }

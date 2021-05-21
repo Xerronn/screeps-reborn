@@ -6,13 +6,15 @@ class GameObj {
         this.update(true);
     }
 
-    //this should be called once per tick
+    /**
+     * Function that update objects with live game references
+     * @param {boolean} force 
+     * @returns 
+     */
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
             this.liveObj = Game.getObjectById(this.id);
             if (!this.liveObj) {
-                //todo: should schedule it for next tick using executive so it doesn't get lost on global reset
-                global.Initiator.initiate(this);
                 return false;
             }
             this.updateTick = Game.time;
@@ -22,6 +24,13 @@ class GameObj {
             this.maxHits = this.liveObj.hitsMax;
         }
         return true;
+    }
+
+    /**
+     * Function to execute the main logic of the object per tick
+     */
+    run() {
+        console.log("Override me please");
     }
 
     info() {

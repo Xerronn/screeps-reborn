@@ -12,6 +12,7 @@ class Proletarian extends GameObj {
         } else {
             this.type = this.liveObj.memory.type;
         }
+        this.name = this.liveObj.name;
         
         this.update(true);
     }
@@ -19,7 +20,12 @@ class Proletarian extends GameObj {
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
             //stop if you're dead
-            if (!super.update(force)) return false;
+            if (!super.update(force)) {
+                //todo: This will fail if a global reset happens the same tick as a creep dies.
+                //todo: Figure out a way to get around that
+                global.Executive.schedule(Game.time + 1, "global.Initiator.initiate(objArr[0]);", [this])
+                return false;
+            }
             this.body = this.liveObj.body.map(b => b.type);
             this.fatigue = this.liveObj.fatigue;   
         }

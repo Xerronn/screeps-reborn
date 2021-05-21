@@ -15,5 +15,6 @@ console.log("<b>--------Global Reset--------</b>");
 module.exports.loop = function() {
     let startcpu = Game.cpu.getUsed();
     global.Imperator.refresh();
+    global.Executive.execute();
     console.log(Game.cpu.getUsed() - startcpu);
 }
