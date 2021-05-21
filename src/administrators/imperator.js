@@ -23,6 +23,15 @@ class Imperator {
             this.originators[room].refresh();
         }
     }
+
+    /**
+     * Function that runs all objects in the game
+     */
+    run() {
+        for (var room of Object.keys(this.originators)) {
+            this.originators[room].run();
+        }
+    }
 }
 
 module.exports = Imperator;

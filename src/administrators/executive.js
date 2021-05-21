@@ -1,14 +1,9 @@
-const Originator = require("./originator");
-
 //Entity that manages task execution
 class Executive {
     /**
-     * Constructor for executive, links it to an Originator Object permanently
-     * @param {Originator} Originator 
+     * Constructor for executive
      */
-    constructor(Originator) {
-        this.originator = Originator;
-
+    constructor() {
         //Executive manages a scheduler system that can schedule tasks for ticks in the future
         //Due to global resets, this will have to be stored in memory.
         this.initScheduler();
@@ -42,7 +37,7 @@ class Executive {
     }
     
     /**
-     * Function that executes tasks for all Game objects in the Originator and the schedule
+     * Function that executes the schedule
      */
     execute() {
         //execute scheduler code

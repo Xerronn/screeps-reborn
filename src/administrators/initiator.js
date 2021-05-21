@@ -22,6 +22,7 @@ class Initiator {
             let origArr = originator.proletarian[deadCreep.type];
             let index = origArr.indexOf(deadCreep);
             origArr.splice(index, 1);
+            //todo: we can use the absence of this to see when we missed a creep due to global reset
             delete Memory.creeps[deadCreep.name];
         }
     }
