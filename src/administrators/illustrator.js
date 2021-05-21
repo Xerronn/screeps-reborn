@@ -13,7 +13,7 @@ class Illustrator {
         global.classes.gameObj = require("../gameObj");
 
         global.classes.proletariat.proletarian = require("../proletariat/proletarian");
-        global.classes.proletariat.archon = require("../proletariat/archon");
+        global.classes.proletariat.archon = require("../proletariat/harvesters/archon");
 
         global.classes.constructs.construct = require("../constructs/construct");
         global.classes.constructs.nexus = require("../constructs/nexus");
