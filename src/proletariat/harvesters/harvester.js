@@ -1,0 +1,68 @@
+const Proletarian = require("../proletarian");
+
+//the parent harvester definition
+class Harvester extends Proletarian {
+    constructor(creepId) {
+        super(creepId);
+        
+        //attributes that won't change tick to tick
+        if (this.memory.source) {
+            //for creep rebirth and object init
+            this.sourceId = this.memory.source;
+        } else {
+            //for first time an ancestry has spawned
+            let roomSources = Memory.rooms[this.room].sources;
+            let sortedSources = _.sortBy(Object.keys(roomSources), s => this.pos.getRangeTo(Game.getObjectById(s)));
+            let currentBest = "";
+            for (let source of sortedSources) {
+                if (currentBest == "" || roomSources[source].harvesters.length < roomSources[currentBest].harvesters.length) {
+                    currentBest = source;
+                }
+            }
+
+            roomSources[currentBest].harvesters.push(this.name);
+            this.sourceId = currentBest;
+            this.memory.source = currentBest;
+        }
+        
+
+        this.update(true);
+    }
+
+    update(force=false) {
+        if (this.updateTick != Game.time || force == true) {
+            if (!super.update(force)) {
+                //remove creep from its array on death
+                let roomSources = Memory.rooms[this.room].sources;
+                let index = roomSources[this.sourceId].harvesters.indexOf(this.name);
+                roomSources[this.sourceId].harvesters.splice(index, 1);
+                return false;
+            }
+            //attributes that will change tick to tick
+            this.source = Game.getObjectById(this.sourceId);
+        }
+        return true;
+    }
+
+    /**
+     * Function that runs on each game loop. Decides what to do
+     */
+    run() {
+        if (this.store.getFreeCapacity(RESOURCE_ENERGY) > 0 ) {
+            this.harvest();
+        }
+    }
+
+    /**
+     * Function to harvest the assigned source
+     */
+    harvest() {
+        if (this.pos.inRangeTo(this.source, 1)) {
+            this.liveObj.harvest(this.source);
+        } else {
+            this.liveObj.moveTo(this.source);
+        }
+    }
+}
+
+module.exports = Harvester;

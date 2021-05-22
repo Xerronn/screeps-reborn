@@ -1,5 +1,5 @@
 const Archon = require("../proletariat/harvesters/archon");
-const Harvester = require("../proletariat/harvesters/harvester");
+const Engineer = require("../proletariat/harvesters/engineer");
 const Nexus = require("../constructs/nexus");
 
 //entity that initializes, refreshes, runs all roomObj in a room
@@ -18,16 +18,19 @@ class Originator {
         let thisRoom = Game.rooms[this.room];
         //initialize all creeps in the room to their respective classes
         //todo: What if a global reset happens when a creep is in a different room
+        //! should probably intialize from memory instead of room.find
+        //! actually definitely do that! it would solve lots of problems
         for (var creep of thisRoom.find(FIND_MY_CREEPS)) {
+            //todo: figure out a way to do this without a switch and many branches
             switch(creep.memory.type) {
                 case "archon":
                     //init the list in the dictionary if it doesn't exist
                     !("archon" in this.proletarian) && (this.proletarian["archon"] = []);
                     this.proletarian["archon"].push(new Archon(creep.id));
                     break;
-                case "harvester":
-                    !("harvester" in this.proletarian) && (this.proletarian["harvester"] = []);
-                    this.proletarian["harvester"].push(new Harvester(creep.id));
+                case "engineer":
+                    !("engineer" in this.proletarian) && (this.proletarian["engineer"] = []);
+                    this.proletarian["engineer"].push(new Engineer(creep.id));
                     break;
             }
         }

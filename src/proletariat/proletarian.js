@@ -23,11 +23,12 @@ class Proletarian extends GameObj {
             if (!super.update(force)) {
                 //todo: This will fail if a global reset happens the same tick as a creep dies.
                 //todo: Figure out a way to get around that. Maybe use the leftover creep memory that happens in this case
-                //todo: add queueing to the scheduler so that it won't get lost if there isnt enough energy
+                //todo: not all creeps will want to rebirth themselves
                 global.Imperator.administrators[this.room].initiator.initiate(this, true);
                 return false;
             }
             this.body = this.liveObj.body.map(b => b.type);
+            this.store = this.liveObj.store;
             this.fatigue = this.liveObj.fatigue;
             this.memory = this.liveObj.memory;
         }

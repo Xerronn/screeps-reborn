@@ -30,7 +30,7 @@ class GameObj {
      * Function to execute the main logic of the object per tick
      */
     run() {
-        console.log("Override me please");
+        console.log("Override me please, " + this.constructor.name);
     }
 
     info() {

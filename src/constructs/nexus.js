@@ -19,7 +19,12 @@ class Nexus extends Construct {
         return true;
     }
 
+    run() {
+        return;
+    }
+
     spawnCreep(body, type, memory=null) {
+        //todo: make an object for the newly spawned creep
         let name = type + " <" + Game.time + ">"
         if (!memory) {
             memory = {
