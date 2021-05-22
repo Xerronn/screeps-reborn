@@ -51,7 +51,10 @@ for subdir, dirs, files in os.walk("./dist"):
                     directory = file.split("_")
                     #make sure its not root
                     if len(directory) > 1:
-                        new = new.replace("./", directory[0] + "/")
+                        fullPath = ""
+                        for i in range(len(directory) - 1):
+                            fullPath += directory[i] + "/"
+                        new = new.replace("./", fullPath)
                     else:
                         new = new.replace("./", "")
                 if "../" in new[0:4]:
