@@ -22,17 +22,10 @@ class Originator {
         //! actually definitely do that! it would solve lots of problems
         for (var creep of thisRoom.find(FIND_MY_CREEPS)) {
             //todo: figure out a way to do this without a switch and many branches
-            switch(creep.memory.type) {
-                case "archon":
-                    //init the list in the dictionary if it doesn't exist
-                    !("archon" in this.proletarian) && (this.proletarian["archon"] = []);
-                    this.proletarian["archon"].push(new Archon(creep.id));
-                    break;
-                case "engineer":
-                    !("engineer" in this.proletarian) && (this.proletarian["engineer"] = []);
-                    this.proletarian["engineer"].push(new Engineer(creep.id));
-                    break;
-            }
+            !(creep.memory.type in this.proletarian) && (this.proletarian[creep.memory.type] = []);
+            let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + 
+                creep.memory.type.charAt(0).toUpperCase() + creep.memory.type.slice(1) + "(creep.id));";
+            eval(createObjStr);
         }
 
         //initialize all structures in the room to their respective classes
