@@ -10,20 +10,20 @@ class Initiator {
      * @param {boolean} rebirth whether or not this is a rebirth
      */
     initiate(template=null, rebirth=false) {
+        //! checking to see if success != OK will cause a bug when multiple spawns are queued in the same tick. It will erase them.
         if (template) {
             //this could be a property, but initialization could get weird. Easier to keep it like this
             let originator = global.Imperator.administrators[this.room].originator;
             //loop through the spawns until an available one is found
-            for (var nexus of originator.constructs["nexus"]) {
+            for (let nexus of originator.constructs["nexus"]) {
                 if (!nexus.spawning) {
-                    let success = nexus.spawnCreep(template.body, template.type, template.memory);
+                    let success = nexus.spawnCreep(template.body, template.type, {...template.memory});
 
                     //if the request fails, schedule it for 20 ticks in the future
-                    if ([ERR_NOT_ENOUGH_ENERGY, ERR_BUSY].includes(success)) {
+                    if (success != OK) {
                         let task = "global.Imperator.administrators[objArr[1].room].initiator.initiate(objArr[0]);";
-                        global.Executive.schedule(Game.time + 20, task, [template, this]);
+                        global.Executive.schedule(Game.time + 20, task, [{...template}, this]);
                     }
-                    break;
                 }
             }
 
@@ -31,9 +31,10 @@ class Initiator {
                 //If the creep is replacing a dead creep, we delete it from memory
                 let origArr = originator.proletarian[template.type];
                 let index = origArr.indexOf(template);
-                origArr.splice(index, 1);
+                if (index >= 0) origArr.splice(index, 1);
                 //todo: we can use the absence of this to see when we missed a creep due to global reset
-                delete Memory.creeps[template.name];
+                console.log(template.memory.name);
+                delete Memory.creeps[template.memory.name];
             }
         }
     }
@@ -46,7 +47,6 @@ class Initiator {
         //I think 5 engineers is a good starting point
         for (var i = 0; i < 5; i++) {
             //todo: Figure out a way to terminate these tasks once we finish phaseOne
-            //! these tasks are not being looped back around like they should. Figure out why
             let task = "global.Imperator.administrators[objArr[0].room].initiator.initiate({'body' : [WORK, CARRY, CARRY, MOVE], 'type': 'engineer', 'memory': null});";
             global.Executive.schedule(Game.time + (i * 10), task, [this]);
         }

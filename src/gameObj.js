@@ -1,6 +1,6 @@
 //Screeps game object definition
 class GameObj {
-    constructor(id) {
+    constructor(id) {   
         this.id = id;
         this.updateTick = Game.time;
         this.update(true);

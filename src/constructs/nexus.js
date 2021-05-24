@@ -23,15 +23,32 @@ class Nexus extends Construct {
         return;
     }
 
+    /**
+     * A function to spawn a creep in a room
+     * @param {Array} body Array of body constants that the creep will be spawned with
+     * @param {String} type The type of creep to be spawned
+     * @param {Object} memory an optional memory object to spawn the creep with. Recommended only for rebirth. Do other memory stuff in objects
+     * @returns 
+     */
     spawnCreep(body, type, memory=null) {
         //todo: make an object for the newly spawned creep
-        let name = type + " <" + Game.time + ">"
+        let name = type + "<" + Game.time + ">"
         if (!memory) {
-            memory = {
-                "type": type
-            }
+            memory = {}
         }
-        return this.liveObj.spawnCreep(body, name, {memory: memory})
+        memory["name"] = name;
+        memory["type"] = type;
+        memory["spawnRoom"] = this.room;
+        memory["body"] = body;
+        memory["spawning"] = true;
+        let success = this.liveObj.spawnCreep(body, name, {memory: memory});
+
+        //todo: schedule the creation of the creep wrapper for the new baby creep so you dont have to wait for a reset
+        if (success == OK) {
+            let task = "delete Memory.creeps[\"" + name + "\"].spawning;";
+            global.Executive.schedule(Game.time + body.length * CREEP_SPAWN_TIME, task)
+        }
+        return success;
     }
 }
 

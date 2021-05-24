@@ -13,6 +13,7 @@ class Proletarian extends GameObj {
             this.type = this.liveObj.memory.type;
         }
         this.name = this.liveObj.name;
+        this.body = this.liveObj.body.map(b => b.type);
         
         this.update(true);
     }
@@ -27,7 +28,6 @@ class Proletarian extends GameObj {
                 global.Imperator.administrators[this.room].initiator.initiate(this, true);
                 return false;
             }
-            this.body = this.liveObj.body.map(b => b.type);
             this.store = this.liveObj.store;
             this.fatigue = this.liveObj.fatigue;
             this.memory = this.liveObj.memory;

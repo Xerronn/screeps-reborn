@@ -8,7 +8,6 @@ class Originator {
         this.room = room;
         this.proletarian = {};
         this.constructs = {};
-        this.initialize();
     }
 
     /**
@@ -16,18 +15,6 @@ class Originator {
      */
     initialize() {
         let thisRoom = Game.rooms[this.room];
-        //initialize all creeps in the room to their respective classes
-        //todo: What if a global reset happens when a creep is in a different room
-        //! should probably intialize from memory instead of room.find
-        //! actually definitely do that! it would solve lots of problems
-        for (var creep of thisRoom.find(FIND_MY_CREEPS)) {
-            //todo: figure out a way to do this without a switch and many branches
-            !(creep.memory.type in this.proletarian) && (this.proletarian[creep.memory.type] = []);
-            let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + 
-                creep.memory.type.charAt(0).toUpperCase() + creep.memory.type.slice(1) + "(creep.id));";
-            eval(createObjStr);
-        }
-
         //initialize all structures in the room to their respective classes
         for (var struc of thisRoom.find(FIND_MY_STRUCTURES)) {
             switch(struc.structureType) {
@@ -36,6 +23,26 @@ class Originator {
                     !("nexus" in this.constructs) && (this.constructs["nexus"] = []);
                     this.constructs["nexus"].push(new Nexus(struc.id));
                     break;
+            }
+        }
+
+        //initialize all creeps in the room to their respective classes
+        for (let creepMem of _.filter(Memory.creeps, c => c.spawnRoom == this.room && !c.spawning)) {
+            !(creepMem.type in this.proletarian) && (this.proletarian[creepMem.type] = []);
+
+            if (Game.creeps[creepMem.name]) {
+                let createObjStr = "this.proletarian[\"" + creepMem.type + "\"].push(new " + creepMem.type.charAt(0).toUpperCase() + 
+                    creepMem.type.slice(1) + "(Game.creeps[\"" + creepMem.name + "\"].id));";
+
+                eval(createObjStr);
+            } else {
+                //the creep is dead. This should only happen if a creep dies on the same tick as a global reset.
+                let template = {
+                    "body": creepMem.body,
+                    "type": creepMem.type,
+                    "memory": creepMem
+                };
+                global.Imperator.administrators[this.room].initiator.initiate(template, true);
             }
         }
     }
