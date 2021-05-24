@@ -16,7 +16,7 @@ class Initiator {
             let originator = global.Imperator.administrators[this.room].originator;
             //loop through the spawns until an available one is found
             for (let nexus of originator.constructs["nexus"]) {
-                if (!nexus.spawning) {
+                if (!nexus.spawning && !nexus.spawningThisTick) {
                     let success = nexus.spawnCreep(template.body, template.type, {...template.memory});
 
                     //if the request fails, schedule it for 20 ticks in the future

@@ -15,6 +15,9 @@ class Nexus extends Construct {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) return false;
             this.spawning = this.liveObj.spawning;
+
+            //used to prevent trying to spawn multiple things on one tick
+            this.spawningThisTick = false;
         }
         return true;
     }
@@ -46,7 +49,9 @@ class Nexus extends Construct {
         //todo: schedule the creation of the creep wrapper for the new baby creep so you dont have to wait for a reset
         if (success == OK) {
             let task = "delete Memory.creeps[\"" + name + "\"].spawning;";
-            global.Executive.schedule(Game.time + body.length * CREEP_SPAWN_TIME, task)
+            this.spawningThisTick = true;
+            Memory.rooms[this.room].extensionsFilled = false;
+            global.Executive.schedule(Game.time + body.length * CREEP_SPAWN_TIME, task);
         }
         return success;
     }

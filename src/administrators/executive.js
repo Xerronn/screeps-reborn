@@ -26,6 +26,7 @@ class Executive {
      * @param {Array} objArr 
      */
     schedule(tick, task, objArr=null) {
+        //todo: make an id system so we can cancel tasks too
         if (!Memory.scheduler[tick.toString()]) {
             Memory.scheduler[tick.toString()] = [];
         }

@@ -9,6 +9,7 @@ global.Executive = new Executive();
 global.Archivist = new Archivist();
 
 global.Imperator = new Imperator();
+global.Archivist.build();
 global.Imperator.initialize();
 console.log("<b>--------Global Reset--------</b>");
 

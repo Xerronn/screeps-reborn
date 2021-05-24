@@ -63,6 +63,39 @@ class Harvester extends Proletarian {
             this.liveObj.moveTo(this.source);
         }
     }
+
+    /**
+     * Function to fill spawn and extensions
+     */
+    fillExtensions() {
+        let liveClosestExt = Game.getObjectById(this.memory.closestExt);
+        if (!liveClosestExt || liveClosestExt.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+            let ext = Memory.rooms[this.room].structures.extensions.map(ext => Game.getObjectById(ext)).filter(ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+            console.log(ext.length);
+            if (ext.length == 0) {
+                Memory.rooms[this.room].extensionsFilled = true;
+                return;
+            }
+            liveClosestExt = this.pos.findClosestByRange(ext);
+            this.memory.closestExt = liveClosestExt.id;
+        }
+
+        if (this.pos.inRangeTo(liveClosestExt, 1)) {
+            this.liveObj.transfer(liveClosestExt, RESOURCE_ENERGY);
+        } else {
+            this.liveObj.moveTo(liveClosestExt);
+        }
+    }
+
+    upgradeController() {
+        let controller = Game.rooms[this.room].controller;
+
+        if (this.pos.inRangeTo(controller, 1)) {
+            this.liveObj.upgradeController(controller);
+        } else {
+            this.liveObj.moveTo(controller);
+        }
+    }
 }
 
 module.exports = Harvester;

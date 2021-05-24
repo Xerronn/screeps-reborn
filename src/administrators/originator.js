@@ -1,5 +1,5 @@
-const Archon = require("../proletariat/harvesters/archon");
-const Engineer = require("../proletariat/harvesters/engineer");
+const Archon = require("../proletariat/workers/archon");
+const Engineer = require("../proletariat/workers/engineer");
 const Nexus = require("../constructs/nexus");
 
 //entity that initializes, refreshes, runs all roomObj in a room
@@ -14,6 +14,7 @@ class Originator {
      * Function that initializes the Originator with all GameObj
      */
     initialize() {
+        //todo: make it initialize structures from archivist
         let thisRoom = Game.rooms[this.room];
         //initialize all structures in the room to their respective classes
         for (var struc of thisRoom.find(FIND_MY_STRUCTURES)) {
