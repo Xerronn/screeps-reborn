@@ -12,7 +12,6 @@ class Engineer extends Worker {
     }
 
     run() {
-        console.log(this.store.getUsedCapacity(RESOURCE_ENERGY));
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";
         } else if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0 && !Memory.rooms[this.room].extensionsFilled) {

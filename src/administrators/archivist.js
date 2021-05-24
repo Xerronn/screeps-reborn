@@ -36,6 +36,7 @@ class Archivist {
      * Refresh all structures cache
      */
     refresh() {
+        //todo: make this automatically happen only once
         for (let room of global.Imperator.dominion) {
             Memory.rooms[room].structures = {};
 

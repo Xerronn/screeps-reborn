@@ -17,6 +17,7 @@ class Initiator {
             //loop through the spawns until an available one is found
             for (let nexus of originator.constructs["nexus"]) {
                 if (!nexus.spawning && !nexus.spawningThisTick) {
+                    //! these seem to be failing
                     let success = nexus.spawnCreep(template.body, template.type, {...template.memory});
 
                     //if the request fails, schedule it for 20 ticks in the future
@@ -33,7 +34,6 @@ class Initiator {
                 let index = origArr.indexOf(template);
                 if (index >= 0) origArr.splice(index, 1);
                 //todo: we can use the absence of this to see when we missed a creep due to global reset
-                console.log(template.memory.name);
                 delete Memory.creeps[template.memory.name];
             }
         }
@@ -47,7 +47,7 @@ class Initiator {
         //I think 5 engineers is a good starting point
         for (var i = 0; i < 5; i++) {
             //todo: Figure out a way to terminate these tasks once we finish phaseOne
-            let task = "global.Imperator.administrators[objArr[0].room].initiator.initiate({'body' : [WORK, CARRY, CARRY, MOVE], 'type': 'engineer', 'memory': null});";
+            let task = "global.Imperator.administrators[objArr[0].room].initiator.initiate({'body' : [WORK, CARRY, MOVE, MOVE], 'type': 'engineer', 'memory': null});";
             global.Executive.schedule(Game.time + (i * 10), task, [this]);
         }
     }

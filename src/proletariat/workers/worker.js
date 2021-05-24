@@ -71,7 +71,6 @@ class Harvester extends Proletarian {
         let liveClosestExt = Game.getObjectById(this.memory.closestExt);
         if (!liveClosestExt || liveClosestExt.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
             let ext = Memory.rooms[this.room].structures.extensions.map(ext => Game.getObjectById(ext)).filter(ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-            console.log(ext.length);
             if (ext.length == 0) {
                 Memory.rooms[this.room].extensionsFilled = true;
                 return;
