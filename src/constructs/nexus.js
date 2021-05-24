@@ -48,7 +48,7 @@ class Nexus extends Construct {
 
         //todo: schedule the creation of the creep wrapper for the new baby creep so you dont have to wait for a reset
         if (success == OK) {
-            let task = "delete Memory.creeps[\"" + name + "\"].spawning;";
+            let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].originator.initializeCreep(\"" + name + "\");";
             this.spawningThisTick = true;
             Memory.rooms[this.room].extensionsFilled = false;
             global.Executive.schedule(Game.time + body.length * CREEP_SPAWN_TIME, task);

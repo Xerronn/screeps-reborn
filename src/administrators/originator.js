@@ -49,6 +49,18 @@ class Originator {
     }
 
     /**
+     * Function to initialize a newly created creep
+     * @param {String} creepName Name of the creep
+     */
+    initializeCreep(creepName) {
+        let creep = Game.creeps[creepName];
+        let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
+                    creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
+
+        eval(createObjStr);
+    }
+
+    /**
      * Function that updates all stored GameObj with live references.
      * Should be run each tick in the main loop
      */
