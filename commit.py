@@ -1,5 +1,14 @@
-import os, re, shutil, json, requests
+import os, re, shutil, json, requests, argparse
 from requests.auth import HTTPBasicAuth
+
+parser = argparse.ArgumentParser(description="A screeps code formatter and uploader.")
+parser.add_argument("-d", "--dry-run", help="Run without connecting to the screeps server.", action="store_true")
+parser.add_argument("-l", "--local", help="Copy files into a local directory.", default=None)
+
+args = parser.parse_args()
+
+isDryRun = args._get_kwargs()[0][1]
+local = args._get_kwargs()[1][1]
 
 #load the credentials from the config file
 with open("config/credentials.json") as f:
@@ -17,6 +26,7 @@ data = {
     "modules": {}
 }
 
+#get a list of all js files in our src
 fileList = []
 for subdir, dirs, files in os.walk("./src"):
     for file in files:
@@ -47,6 +57,8 @@ for subdir, dirs, files in os.walk("./dist"):
             paths = re.findall('\(([^)]+)\)', requires)
             for path in paths:
                 new = path
+
+                #replace the current folder with the full path
                 if "./" in new[0:3]:
                     directory = file.split("_")
                     #make sure its not root
@@ -57,6 +69,8 @@ for subdir, dirs, files in os.walk("./dist"):
                         new = new.replace("./", fullPath)
                     else:
                         new = new.replace("./", "")
+                
+                #replace the parent folder with the full path
                 if "../" in new[0:4]:
                     directory = file.split("_")
                     
@@ -76,13 +90,24 @@ for subdir, dirs, files in os.walk("./dist"):
             outfile.write(contents)
         
         data["modules"][filepath.split('\\')[-1][:-3]] = contents
-            
 
-r = requests.post(
-    url = url, 
-    data = json.dumps(data, separators=(',', ':')), 
-    headers = headers, 
-    auth = HTTPBasicAuth(credentials['username'], credentials['password'])
-)
+#if a path is passed, copy the resulting files to that path if it is valid
+if local is not None:
+    #todo: everything lol
+    print(local)
 
-print(r.content)
+#upload the files to the screeps folder is dry run isnt specified
+if not isDryRun:      
+    try:
+        r = requests.post(
+            url = url, 
+            data = json.dumps(data, separators=(',', ':')), 
+            headers = headers, 
+            auth = HTTPBasicAuth(credentials['username'], credentials['password'])
+        )
+
+        print(r.content)
+    except:
+        print("Connection to screeps servers failed")
+else:
+    print("Ran successfully without upload")
