@@ -3,12 +3,12 @@ from requests.auth import HTTPBasicAuth
 
 parser = argparse.ArgumentParser(description="A screeps code formatter and uploader.")
 parser.add_argument("-d", "--dry-run", help="Run without connecting to the screeps server.", action="store_true")
-parser.add_argument("-l", "--local", help="Copy files into a local directory.", default=None)
+parser.add_argument("-l", "--local", help="Copy files into the screeps folder locally. Specify the branch", default=None)
 
 args = parser.parse_args()
 
 isDryRun = args._get_kwargs()[0][1]
-local = args._get_kwargs()[1][1]
+local = args._get_kwargs()[1][1] + "/"
 
 #load the credentials from the config file
 with open("config/credentials.json") as f:
@@ -55,13 +55,14 @@ for subdir, dirs, files in os.walk("./dist"):
             requires = ", ".join(re.findall('require\(.+\)', contents))
             #get the contents inside the parenthesis
             paths = re.findall('\(([^)]+)\)', requires)
+            #todo: find a more elegant solution
             for path in paths:
                 new = path
 
                 #replace the current folder with the full path
                 if "./" in new[0:3]:
                     directory = file.split("_")
-                    #make sure its not root
+                    #if its root, delete the ./
                     if len(directory) > 1:
                         fullPath = ""
                         for i in range(len(directory) - 1):
@@ -73,7 +74,7 @@ for subdir, dirs, files in os.walk("./dist"):
                 #replace the parent folder with the full path
                 if "../" in new[0:4]:
                     directory = file.split("_")
-                    
+                    #if its root, just delete the ../
                     if len(directory) > 2:
                         fullPath = ""
                         for i in range(len(directory) - 2):
@@ -93,8 +94,23 @@ for subdir, dirs, files in os.walk("./dist"):
 
 #if a path is passed, copy the resulting files to that path if it is valid
 if local is not None:
-    #todo: everything lol
-    print(local)
+    #for windows
+    if os.name == "nt":
+        fullPath = f"C:/Users/{os.getlogin()}/AppData/Local/Screeps/scripts/screeps.com/{local}"
+        #remove all contents of the folder
+        if os.path.isdir(fullPath):
+            shutil.rmtree(fullPath)
+        os.mkdir(fullPath)
+        
+        #copy all the files to the new folder
+        for subdir, dirs, files in os.walk("./dist"):
+            for file in files:
+                filepath = subdir + os.sep + file
+                shutil.copy(filepath, fullPath + file)
+        print(f"Files copied into {fullPath}")
+    else:
+        #todo windows, linux support
+        pass
 
 #upload the files to the screeps folder is dry run isnt specified
 if not isDryRun:      
