@@ -38,12 +38,17 @@ class Originator {
                 eval(createObjStr);
             } else {
                 //the creep is dead. This should only happen if a creep dies on the same tick as a global reset.
-                let template = {
-                    "body": creepMem.body,
-                    "type": creepMem.type,
-                    "memory": creepMem
-                };
-                global.Imperator.administrators[this.room].initiator.initiate(template, true);
+                //if it is a rebirth creep, rebirth it, otherwise delete the memory
+                if (creepMem.generation != null) {
+                    let template = {
+                        "body": creepMem.body,
+                        "type": creepMem.type,
+                        "memory": creepMem
+                    };
+                    this.getInitiator().initiate(template, true);
+                } else {
+                    delete Memory.creeps[creepMem.name];
+                }
             }
         }
     }
@@ -54,6 +59,9 @@ class Originator {
      */
     initializeCreep(creepName) {
         let creep = Game.creeps[creepName];
+        if (!this.proletarian[creep.memory.type]) {
+            this.proletarian[creep.memory.type] = [];
+        }
         let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
                     creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
 
@@ -97,6 +105,14 @@ class Originator {
                 struc.run();
             }
         }
+    }
+
+    /**
+     * function to return the room's initiator
+     * @returns Initiator
+     */
+    getInitiator() {
+        return global.Imperator.administrators[this.room].initiator;
     }
 }
 
