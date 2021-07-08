@@ -52,6 +52,23 @@ class Executive {
             }
         }
     }
+
+    /**
+     * Delete all instances of tasks using provided script
+     * @param {String} script the script to find
+     */
+    deleteTask(script) {
+        let schedule = Memory.scheduler;
+
+        for (let tick in schedule) {
+            for (let task in tick) {
+                if (tick[task].script == script) {
+                    console.log(tick[task].script)
+                    // tick.splice(task, 1);
+                }
+            }
+        }
+    }
 }
 
 module.exports = Executive;
