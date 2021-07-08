@@ -73,7 +73,9 @@ class Worker extends Proletarian {
     fillExtensions() {
         let liveClosestExt = Game.getObjectById(this.memory.closestExt);
         if (!liveClosestExt || liveClosestExt.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-            let ext = Memory.rooms[this.room].structures.extensions.map(ext => Game.getObjectById(ext)).filter(ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+            let ext = global.Archivist.getStructures(this.room, "extension").filter(
+                ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            );
             if (ext.length == 0) {
                 //let all the other creeps know that there isn't any point in looking
                 global.Archivist.setExtensionsFilled(this.room, true);
@@ -97,6 +99,26 @@ class Worker extends Proletarian {
             this.liveObj.upgradeController(controller);
         } else {
             this.liveObj.moveTo(controller);
+        }
+    }
+
+    buildNearest() {
+        let liveClosestSite = Game.getObjectById(this.memory.closestSite);
+        
+        if (!liveClosestSite) {
+            //get the closest construction site
+            liveClosestSite = Game.constructionSites[Object.keys(Game.constructionSites)[0]];
+            this.memory.closestSite = liveClosestSite.id;
+            let site = global.Archivist.getStructures(this.room, "constructionSite");
+
+            liveClosestSite = this.pos.findClosestByRange(site);
+            this.memory.closestSite = liveClosestSite.id;
+        }
+
+        if (this.pos.inRangeTo(liveClosestSite, 1)) {
+            this.liveObj.build(liveClosestSite);
+        } else {
+            this.liveObj.moveTo(liveClosestSite);
         }
     }
 }
