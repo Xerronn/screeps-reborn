@@ -1,7 +1,7 @@
 const Proletarian = require("../proletarian");
 
 //the parent harvester definition
-class Harvester extends Proletarian {
+class Worker extends Proletarian {
     constructor(creepId) {
         super(creepId);
         
@@ -10,6 +10,7 @@ class Harvester extends Proletarian {
             //for creep rebirth and object init
             this.sourceId = this.memory.source;
         } else {
+            //! causes issues where they get removed from the harvesters list but not readded duiring rebirth
             //for first time an ancestry has spawned
             let roomSources = Memory.rooms[this.room].sources;
             let sortedSources = _.sortBy(Object.keys(roomSources), s => this.pos.getRangeTo(Game.getObjectById(s)));
@@ -30,6 +31,8 @@ class Harvester extends Proletarian {
     }
 
     update(force=false) {
+        //! this removes creeps from the source arrays when they die, which doesn't work with rebirth.
+        //! need to add a way to track if a creep is rebirthing or not
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //remove creep from its array on death
@@ -72,7 +75,8 @@ class Harvester extends Proletarian {
         if (!liveClosestExt || liveClosestExt.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
             let ext = Memory.rooms[this.room].structures.extensions.map(ext => Game.getObjectById(ext)).filter(ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
             if (ext.length == 0) {
-                Memory.rooms[this.room].extensionsFilled = true;
+                //let all the other creeps know that there isn't any point in looking
+                global.Archivist.setExtensionsFilled(this.room, true);
                 return;
             }
             liveClosestExt = this.pos.findClosestByRange(ext);
@@ -97,4 +101,4 @@ class Harvester extends Proletarian {
     }
 }
 
-module.exports = Harvester;
+module.exports = Worker;

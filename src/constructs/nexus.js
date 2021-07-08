@@ -50,7 +50,7 @@ class Nexus extends Construct {
         if (success == OK) {
             let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].originator.initializeCreep(\"" + name + "\");";
             this.spawningThisTick = true;
-            Memory.rooms[this.room].extensionsFilled = false;
+            global.Archivist.setExtensionsFilled(this.room, false);
             global.Executive.schedule(Game.time + body.length * CREEP_SPAWN_TIME, task);
         }
         return success;

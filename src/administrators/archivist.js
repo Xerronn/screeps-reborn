@@ -8,6 +8,10 @@ class Archivist {
      * @param {boolean} reset reset the memory
      */
     build(reset = false) {
+        if (!Memory.creeps || reset) {
+            Memory.creeps = {};
+        }
+
         if (!Memory.rooms || reset) {
             Memory.rooms = {};
         }

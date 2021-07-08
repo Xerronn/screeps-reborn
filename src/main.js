@@ -19,5 +19,4 @@ module.exports.loop = function() {
     global.Imperator.refresh();
     global.Executive.execute();
     global.Imperator.run();
-    console.log(Game.cpu.getUsed() - startcpu);
 }
