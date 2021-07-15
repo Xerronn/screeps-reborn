@@ -73,15 +73,19 @@ class Worker extends Proletarian {
     fillExtensions() {
         let liveClosestExt = Game.getObjectById(this.memory.closestExt);
         if (!liveClosestExt || liveClosestExt.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-            let ext = global.Archivist.getStructures(this.room, "extension").filter(
-                ext => ext.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            let ext = global.Archivist.getStructures(this.room, STRUCTURE_EXTENSION);
+            let spawns = global.Archivist.getStructures(this.room, STRUCTURE_SPAWN);
+
+            let fillables = spawns.concat(ext).filter(
+                obj => obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             );
-            if (ext.length == 0) {
+            
+            if (fillables.length == 0) {
                 //let all the other creeps know that there isn't any point in looking
                 global.Archivist.setExtensionsFilled(this.room, true);
                 return;
             }
-            liveClosestExt = this.pos.findClosestByRange(ext);
+            liveClosestExt = this.pos.findClosestByRange(fillables);
             this.memory.closestExt = liveClosestExt.id;
         }
 
@@ -95,7 +99,7 @@ class Worker extends Proletarian {
     upgradeController() {
         let controller = Game.rooms[this.room].controller;
 
-        if (this.pos.inRangeTo(controller, 1)) {
+        if (this.pos.inRangeTo(controller, 3)) {
             this.liveObj.upgradeController(controller);
         } else {
             this.liveObj.moveTo(controller);
