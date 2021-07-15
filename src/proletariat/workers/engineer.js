@@ -14,8 +14,10 @@ class Engineer extends Worker {
     run() {
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";
-        } else if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0 && !global.Archivist.getExtensionsFilled(this.room)) {
+        } else if (!global.Archivist.getExtensionsFilled(this.room)) {
             this.memory.task = "fillExtensions";
+        } else if (global.Archivist.getStructures(this.room, "constructionSite").length > 0) {
+            this.memory.task = "buildNearest";
         } else {
             this.memory.task = "upgradeController";
         }
