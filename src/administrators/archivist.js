@@ -116,12 +116,17 @@ class Archivist {
     /**
      * Get all instances of a certain structure within a room
      * @param {String} room string representing the room
-     * @param {String} structure type of structure to get
+     * @param {String} structure screeps constant type of structure to get
      * @returns an array of live game objects
      */
     getStructures(room, structure) {
-        let call = "Memory.rooms[room].structures." + structure + ".map(obj => Game.getObjectById(obj))";
-        return eval(call);
+        let structureString = structure + "s";
+        let call = "Memory.rooms[\"" + room + "\"].structures." + structureString + ".map(obj => Game.getObjectById(obj))";
+        try {
+            return eval(call);
+        } catch (err) {
+            return [];
+        } 
     }
 }
 
