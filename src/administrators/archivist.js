@@ -29,6 +29,7 @@ class Archivist {
             if (!Memory.rooms[room].flags) {
                 Memory.rooms[room].flags = {}
                 Memory.rooms[room].flags.extensionsFilled = false;
+                Memory.rooms[room].flags.rank = 0;
             }
 
             if (!Memory.rooms[room].sources) {
@@ -95,13 +96,17 @@ class Archivist {
         global.Executive.schedule(Game.time + 100, task);
     }
 
+    /////////////////
+    /////GETTERS/////
+    /////////////////
+
     /**
-     * Set extensions filled flag for a given room
-     * @param {String} room string representing the room
-     * @param {Boolean} value value to set the flag
+     * Set the anchor point of a room
+     * @param {String} room string representation of a room 
+     * @param {Object} value object with x and y coordinates
      */
-    setExtensionsFilled(room, value) {
-        Memory.rooms[room].flags.extensionsFilled = value;
+     getAnchor(room) {
+        return Memory.rooms[room].flags.anchor;
     }
 
     /**
@@ -111,6 +116,14 @@ class Archivist {
      */
      getExtensionsFilled(room) {
         return Memory.rooms[room].flags.extensionsFilled;
+    }
+
+    /**
+     * Get rank flag for a given room
+     * @param {String} room string representing the room
+     */
+    getRank(room) {
+        return Memory.rooms[room].flags.rank;
     }
 
     /**
@@ -127,6 +140,37 @@ class Archivist {
         } catch (err) {
             return [];
         } 
+    }
+
+    /////////////////
+    /////SETTERS/////
+    /////////////////
+
+    /**
+     * Set the anchor point of a room
+     * @param {String} room string representation of a room 
+     * @param {Object} value object with x and y coordinates
+     */
+    setAnchor(room, value) {
+        Memory.rooms[room].flags.anchor = value;
+    }
+    
+    /**
+     * Set extensions filled flag for a given room
+     * @param {String} room string representing the room
+     * @param {Boolean} value value to set the flag
+     */
+     setExtensionsFilled(room, value) {
+        Memory.rooms[room].flags.extensionsFilled = value;
+    }
+
+    /**
+     * 
+     * @param {String} room string representing the room
+     * @param {Integer} value value to set the flag
+     */
+    setRank(room, value) {
+        Memory.rooms[room].flags.rank = value;
     }
 }
 
