@@ -4,8 +4,13 @@ class Architect {
 
     }
 
+    /**
+     * Function to do room planning whenever a room controller levels up
+     * @param {String} room string representation of a room 
+     */
     design(room) {
-        if (global.Archivist.getRank(room) != Game.rooms[room].controller.level) {
+        let roomController = Game.rooms[room].controller;
+        if (global.Archivist.getRank(room) != roomController.level) {
             //TODO: factory is not building for some reason
             let bunkerSchema = global.Illustrator.getBunkerSchema();
 
@@ -35,20 +40,21 @@ class Architect {
                 this.buildNewStructures(type, room);
             }
 
-            // if (roomController.level >= 2) {
-            //     //build containers
-            //     if (!Memory.roomsPersistent[room].roomPlanning.containersBuilt) {
-            //         let closest = []
-            //         for (var source of Game.rooms[room].find(FIND_SOURCES)) {
-            //             let pathToSource = roomAnchor.findPathTo(source.pos, {range: 1, ignoreCreeps: true})
-            //             let closestPosition = new RoomPosition(pathToSource[pathToSource.length - 1]["x"], pathToSource[pathToSource.length - 1]["y"], room);
-            //             closest.push(closestPosition); 
-            //         }
-            //         for (var close of closest) {
-            //             close.createConstructionSite(STRUCTURE_CONTAINER);
-            //         }
-            //         Memory.roomsPersistent[room].roomPlanning.containersBuilt = true;
-            //     }
+            if (roomController.level >= 2) {
+                //build containers
+                if (!global.Archivist.getContainersBuilt(room)) {
+                    let closest = []
+                    for (var source of Game.rooms[room].find(FIND_SOURCES)) {
+                        let pathToSource = roomAnchor.findPathTo(source.pos, {range: 1, ignoreCreeps: true})
+                        let closestPosition = new RoomPosition(pathToSource[pathToSource.length - 1]["x"], pathToSource[pathToSource.length - 1]["y"], room);
+                        closest.push(closestPosition); 
+                    }
+                    for (var close of closest) {
+                        close.createConstructionSite(STRUCTURE_CONTAINER);
+                    }
+                    global.Archivist.setContainersBuilt(room, true);
+                }
+            }
 
             //     //build roads to sources
             //     if (!Memory.roomsPersistent[room].roomPlanning.travelRoadsBuilt) {
