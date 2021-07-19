@@ -73,13 +73,8 @@ class Archivist {
                 }
                 sortedStructures[struc.structureType].push(struc);
             }
-
-            //construction sites
-            let constructionSites = Game.rooms[room].find(FIND_MY_CONSTRUCTION_SITES);
-            Memory.rooms[room].structures.constructionSites = [];
-            constructionSites.forEach(site => Memory.rooms[room].structures.constructionSites.push(site.id));
-            
-            //all other stored structures
+ 
+            //all structures
             for (let strucType in sortedStructures) {
                 //create the empty memory
                 eval("Memory.rooms[room].structures." + strucType + "s = []");
@@ -101,12 +96,21 @@ class Archivist {
     /////////////////
 
     /**
-     * Set the anchor point of a room
+     * Get the anchor point of a room
      * @param {String} room string representation of a room 
-     * @param {Object} value object with x and y coordinates
+     * @returns the anchor coordinate object
      */
      getAnchor(room) {
         return Memory.rooms[room].flags.anchor;
+    }
+
+    /**
+     * Get if source containers are built
+     * @param {String} room 
+     * @returns 
+     */
+    getContainersBuilt(room) {
+        return Memory.rooms[room].flags.containerseBuilt;
     }
 
     /**
@@ -153,6 +157,15 @@ class Archivist {
      */
     setAnchor(room, value) {
         Memory.rooms[room].flags.anchor = value;
+    }
+
+    /**
+     * Set containers built flag
+     * @param {String} room string representing the room
+     * @param {Boolean} value value to set the flag
+     */
+    setContainersBuilt(room, value) {
+        Memory.rooms[room].flags.containerseBuilt = value;
     }
     
     /**
