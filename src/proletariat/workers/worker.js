@@ -110,12 +110,9 @@ class Worker extends Proletarian {
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
-            //get the closest construction site
-            liveClosestSite = Game.constructionSites[Object.keys(Game.constructionSites)[0]];
-            this.memory.closestSite = liveClosestSite.id;
-            let site = global.Archivist.getStructures(this.room, "constructionSite");
+            let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
 
-            liveClosestSite = this.pos.findClosestByRange(site);
+            liveClosestSite = this.pos.findClosestByRange(sites);
             this.memory.closestSite = liveClosestSite.id;
         }
 
