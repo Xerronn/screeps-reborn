@@ -43,6 +43,16 @@ class Illustrator {
             "lab":{"pos":[{"x":8,"y":7},{"x":9,"y":7},{"x":7,"y":8},{"x":9,"y":8},{"x":10,"y":8},{"x":7,"y":9},{"x":8,"y":9},{"x":10,"y":9},{"x":8,"y":10},{"x":9,"y":10}]}
         };
     }
+
+    drawBunker(room) {
+        try {
+        let roomAnchor = global.Archivist.getAnchor(room);
+        Game.rooms[room].visual.rect(roomAnchor.x, roomAnchor.y, 10, 10, {opacity: 0.7});
+        return true;
+        } catch (err) {
+            return "No room Anchor set for room";
+        }
+    }
 }
 
 module.exports = Illustrator;
