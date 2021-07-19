@@ -23,6 +23,9 @@ class Nexus extends Construct {
     }
 
     run() {
+        if (this.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+            global.Archivist.setExtensionsFilled(this.room, false);
+        }
         return;
     }
 
