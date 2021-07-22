@@ -25,7 +25,7 @@ class Initiator {
                     }
                     template.memory.generation++;
                 }
-                let success = nexus.spawnCreep(template.body, template.type, {...template.memory});
+                let success = nexus.spawnCreep(template.memory.body, template.type, {...template.memory});
 
                 //if the request fails, schedule it for 20 ticks in the future
                 if (success != OK) {
