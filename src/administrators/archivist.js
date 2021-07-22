@@ -123,6 +123,15 @@ class Archivist {
     }
 
     /**
+     * Get towers filled flag for a given room
+     * @param {String} room string representing the room 
+     * @returns value of the towersFilled flag
+     */
+    getTowersFilled(room) {
+        return Memory.rooms[room].flags.towersFilled;
+    }
+
+    /**
      * Get rank flag for a given room
      * @param {String} room string representing the room
      */
@@ -171,14 +180,23 @@ class Archivist {
     /**
      * Set extensions filled flag for a given room
      * @param {String} room string representing the room
-     * @param {Boolean} value value to set the flag
+     * @param {Boolean} value true or false value to set the flag
      */
      setExtensionsFilled(room, value) {
         Memory.rooms[room].flags.extensionsFilled = value;
     }
 
     /**
-     * 
+     * Set towers filled flag for a given room
+     * @param {String} room string representing the room 
+     * @param {Boolean} value true or false value to set the flag
+     */
+    setTowersFilled(room, value) {
+        Memory.rooms[room].flags.towersFilled = value;
+    }
+
+    /**
+     * Set the room planning rank for a given room
      * @param {String} room string representing the room
      * @param {Integer} value value to set the flag
      */
