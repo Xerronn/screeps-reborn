@@ -22,9 +22,6 @@ class Proletarian extends GameObj {
         if (this.updateTick != Game.time || force == true) {
             //stop if you're dead
             if (!super.update(force)) {
-                //todo: This will fail if a global reset happens the same tick as a creep dies.
-                //todo: Figure out a way to get around that. Maybe use the leftover creep memory that happens in this case
-                //todo: not all creeps will want to rebirth themselves
                 //only rebirth if the generation flag is there. If you want a creep to rebirth, set generation = 0 in the memory
                 if (this.memory.generation != null) {
                     global.Imperator.administrators[this.room].initiator.initiate(this, true);
