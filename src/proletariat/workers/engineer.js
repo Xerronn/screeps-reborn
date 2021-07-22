@@ -54,6 +54,11 @@ class Engineer extends Worker {
 
         let task = "this." + this.memory.task + "();"
         eval(task);
+
+        //evolve the creep to meet expanding energy availability
+        if (this.ticksToLive < 2) {
+            this.evolve();
+        }
     }
 
     /**
@@ -73,6 +78,33 @@ class Engineer extends Worker {
             this.liveObj.build(liveClosestSite);
         } else {
             this.liveObj.moveTo(liveClosestSite);
+        }
+    }
+
+    /**
+     * Method to evolve the engineer as more extensions are built
+     */
+    evolve() {
+        if (Game.rooms[this.room].energyCapacityAvailable >= 500) {
+            this.memory.body = [
+                WORK, WORK, 
+                CARRY, CARRY, 
+                MOVE, MOVE, MOVE, MOVE
+            ];
+        }
+        if (Game.rooms[this.room].energyCapacityAvailable >= 750) {
+            this.memory.body = [
+                WORK, WORK, WORK, 
+                CARRY, CARRY, CARRY, 
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ];
+        }
+        if (Game.rooms[this.room].energyCapacityAvailable >= 1000) {
+            this.memory.body = [
+                WORK, WORK, WORK, WORK, 
+                CARRY, CARRY, CARRY, CARRY, 
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ];
         }
     }
 }
