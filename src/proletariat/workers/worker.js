@@ -56,10 +56,37 @@ class Worker extends Proletarian {
         }
     }
 
+    upgradeController() {
+        let controller = Game.rooms[this.room].controller;
+
+        if (this.pos.inRangeTo(controller, 3)) {
+            this.liveObj.upgradeController(controller);
+        } else {
+            this.liveObj.moveTo(controller);
+        }
+    }
+
+    buildNearest() {
+        let liveClosestSite = Game.getObjectById(this.memory.closestSite);
+        
+        if (!liveClosestSite) {
+            let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
+
+            liveClosestSite = this.pos.findClosestByRange(sites);
+            this.memory.closestSite = liveClosestSite.id;
+        }
+
+        if (this.pos.inRangeTo(liveClosestSite, 1)) {
+            this.liveObj.build(liveClosestSite);
+        } else {
+            this.liveObj.moveTo(liveClosestSite);
+        }
+    }
+
     /**
      * Function to harvest the assigned source
      */
-    harvest() {
+     harvest() {
         if (this.pos.inRangeTo(this.source, 1)) {
             this.liveObj.harvest(this.source);
         } else {
@@ -96,30 +123,31 @@ class Worker extends Proletarian {
         }
     }
 
-    upgradeController() {
-        let controller = Game.rooms[this.room].controller;
+    /**
+     * Function to fill towers
+     */
+    fillTowers() {
+        let liveClosestTower = Game.getObjectById(this.memory.closestTower);
+        if (!liveClosestTower || liveClosestTower.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+            let towers = global.Archivist.getStructures(this.room, STRUCTURE_TOWER);
 
-        if (this.pos.inRangeTo(controller, 3)) {
-            this.liveObj.upgradeController(controller);
-        } else {
-            this.liveObj.moveTo(controller);
+            let fillables = towers.filter(
+                obj => obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            );
+            
+            if (fillables.length == 0) {
+                //let all the other creeps know that there isn't any point in looking
+                global.Archivist.setTowersFilled(this.room, true);
+                return;
+            }
+            liveClosestTower = this.pos.findClosestByRange(fillables);
+            this.memory.closestTower = liveClosestTower.id;
         }
-    }
 
-    buildNearest() {
-        let liveClosestSite = Game.getObjectById(this.memory.closestSite);
-        
-        if (!liveClosestSite) {
-            let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
-
-            liveClosestSite = this.pos.findClosestByRange(sites);
-            this.memory.closestSite = liveClosestSite.id;
-        }
-
-        if (this.pos.inRangeTo(liveClosestSite, 1)) {
-            this.liveObj.build(liveClosestSite);
+        if (this.pos.inRangeTo(liveClosestTower, 1)) {
+            this.liveObj.transfer(liveClosestTower, RESOURCE_ENERGY);
         } else {
-            this.liveObj.moveTo(liveClosestSite);
+            this.liveObj.moveTo(liveClosestTower);
         }
     }
 }

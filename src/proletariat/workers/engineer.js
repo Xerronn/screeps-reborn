@@ -11,24 +11,39 @@ class Engineer extends Worker {
         
     }
 
+    update(force) {
+        if (this.updateTick != Game.time || force == true) {
+            if (!super.update(force)) {
+                //creep is dead
+                return false;
+            }
+            //any attributes to update
+        }
+        return true;
+    }
+
     run() {
-        //determine if 
+        //determine if the room needs emergency upgrading
         let roomController = Game.rooms[this.room].controller;
         if (roomController.ticksToDowngrade < CONTROLLER_DOWNGRADE[roomController.level] / 10) {
             this.memory.task = "emergencyUpgrade";
-        } else if (roomController.ticksToDowngrade == CONTROLLER_DOWNGRADE[roomController.level]) {
-            this.memory.task = "harvest";
         }
 
         //emergency upgrader
         if (this.memory.task == "emergencyUpgrade") {
-            this.upgradeController();
-            return;
+            if (roomController.ticksToDowngrade == CONTROLLER_DOWNGRADE[roomController.level]) {
+                this.memory.task = "harvest";
+            } else {
+                this.upgradeController();
+                return;
+            }
         }
 
-        //good priorities up to rcl 3, where engineers will begin to be phased out
+        //good priorities up to rcl 4, where engineers will begin to be phased out
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";
+        } else if (!global.Archivist.getTowersFilled(this.room)) {
+            this.memory.task = "fillTowers";
         } else if (!global.Archivist.getExtensionsFilled(this.room)) {
             this.memory.task = "fillExtensions";
         } else if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
