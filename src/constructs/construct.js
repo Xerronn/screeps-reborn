@@ -25,6 +25,10 @@ class Construct extends GameObj {
         }
         return true;
     }
+
+    run() {
+        return;
+    }
 }
 
 module.exports = Construct;
