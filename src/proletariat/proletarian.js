@@ -13,6 +13,7 @@ class Proletarian extends GameObj {
             this.type = this.liveObj.memory.type;
         }
         this.name = this.liveObj.name;
+        //! TODO: need to account for damaged body somehow
         this.body = this.liveObj.body.map(b => b.type);
         
         this.update(true);
@@ -34,6 +35,7 @@ class Proletarian extends GameObj {
             this.store = this.liveObj.store;
             this.fatigue = this.liveObj.fatigue;
             this.memory = this.liveObj.memory;
+            this.ticksToLive = this.liveObj.ticksToLive;
         }
         return true;
     }
