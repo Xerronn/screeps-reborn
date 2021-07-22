@@ -47,13 +47,33 @@ class Engineer extends Worker {
         } else if (!global.Archivist.getExtensionsFilled(this.room)) {
             this.memory.task = "fillExtensions";
         } else if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
-            this.memory.task = "buildNearest";
+            this.memory.task = "build";
         } else {
             this.memory.task = "upgradeController";
         }
 
         let task = "this." + this.memory.task + "();"
         eval(task);
+    }
+
+    /**
+     * Overriden build method that finds nearest to assigned source instead of position
+     */
+    build() {
+        let liveClosestSite = Game.getObjectById(this.memory.closestSite);
+        
+        if (!liveClosestSite) {
+            let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
+
+            liveClosestSite = this.source.pos.findClosestByRange(sites);
+            this.memory.closestSite = liveClosestSite.id;
+        }
+
+        if (this.pos.inRangeTo(liveClosestSite, 1)) {
+            this.liveObj.build(liveClosestSite);
+        } else {
+            this.liveObj.moveTo(liveClosestSite);
+        }
     }
 }
 
