@@ -1,6 +1,7 @@
 const Archon = require("../proletariat/workers/archon");
 const Engineer = require("../proletariat/workers/engineer");
 const Nexus = require("../constructs/nexus");
+const Bastion = require("../constructs/bastion")
 
 //entity that initializes, refreshes, runs all roomObj in a room
 class Originator {
@@ -23,6 +24,11 @@ class Originator {
                     //init the list in the dictionary if it doesn't exist
                     !("nexus" in this.constructs) && (this.constructs["nexus"] = []);
                     this.constructs["nexus"].push(new Nexus(struc.id));
+                    break;
+                
+                case STRUCTURE_TOWER:
+                    !("bastion" in this.constructs) && (this.constructs["bastion"] = []);
+                    this.constructs["bastion"].push(new Bastion(struc.id));
                     break;
             }
         }
