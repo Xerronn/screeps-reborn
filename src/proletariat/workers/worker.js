@@ -56,6 +56,9 @@ class Worker extends Proletarian {
         }
     }
 
+    /**
+     * upgrade the controller
+     */
     upgradeController() {
         let controller = Game.rooms[this.room].controller;
 
@@ -66,7 +69,10 @@ class Worker extends Proletarian {
         }
     }
 
-    buildNearest() {
+    /**
+     * build construction sites closest to current position
+     */
+    build() {
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
