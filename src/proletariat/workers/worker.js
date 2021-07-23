@@ -5,17 +5,28 @@ class Worker extends Proletarian {
     constructor(creepId) {
         super(creepId);
         
+        let roomSources = Memory.rooms[this.room].sources;
+
         //attributes that won't change tick to tick
         if (this.memory.source) {
             //for creep rebirth and object init
             this.sourceId = this.memory.source;
+
+            //ensure that the array exists
+            !(this.constructor.name in roomSources[this.sourceId].workers) && 
+                (roomSources[this.sourceId].workers[this.constructor.name] = []);
+
             roomSources[this.sourceId].workers[this.constructor.name].push(this.name);
         } else {
             //for first time an ancestry has spawned
-            let roomSources = Memory.rooms[this.room].sources;
             let sortedSources = _.sortBy(Object.keys(roomSources), s => this.pos.getRangeTo(Game.getObjectById(s)));
             let currentBest = "";
             for (let source of sortedSources) {
+                //ensure that the array exists
+                !(this.constructor.name in roomSources[source].workers) && 
+                (roomSources[source].workers[this.constructor.name] = []);
+
+                //find the source with the least workers assigned
                 if (currentBest == "" || roomSources[source].workers[this.constructor.name].length < roomSources[currentBest].workers[this.constructor.name].length) {
                     currentBest = source;
                 }
