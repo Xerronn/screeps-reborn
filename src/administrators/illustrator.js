@@ -44,6 +44,10 @@ class Illustrator {
         };
     }
 
+    /**
+     * Method that visualizes bunker position with a white square
+     * @param {String} room string representing the room
+     */
     drawBunker(room) {
         try {
         let roomAnchor = global.Archivist.getAnchor(room);
@@ -51,6 +55,37 @@ class Illustrator {
         return true;
         } catch (err) {
             return "No room Anchor set for room";
+        }
+    }
+
+    /**
+     * Method that returns the wrapper object for a given Game Object
+     * @param {String} id Game Object ID
+     * @returns wrapper object
+     */
+    getWrapper(id) {
+        let liveObj = Game.getObjectById(id);
+        let room = liveObj.room;
+        let originator = global.Imperator.administrators[room.name].originator;
+
+        if (liveObj.fatigue == undefined) {
+            //is a structure
+            let origArr = originator.proletarian[liveObj.structureType];
+            for (let struc of origArr) {
+                if (struc.id == id) {
+                    return creep;
+                }
+            }
+            return undefined;
+        } else {
+            //is a creep
+            let origArr = originator.proletarian[liveObj.memory.type];
+            for (let creep of origArr) {
+                if (creep.id == id) {
+                    return creep;
+                }
+            }
+            return undefined;
         }
     }
 }
