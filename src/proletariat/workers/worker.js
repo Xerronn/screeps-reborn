@@ -9,19 +9,19 @@ class Worker extends Proletarian {
         if (this.memory.source) {
             //for creep rebirth and object init
             this.sourceId = this.memory.source;
+            roomSources[this.sourceId].workers[this.constructor.name].push(this.name);
         } else {
-            //! causes issues where they get removed from the harvesters list but not readded duiring rebirth
             //for first time an ancestry has spawned
             let roomSources = Memory.rooms[this.room].sources;
             let sortedSources = _.sortBy(Object.keys(roomSources), s => this.pos.getRangeTo(Game.getObjectById(s)));
             let currentBest = "";
             for (let source of sortedSources) {
-                if (currentBest == "" || roomSources[source].harvesters.length < roomSources[currentBest].harvesters.length) {
+                if (currentBest == "" || roomSources[source].workers[this.constructor.name].length < roomSources[currentBest].workers[this.constructor.name].length) {
                     currentBest = source;
                 }
             }
 
-            roomSources[currentBest].harvesters.push(this.name);
+            roomSources[currentBest].workers[this.constructor.name].push(this.name);
             this.sourceId = currentBest;
             this.memory.source = currentBest;
         }
@@ -37,8 +37,8 @@ class Worker extends Proletarian {
             if (!super.update(force)) {
                 //remove creep from its array on death
                 let roomSources = Memory.rooms[this.room].sources;
-                let index = roomSources[this.sourceId].harvesters.indexOf(this.name);
-                roomSources[this.sourceId].harvesters.splice(index, 1);
+                let index = roomSources[this.sourceId].workers[this.constructor.name].indexOf(this.name);
+                roomSources[this.sourceId].workers[this.constructor.name].splice(index, 1);
                 return false;
             }
             //attributes that will change tick to tick
