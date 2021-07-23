@@ -1,4 +1,4 @@
-const Archon = require("../proletariat/workers/archon");
+const Miner = require("../proletariat/workers/miner");
 const Engineer = require("../proletariat/workers/engineer");
 const Nexus = require("../constructs/nexus");
 const Bastion = require("../constructs/bastion")

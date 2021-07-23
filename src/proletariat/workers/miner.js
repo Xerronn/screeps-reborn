@@ -1,11 +1,11 @@
 const Proletarian = require("../proletarian");
 
 //creep tasked with harvesting sources
-class Archon extends Proletarian {
+class Miner extends Proletarian {
     constructor(creepId) {
         super(creepId);
         
     }
 }
 
-module.exports = Archon;
+module.exports = Miner;
