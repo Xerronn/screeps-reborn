@@ -14,7 +14,7 @@ class Courier extends Miner {
     /**
      * Update live game object references each tick
      */
-    update() {
+    update(force) {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //creep is dead
