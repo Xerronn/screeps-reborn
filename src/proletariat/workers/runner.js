@@ -18,4 +18,4 @@ class Runner extends Worker {
     }
 }
 
-module.exports = Runner
+module.exports = Runner;

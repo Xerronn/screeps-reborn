@@ -132,9 +132,19 @@ class Archivist {
     /**
      * Get rank flag for a given room
      * @param {String} room string representing the room
+     * @returns value of the rank flag
      */
     getRank(room) {
         return Memory.rooms[room].flags.rank;
+    }
+
+    /**
+     * Get all sources in a room
+     * @param {String} room string representing the room
+     * @returns  room sources object
+     */
+    getSources(room) {
+        return Memory.rooms[this.room].sources;
     }
 
     /**

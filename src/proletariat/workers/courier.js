@@ -32,7 +32,7 @@ class Courier extends Miner {
         let freeCapacity = this.store.getFreeCapacity(RESOURCE_ENERGY);
         if (freeCapacity > 0) {
             this.withdrawContainer();
-        } else if (freeCapacity == 0) {
+        } else {
             this.depositStorage();
         }
     }

@@ -39,9 +39,9 @@ class Architect {
             for (var type of typesToBuild) {
                 this.buildNewStructures(type, room);
             }
-
-            if (roomController.level >= 2) {
-                //build containers
+            
+            if (roomController.level >= 3) {
+                //build containers once towers are unlocked so towers can handle repair
                 if (!global.Archivist.getContainersBuilt(room)) {
                     let closest = []
                     for (var source of Game.rooms[room].find(FIND_SOURCES)) {

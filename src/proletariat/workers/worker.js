@@ -5,7 +5,7 @@ class Worker extends Proletarian {
     constructor(creepId) {
         super(creepId);
         
-        let roomSources = Memory.rooms[this.room].sources;
+        let roomSources = global.Archivist.getSources(this.room);
 
         //attributes that won't change tick to tick
         if (this.memory.source) {
@@ -47,7 +47,7 @@ class Worker extends Proletarian {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //remove creep from its array on death
-                let roomSources = Memory.rooms[this.room].sources;
+                let roomSources = global.Archivist.getSources(this.room);
                 let index = roomSources[this.sourceId].workers[this.constructor.name].indexOf(this.name);
                 roomSources[this.sourceId].workers[this.constructor.name].splice(index, 1);
                 return false;

@@ -35,13 +35,13 @@ class Miner extends Worker {
      * logic run on every tick
      */
     run() {
-        //move to container
         this.harvest();
     }
 
     /**
      * Overriden harvest method that moves to container instead of to source
      */
+    //TODO: add automatic container repairing too
     harvest() {
         if (this.pos.inRangeTo(this.container, 0)) {
             this.liveObj.harvest(this.source);

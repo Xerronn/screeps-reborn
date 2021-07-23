@@ -31,7 +31,7 @@ class Professor extends Worker {
         let freeCapacity = this.store.getFreeCapacity(RESOURCE_ENERGY);
         if (freeCapacity > 0) {
             this.withdrawStorage();
-        } else if (freeCapacity == 0) {
+        } else {
             this.upgradeController();
         }
     }
