@@ -167,6 +167,16 @@ class Worker extends Proletarian {
             this.liveObj.moveTo(liveClosestTower);
         }
     }
+
+    withdrawStorage() {
+        let storage = Game.rooms[this.room].storage;
+
+        if (this.pos.inRangeTo(storage, 1)) {
+            this.liveObj.withdraw(storage, RESOURCE_ENERGY);
+        } else {
+            this.liveObj.moveTo(storage);
+        }
+    }
 }
 
 module.exports = Worker;
