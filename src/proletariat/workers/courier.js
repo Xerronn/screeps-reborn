@@ -75,9 +75,17 @@ class Courier extends Miner {
         //add one of each
         //only if < 800 in case it fills up while transporter is dead
         if (this.ticksToLive < 800) {
+            //miners mine 12 energy per tick, and you have to travel both ways
+            let travelLength = this.storage.pos.findPathTo(this.container).length * 12 * 2;
+            let carryCount = Math.ceil(travelLength / 50);
+
+            let newBody = [];
+            for (let i = 0; i < carryCount; i++) {
+                newBody.push(MOVE);
+                newBody.unshift(CARRY);
+            }
             this.evolved = true;
-            this.memory.body.push(MOVE);
-            this.memory.body.unshift(CARRY);
+            this.memory.body = newBody;
         }
     }
 }
