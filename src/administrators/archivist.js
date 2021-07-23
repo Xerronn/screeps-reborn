@@ -144,7 +144,7 @@ class Archivist {
      * @returns  room sources object
      */
     getSources(room) {
-        return Memory.rooms[this.room].sources;
+        return Memory.rooms[room].sources;
     }
 
     /**

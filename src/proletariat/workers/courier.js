@@ -29,10 +29,11 @@ class Courier extends Miner {
      * logic to run each tick
      */
     run() {
-        let freeCapacity = this.store.getFreeCapacity(RESOURCE_ENERGY);
-        if (freeCapacity > 0) {
+        if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+            this.memory.task = "withdraw";
             this.withdrawContainer();
         } else {
+            this.memory.task = "deposit"
             this.depositStorage();
         }
     }

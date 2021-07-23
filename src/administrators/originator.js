@@ -1,5 +1,9 @@
 const Miner = require("../proletariat/workers/miner");
 const Engineer = require("../proletariat/workers/engineer");
+const Courier = require("../proletariat/workers/courier");
+const Professor = require("../proletariat/workers/professor");
+const Runner = require("../proletariat/workers/runner");
+
 const Nexus = require("../constructs/nexus");
 const Bastion = require("../constructs/bastion")
 

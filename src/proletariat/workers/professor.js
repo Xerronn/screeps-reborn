@@ -7,7 +7,7 @@ class Professor extends Worker {
         //attributes that will not change tick to tick
         this.controllerId = Game.rooms[this.room].controller.id;
 
-        update(true);
+        this.update(true);
     }
 
     /**
@@ -28,10 +28,11 @@ class Professor extends Worker {
      * logic to run each tick
      */
     run() {
-        let freeCapacity = this.store.getFreeCapacity(RESOURCE_ENERGY);
-        if (freeCapacity > 0) {
+        if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+            this.memory.task = "withdraw";
             this.withdrawStorage();
         } else {
+            this.memory.task = "upgrade";
             this.upgradeController();
         }
     }
