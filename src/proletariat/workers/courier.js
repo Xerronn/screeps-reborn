@@ -7,6 +7,7 @@ class Courier extends Miner {
 
         //! TODO: what if the storage is killed
         this.storageId = Game.rooms[this.room].storage.id;
+        this.evolved = false;
 
         this.update(true);
     }
@@ -29,6 +30,11 @@ class Courier extends Miner {
      * logic to run each tick
      */
     run() {
+        //evolve if the container ever gets full. it means the transporter is underpowered
+        if (this.container.store.getFreeCapacity(RESOURCE_ENERGY) == 0 && this.evolved == false) {
+            this.evolve();
+        }
+
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
             this.withdrawContainer();
@@ -59,6 +65,19 @@ class Courier extends Miner {
             this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
         } else {
             this.liveObj.moveTo(this.storage);
+        }
+    }
+
+    /**
+     * Method to evolve creep if its base body isn't enough to keep up
+     */
+    evolve() {
+        //add one of each
+        //only if < 800 in case it fills up while transporter is dead
+        if (this.ticksToLive < 800) {
+            this.evolved = true;
+            this.memory.body.push(MOVE);
+            this.memory.body.unshift(CARRY);
         }
     }
 }
