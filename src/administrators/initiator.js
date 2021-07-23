@@ -25,7 +25,13 @@ class Initiator {
                     }
                     template.memory.generation++;
                 }
-                let success = nexus.spawnCreep(template.memory.body, template.type, {...template.memory});
+                
+                //use the body stored in memory if it exists, as it can contain evolutions
+                let newBody = template.memory.body;
+                if (!newBody) {
+                    newBody = template.body;
+                } 
+                let success = nexus.spawnCreep(newBody, template.type, {...template.memory});
 
                 //if the request fails, schedule it for 20 ticks in the future
                 if (success != OK) {
@@ -70,16 +76,49 @@ class Initiator {
 
     /**
      * Initialize spawning for phase one rooms
-     * Phase one is defined as RCL 1-3
+     * Phase one is defined as RCL 1-4
      */
     phaseOne() {
         //I think 5 engineers is a good starting point
         for (var i = 0; i < 5; i++) {
             //todo: Figure out a way to terminate these tasks once we finish phaseOne
             let memory = {"generation" : 0}
-            let task = "global.Imperator.administrators[objArr[0].room].initiator.initiate({'body' : [WORK, CARRY, MOVE, MOVE], 'type': 'engineer', 'memory': objArr[1]});";
-            global.Executive.schedule(Game.time + (i * 10), task, [this, memory]);
+            let task = "global.Imperator.administrators[objArr[0]].initiator.initiate({'body' : [WORK, CARRY, MOVE, MOVE], 'type': 'engineer', 'memory': objArr[1]});";
+            global.Executive.schedule(Game.time + (i * 10), task, [this.room, memory]);
         }
+    }
+
+    /**
+     * Phase out the engineers in favor of specialized creeps
+     */
+    phaseTwo() {
+        for (let creep of Game.rooms[this.room].find(FIND_MY_CREEPS)) {
+            //remove rebirth for engineers
+            delete creep.memory.generation;
+        }
+
+        let sources = global.Archivist.getSources(this.room);
+
+        //spawn creeps with rebirth enabled
+        let memory = {"generation" : 0}
+        let creepsToSpawn = [
+            {'body' : [CARRY, CARRY, MOVE, MOVE], 'type': 'runner', 'memory': memory},
+            {'body' : [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'professor', 'memory': memory}
+        ]
+
+        //! TODO: prioritization 
+        for (let source of Object.keys(sources)) {
+            //one miner per source
+            creepsToSpawn.push({'body' : [WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'miner', 'memory': memory});
+            //one courier per source
+            //todo: maybe build the body based on how far the transporter has to go between container and storage
+            creepsToSpawn.push({'body' : [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'type': 'courier', 'memory': memory});
+        }
+        
+        for (let creepToSpawn of creepsToSpawn) {
+            global.Imperator.administrators[this.room].initiator.initiate(creepToSpawn);
+        }
+
     }
 }
 
