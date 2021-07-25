@@ -65,6 +65,10 @@ class Illustrator {
      */
     getWrapper(id) {
         let liveObj = Game.getObjectById(id);
+        if (!liveObj) {
+            return undefined;
+        }
+        
         let room = liveObj.room;
         let originator = global.Imperator.administrators[room.name].originator;
 
