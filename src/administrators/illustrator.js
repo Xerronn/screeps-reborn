@@ -68,13 +68,13 @@ class Illustrator {
         if (!liveObj) {
             return undefined;
         }
-        
+
         let room = liveObj.room;
         let originator = global.Imperator.administrators[room.name].originator;
 
         if (liveObj.fatigue == undefined) {
             //is a structure
-            let origArr = originator.constructs[liveObj.structureType];
+            let origArr = originator.constructs[this.mapGameToClass(liveObj.structureType)];
             for (let struc of origArr) {
                 if (struc.id == id) {
                     return struc;
@@ -91,6 +91,21 @@ class Illustrator {
             }
             return undefined;
         }
+    }
+
+    /**
+     * Method that takes a structure type constant and returns the name of its wrapper class
+     * @param {String} structureType structure type constant
+     * @returns class that wraps provided structureType
+     */
+    mapGameToClass(structureType) {
+        //todo: add them here as needed
+        let mapper = {
+            [STRUCTURE_SPAWN] : "nexus",
+            [STRUCTURE_TOWER] : "bastion"
+        }
+        return mapper[structureType];
+
     }
 }
 
