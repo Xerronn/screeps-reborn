@@ -70,10 +70,10 @@ class Illustrator {
 
         if (liveObj.fatigue == undefined) {
             //is a structure
-            let origArr = originator.proletarian[liveObj.structureType];
+            let origArr = originator.constructs[liveObj.structureType];
             for (let struc of origArr) {
                 if (struc.id == id) {
-                    return creep;
+                    return struc;
                 }
             }
             return undefined;
