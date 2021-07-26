@@ -7,8 +7,13 @@ class Runner extends Worker {
     }
 
     run() {
-        if (this.ticksToLive < 300 || this.memory.task == "renew") {
-            this.memory.task = "renew";
+        if (this.ticksToLive < 300 || this.memory.task == "renew" || this.memory.task == "renewFill") {
+            //start the loop by setting task to rewnewFill
+            //this task will block spawning, but keep filling 
+            //until reaching the required energy for a full renew
+            if (this.memory.task != "renew") {
+                this.memory.task = "renewFill";
+            }
             this.renew();
         } else if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
@@ -40,6 +45,18 @@ class Runner extends Worker {
         //reserve the spawn by spamming it with spawningthistick, then renew until its full or no energy left
         nexus.spawningThisTick = true;
 
+        if (Game.rooms[this.room].energyAvailable < 300 && this.memory.task == "renewFill") {
+            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                this.withdrawStorage();
+            } else {
+                this.fillExtensions();
+            }
+            return;
+        }
+
+        //if we get to this point, energyAvailable is > 300, so we can set task to just renew fully
+        this.memory.task = "renew";
+
         if (!nexus.spawning) {
             if (this.pos.inRangeTo(nexus.liveObj, 1)) {
                 nexus.liveObj.renewCreep(this.liveObj);
@@ -48,7 +65,7 @@ class Runner extends Worker {
             }
         }
 
-        //once ticks to live is high enough or we are out of energy, we can break out of the loop
+        //once ticks to live is high enough we can break out of the loop
         if (this.ticksToLive > 1300 || Game.rooms[this.room].energyAvailable < 30) {
             this.memory.task = "none";
         }
