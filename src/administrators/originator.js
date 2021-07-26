@@ -3,6 +3,7 @@ const Engineer = require("../proletariat/workers/engineer");
 const Courier = require("../proletariat/workers/courier");
 const Professor = require("../proletariat/workers/professor");
 const Runner = require("../proletariat/workers/runner");
+const Contractor = require("../proletariat/workers/contractor");
 
 const Nexus = require("../constructs/nexus");
 const Bastion = require("../constructs/bastion")
@@ -18,10 +19,11 @@ class Originator {
     /**
      * Function that initializes the Originator with all GameObj
      */
-    initialize() {
-        //todo: make it initialize structures from archivist
+    initialize(onlyStructures = false) {
+        //todo: make it initialize structures from archivist maybeeee
         let thisRoom = Game.rooms[this.room];
         //initialize all structures in the room to their respective classes
+        this.constructs = {};
         for (var struc of thisRoom.find(FIND_MY_STRUCTURES)) {
             switch(struc.structureType) {
                 case STRUCTURE_SPAWN:
@@ -37,7 +39,10 @@ class Originator {
             }
         }
 
+        if (onlyStructures) return;
+
         //initialize all creeps in the room to their respective classes
+        this.proletarian = {};
         for (let creepMem of _.filter(Memory.creeps, c => c.spawnRoom == this.room && !c.spawning)) {
             !(creepMem.type in this.proletarian) && (this.proletarian[creepMem.type] = []);
 
