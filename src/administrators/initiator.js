@@ -5,6 +5,29 @@ class Initiator {
     }
 
     /**
+     * initiator logic to run each tick
+     */
+    run() {
+        //todo: this is temporary, we need to check for some room planning flags first
+        if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
+            let contractors = global.Archivist.getNumContractors(this.room);
+
+            if (!contractors || contractors < 2) {
+                this.initiate({
+                    'body' : [
+                        WORK, WORK, WORK, WORK, 
+                        CARRY, CARRY, CARRY, CARRY, 
+                        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+                    ], 
+                    'type': 'contractor', 
+                    'memory': {"generation": 0}
+                });
+                global.Archivist.setNumContractors(this.room, contractors + 1);
+            }
+        }
+    }
+
+    /**
      * Function that takes a creep object and makes a new creep based on that object
      * @param {Object} template An object that contains body, type, and memory
      * @param {boolean} rebirth whether or not this is a rebirth
@@ -117,7 +140,7 @@ class Initiator {
         }
         
         for (let creepToSpawn of creepsToSpawn) {
-            global.Imperator.administrators[this.room].initiator.initiate(creepToSpawn);
+            this.initiate(creepToSpawn);
         }
 
     }
