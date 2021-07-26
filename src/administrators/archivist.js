@@ -130,6 +130,15 @@ class Archivist {
     }
 
     /**
+     * Get num contractors flag for a given room
+     * @param {String} room string representing the room 
+     * @returns value of the numContractors flag
+     */
+    getNumContractors(room) {
+        return Memory.rooms[room].flags.numContractors;
+    }
+
+    /**
      * Get rank flag for a given room
      * @param {String} room string representing the room
      * @returns value of the rank flag
@@ -192,6 +201,15 @@ class Archivist {
      */
      setExtensionsFilled(room, value) {
         Memory.rooms[room].flags.extensionsFilled = value;
+    }
+
+    /**
+     * Set num contractors flag for a given room
+     * @param {String} room string representing the room
+     * @param {Boolean} value integer to set the flag to
+     */
+     setNumContractors(room, value) {
+        Memory.rooms[room].flags.numContractors = value;
     }
 
     /**
