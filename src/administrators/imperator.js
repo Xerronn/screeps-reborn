@@ -39,6 +39,7 @@ class Imperator {
     run() {
         for (let room of this.dominion) {
             this.administrators[room].originator.run();
+            this.administrators[room].initiator.run();
         }
     }
 
