@@ -104,7 +104,11 @@ class Illustrator {
             [STRUCTURE_SPAWN] : "nexus",
             [STRUCTURE_TOWER] : "bastion"
         }
-        return mapper[structureType];
+        try {
+            return mapper[structureType];
+        } catch (err) {
+            return undefined;
+        }
 
     }
 }
