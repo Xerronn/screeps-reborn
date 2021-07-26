@@ -16,7 +16,10 @@ class Worker extends Proletarian {
             !(this.constructor.name in roomSources[this.sourceId].workers) && 
                 (roomSources[this.sourceId].workers[this.constructor.name] = []);
 
-            roomSources[this.sourceId].workers[this.constructor.name].push(this.name);
+            let index = roomSources[this.sourceId].workers[this.constructor.name].indexOf(this.name);
+            if (index < 0) {
+                roomSources[this.sourceId].workers[this.constructor.name].push(this.name);
+            }
         } else {
             //for first time an ancestry has spawned
             let sortedSources = _.sortBy(Object.keys(roomSources), s => this.pos.getRangeTo(Game.getObjectById(s)));
