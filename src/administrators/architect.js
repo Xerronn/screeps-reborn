@@ -374,7 +374,7 @@ class Architect {
 
         //find the sources and sort by distance
         let sources = Game.rooms[room].find(FIND_SOURCES);
-        sources = _.sortBy(sources, source => roomAnchor.getRangeTo(source));
+        sources = _.sortBy(sources, source => roomAnchor.getRangeTo(source)).reverse();
 
         //loop through sources
         for (var source of sources) {
