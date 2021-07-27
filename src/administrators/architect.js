@@ -355,7 +355,8 @@ class Architect {
     buildControllerLink(room) {
         //get anchor
         let anchor = global.Archivist.getAnchor(room);
-        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+        let roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+        let roomController = Game.rooms[room].controller;
 
         //build link
         let pathToController = roomAnchor.findPathTo(roomController.pos, {range: 2, ignoreCreeps: true})
