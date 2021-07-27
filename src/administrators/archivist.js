@@ -30,6 +30,7 @@ class Archivist {
                 Memory.rooms[room].flags = {}
                 Memory.rooms[room].flags.extensionsFilled = false;
                 Memory.rooms[room].flags.gameStage = 0;
+                Memory.rooms[room].flags.roadsBuilt = false;
             }
 
             if (!Memory.rooms[room].sources || reset) {
@@ -100,7 +101,7 @@ class Archivist {
      * @param {String} room string representation of a room 
      * @returns the anchor coordinate object
      */
-     getAnchor(room) {
+    getAnchor(room) {
         return Memory.rooms[room].flags.anchor;
     }
 
@@ -109,7 +110,7 @@ class Archivist {
      * @param {String} room string representing the room
      * @returns value of the extensionsfilled flag
      */
-     getExtensionsFilled(room) {
+    getExtensionsFilled(room) {
         return Memory.rooms[room].flags.extensionsFilled;
     }
 
@@ -138,6 +139,15 @@ class Archivist {
      */
     getNumContractors(room) {
         return Memory.rooms[room].flags.numContractors;
+    }
+
+    /**
+     * Get roads built flag for a given room
+     * @param {String} room string representing the room
+     * @returns value of roadsBuilt flag
+     */
+    getRoadsBuilt(room) {
+        return Memory.rooms[room].flags.roadsBuilt;
     }
 
     /**
@@ -183,7 +193,7 @@ class Archivist {
      * @param {String} room string representing the room
      * @param {Boolean} value true or false value to set the flag
      */
-     setExtensionsFilled(room, value) {
+    setExtensionsFilled(room, value) {
         Memory.rooms[room].flags.extensionsFilled = value;
     }
 
@@ -192,7 +202,7 @@ class Archivist {
      * @param {String} room string representing the room
      * @param {Integer} value value to set the flag
      */
-     setGameStage(room, value) {
+    setGameStage(room, value) {
         Memory.rooms[room].flags.gameStage = value;
     }
 
@@ -201,8 +211,17 @@ class Archivist {
      * @param {String} room string representing the room
      * @param {Boolean} value integer to set the flag to
      */
-     setNumContractors(room, value) {
+    setNumContractors(room, value) {
         Memory.rooms[room].flags.numContractors = value;
+    }
+
+    /**
+     * Set roads built flag for a given room
+     * @param {String} room string representing the room
+     * @param {Boolean} value boolean to set the flag to
+     */
+    setRoadsBuilt(room, value) {
+        Memory.rooms[room].flags.roadsBuilt = value;
     }
 
     /**

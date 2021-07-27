@@ -40,6 +40,7 @@ class Architect {
             case 7:
                 //bunker roads are done, build roads to sources
                 this.buildUtilityRoads(room);
+                global.Archivist.setRoadsBuilt(room, true);
                 break;
             case 8:
                 //just turned rcl 5
@@ -312,6 +313,7 @@ class Architect {
         //get anchor
         let anchor = global.Archivist.getAnchor(room);
         var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+        let roomController = Game.rooms[room].controller;
 
         //define corners of the bunker
         let topRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y, room);
