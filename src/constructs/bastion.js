@@ -45,6 +45,7 @@ class Bastion extends Construct {
         let index = 0;
         for (let id of tempTargets) {
             let liveObj = Game.getObjectById(id)
+            if (!liveObj) continue;
             if (liveObj.hits < liveObj.hitsMax) {
                 target = liveObj;
                 break;
@@ -66,9 +67,11 @@ class Bastion extends Construct {
         let roads = global.Archivist.getStructures(this.room, STRUCTURE_ROAD);
         let containers = global.Archivist.getStructures(this.room, STRUCTURE_CONTAINER);
         
-        let repairables = roads.concat(containers).filter(
-            obj => obj.hits < obj.hitsMax
-        );
+        let repairables = roads.concat(containers).filter(function(obj) {
+            if (obj) {
+                return obj.hits < obj.hitsMax;
+            } else return false;
+        });
 
         let sortedRepairables = _.sortBy(repairables, (struc) => struc.hits/struc.hitsMax).map(obj => obj.id);
         this.repairTargets = sortedRepairables;
