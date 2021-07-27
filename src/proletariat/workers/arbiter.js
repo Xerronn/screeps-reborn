@@ -41,7 +41,7 @@ class Arbiter extends Runner {
                 //pull from the creepStorage this.link if it is higher than the sweet spot
                 if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) > 400) {
                     let amount = this.link.store.getUsedCapacity(RESOURCE_ENERGY) - 400;
-                    this.withdrawLink(amount);
+                    this.withdrawLink(Math.min(amount, this.store.getUsedCapacity(RESOURCE_ENERGY)));
                 } else {
                     this.withdrawStorage();
                 }   
@@ -50,7 +50,7 @@ class Arbiter extends Runner {
                 //transfer to the this.link if it is less than the sweet spot
                 if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) < 400) {
                     let amount = 400 - this.link.store.getUsedCapacity(RESOURCE_ENERGY);
-                    this.depositLink(amount);
+                    this.depositLink(Math.min(amount, this.store.getUsedCapacity(RESOURCE_ENERGY)));
                 } else {
                     this.depositStorage();
                 }
