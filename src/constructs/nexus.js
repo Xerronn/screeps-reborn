@@ -38,6 +38,25 @@ class Nexus extends Construct {
      */
     spawnCreep(body, type, memory=undefined) {
         let name = type + "<" + Game.time + ">"
+
+        //reduce move parts when roads are built
+        if (global.Archivist.getRoadsBuilt(this.room)) {
+            let numMoves = 0;
+            for (let part of body) {
+                if (part == MOVE) {
+                    numMoves++;
+                }
+            }
+
+            let targetMoves = Math.ceil(body.length / 2);
+            if (numMoves > targetMoves) {
+                for (let i = 0; i < numMoves - targetMoves; i++) {
+                    let index = body.indexOf(MOVE);
+                    if (index >= 0) body.splice(index, 1);
+                }
+            }
+        }
+
         if (!memory) {
             memory = {}
         }
