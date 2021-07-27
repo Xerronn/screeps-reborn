@@ -130,7 +130,7 @@ class Executive {
     phaseOne() {
         //I think 6 engineers is a good starting point
         for (var i = 0; i < 6; i++) {
-            let memory = { "generation": 0 }
+            let memory = { "generation": 0 };
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate({'body' : [WORK, CARRY, MOVE, MOVE], 'type': 'engineer', 'memory': objArr[1]});";
             global.TaskMaster.schedule(Game.time + (i * 10), task, [this.room, memory]);
         }
@@ -148,7 +148,7 @@ class Executive {
         let sources = global.Archivist.getSources(this.room);
 
         //spawn creeps with rebirth enabled
-        let memory = { "generation": 0 }
+        let memory = { "generation": 0 };
         let creepsToSpawn = [
             { 'body': [CARRY, CARRY, MOVE, MOVE], 'type': 'runner', 'memory': memory },
             { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'professor', 'memory': memory },
@@ -159,7 +159,7 @@ class Executive {
         //! TODO: prioritization 
         for (let source of Object.keys(sources)) {
             //one miner per source
-            creepsToSpawn.push({ 'body': [WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'miner', 'memory': memory });
+            creepsToSpawn.push({ 'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'miner', 'memory': memory });
             //one courier per source
             //todo: maybe build the body based on how far the transporter has to go between container and storage
             creepsToSpawn.push({ 'body': [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'type': 'courier', 'memory': memory });
@@ -168,6 +168,30 @@ class Executive {
         for (let creepToSpawn of creepsToSpawn) {
             this.getSupervisor().initiate(creepToSpawn);
         }
+    }
+
+    /**
+     * Method that starts phase three, the manager creep
+     */
+    phaseThree() {
+        let arbiter = { 
+            'body': [
+                CARRY, CARRY,
+                MOVE, MOVE,
+            ], 
+            'type': 'arbiter', 
+            'memory': { "generation": 0 }
+        };
+        
+        //this is actually kinda insane
+        let task = 
+        `if (global.Imperator.administrators[objArr[0]].supervisor.storageLink) {
+            global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1])
+        } else {
+            global.TaskMaster.schedule(Game.time + 50, objArr[2], objArr);
+        }`
+
+        global.TaskMaster.schedule(Game.time, task, [this.room, arbiter, task]);
     }
 }
 
