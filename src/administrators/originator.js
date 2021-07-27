@@ -25,7 +25,7 @@ class Originator {
         //initialize all structures in the room to their respective classes
         this.constructs = {};
         for (var struc of thisRoom.find(FIND_MY_STRUCTURES)) {
-            switch(struc.structureType) {
+            switch (struc.structureType) {
                 case STRUCTURE_SPAWN:
                     //init the list in the dictionary if it doesn't exist
                     !("nexus" in this.constructs) && (this.constructs["nexus"] = []);
@@ -54,7 +54,7 @@ class Originator {
             } else {
                 //the creep is dead. This should only happen if a creep dies on the same tick as a global reset.
                 //if it is a rebirth creep, rebirth it, otherwise delete the memory
-                if (creepMem.generation != null) {
+                if (creepMem.generation !== undefined) {
                     let template = {
                         "body": creepMem.body,
                         "type": creepMem.type,

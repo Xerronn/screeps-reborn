@@ -72,7 +72,7 @@ class Illustrator {
         let room = liveObj.room;
         let originator = global.Imperator.administrators[room.name].originator;
 
-        if (liveObj.fatigue == undefined) {
+        if (liveObj.fatigue === undefined) {
             //is a structure
             let origArr = originator.constructs[this.mapGameToClass(liveObj.structureType)];
             for (let struc of origArr) {

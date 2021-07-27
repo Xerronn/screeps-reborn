@@ -36,8 +36,7 @@ class Nexus extends Construct {
      * @param {Object} memory an optional memory object to spawn the creep with. Recommended only for rebirth. Do other memory stuff in objects
      * @returns 
      */
-    spawnCreep(body, type, memory=null) {
-        //todo: make an object for the newly spawned creep
+    spawnCreep(body, type, memory=undefined) {
         let name = type + "<" + Game.time + ">"
         if (!memory) {
             memory = {}
@@ -49,7 +48,6 @@ class Nexus extends Construct {
         memory["spawning"] = true;
         let success = this.liveObj.spawnCreep(body, name, {memory: memory});
 
-        //todo: schedule the creation of the creep wrapper for the new baby creep so you dont have to wait for a reset
         if (success == OK) {
             let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].originator.initializeCreep(\"" + name + "\");";
             this.spawningThisTick = true;

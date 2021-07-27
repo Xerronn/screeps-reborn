@@ -6,7 +6,7 @@ class Construct extends GameObj {
         super(constructId);
 
         //attributes that will not change from tick to tick
-        if (this.liveObj.store == undefined) {
+        if (this.liveObj.store === undefined) {
             this.hasStore = false;
         } else {
             this.hasStore = true;

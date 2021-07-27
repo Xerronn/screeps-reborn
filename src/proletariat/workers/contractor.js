@@ -17,7 +17,7 @@ class Contractor extends Worker {
             this.memory.task = "build";
             this.build();
         } else {
-            if (this.memory.generation != undefined) {
+            if (this.memory.generation !== undefined) {
                 this.conclude();
             }
             this.upgradeController();
