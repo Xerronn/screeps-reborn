@@ -42,15 +42,6 @@ class Imperator {
             this.administrators[room].initiator.run();
         }
     }
-
-    /**
-     * Function that checks if any rooms need room planning
-     */
-    design() {
-        for (let room of this.dominion) {
-            global.Architect.design(room);
-        }
-    }
 }
 
 module.exports = Imperator;
