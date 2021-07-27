@@ -29,7 +29,7 @@ class Archivist {
             if (!Memory.rooms[room].flags) {
                 Memory.rooms[room].flags = {}
                 Memory.rooms[room].flags.extensionsFilled = false;
-                Memory.rooms[room].flags.rank = 0;
+                Memory.rooms[room].flags.gameStage = 0;
             }
 
             if (!Memory.rooms[room].sources || reset) {
@@ -56,8 +56,7 @@ class Archivist {
     /**
      * Refresh all structures cache
      */
-    refresh() {
-        //todo: make this automatically happen only once
+    refresh(onlyOnce=false) {
         for (let room of global.Imperator.dominion) {
             Memory.rooms[room].structures = {};
             let sortedStructures = {};
@@ -83,6 +82,9 @@ class Archivist {
             }
         }
 
+        //skip the scheduler if we only want it once
+        if (onlyOnce) return;
+
         //do it again in 100 ticks
         //! make sure this gets executed only once. Use gflags
         let task = "global.Archivist.refresh()";
@@ -103,21 +105,21 @@ class Archivist {
     }
 
     /**
-     * Get if source containers are built
-     * @param {String} room 
-     * @returns 
-     */
-    getContainersBuilt(room) {
-        return Memory.rooms[room].flags.containerseBuilt;
-    }
-
-    /**
      * Get extensions filled flag for a given room
      * @param {String} room string representing the room
      * @returns value of the extensionsfilled flag
      */
      getExtensionsFilled(room) {
         return Memory.rooms[room].flags.extensionsFilled;
+    }
+
+    /**
+     * Get gameStage flag for a given room
+     * @param {String} room string representing the room
+     * @returns value of the gameStage flag
+     */
+     getGameStage(room) {
+        return Memory.rooms[room].flags.gameStage;
     }
 
     /**
@@ -136,15 +138,6 @@ class Archivist {
      */
     getNumContractors(room) {
         return Memory.rooms[room].flags.numContractors;
-    }
-
-    /**
-     * Get rank flag for a given room
-     * @param {String} room string representing the room
-     * @returns value of the rank flag
-     */
-    getRank(room) {
-        return Memory.rooms[room].flags.rank;
     }
 
     /**
@@ -184,15 +177,6 @@ class Archivist {
     setAnchor(room, value) {
         Memory.rooms[room].flags.anchor = value;
     }
-
-    /**
-     * Set containers built flag
-     * @param {String} room string representing the room
-     * @param {Boolean} value value to set the flag
-     */
-    setContainersBuilt(room, value) {
-        Memory.rooms[room].flags.containerseBuilt = value;
-    }
     
     /**
      * Set extensions filled flag for a given room
@@ -201,6 +185,15 @@ class Archivist {
      */
      setExtensionsFilled(room, value) {
         Memory.rooms[room].flags.extensionsFilled = value;
+    }
+
+    /**
+     * Set the room planning gameStage for a given room
+     * @param {String} room string representing the room
+     * @param {Integer} value value to set the flag
+     */
+     setGameStage(room, value) {
+        Memory.rooms[room].flags.gameStage = value;
     }
 
     /**
@@ -219,15 +212,6 @@ class Archivist {
      */
     setTowersFilled(room, value) {
         Memory.rooms[room].flags.towersFilled = value;
-    }
-
-    /**
-     * Set the room planning rank for a given room
-     * @param {String} room string representing the room
-     * @param {Integer} value value to set the flag
-     */
-    setRank(room, value) {
-        Memory.rooms[room].flags.rank = value;
     }
 }
 
