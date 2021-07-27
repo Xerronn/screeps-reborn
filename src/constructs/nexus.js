@@ -46,14 +46,14 @@ class Nexus extends Construct {
             let noMoves = [];
             for (let part of spawnBody) {
                 if (part != MOVE) {
-                    noMoves.unshift(part);
+                    noMoves.push(part);
                 }
             }
 
             //add moves onto that list until moves are equal to half the non moves
             let targetMoves = Math.ceil(noMoves.length / 2);
             for (let i = 0; i < targetMoves; i++) {
-                noMoves.unshift(MOVE);
+                noMoves.push(MOVE);
             }
             spawnBody = noMoves;
         }
@@ -72,7 +72,7 @@ class Nexus extends Construct {
             let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
             this.spawningThisTick = true;
             global.Archivist.setExtensionsFilled(this.room, false);
-            global.TaskMaster.schedule(Game.time + body.length * CREEP_SPAWN_TIME, task);
+            global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
         }
         return success;
     }
