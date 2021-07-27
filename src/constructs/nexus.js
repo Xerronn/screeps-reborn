@@ -39,20 +39,21 @@ class Nexus extends Construct {
     spawnCreep(body, type, memory=undefined) {
         let name = type + "<" + Game.time + ">"
 
+        let spawnBody = body;
         //reduce move parts when roads are built
         if (global.Archivist.getRoadsBuilt(this.room)) {
             let numMoves = 0;
-            for (let part of body) {
+            for (let part of spawnBody) {
                 if (part == MOVE) {
                     numMoves++;
                 }
             }
 
-            let targetMoves = Math.ceil(body.length / 2);
+            let targetMoves = Math.ceil(spawnBody.length / 4);
             if (numMoves > targetMoves) {
                 for (let i = 0; i < numMoves - targetMoves; i++) {
-                    let index = body.indexOf(MOVE);
-                    if (index >= 0) body.splice(index, 1);
+                    let index = spawnBody.indexOf(MOVE);
+                    if (index >= 0) spawnBody.splice(index, 1);
                 }
             }
         }
@@ -63,9 +64,9 @@ class Nexus extends Construct {
         memory["name"] = name;
         memory["type"] = type;
         memory["spawnRoom"] = this.room;
-        memory["body"] = body;
+        memory["body"] = spawnBody;
         memory["spawning"] = true;
-        let success = this.liveObj.spawnCreep(body, name, {memory: memory});
+        let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
 
         if (success == OK) {
             let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
