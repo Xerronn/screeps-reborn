@@ -17,7 +17,7 @@ class Contractor extends Worker {
             this.memory.task = "build";
             this.build();
         } else {
-            if (this.memory.generation !== undefined) {
+            if (this.memory.generation !== undefined && this.ticksToLive < 2) {
                 this.conclude();
             }
             this.upgradeController();
@@ -32,7 +32,7 @@ class Contractor extends Worker {
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
-            global.Imperator.administrators[this.room].supervisor.initialize(true);
+            global.Imperator.administrators[this.room].supervisor.wrap(true);
             let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
 
             liveClosestSite = storage.pos.findClosestByRange(sites);
