@@ -13,7 +13,7 @@ class Architect {
                 //calculate anchor and build spawn
                 this.buildBunker(room);
                 //start the room off with the five basic engineers
-                global.Imperator.administrators[room].initiator.phaseOne();
+                global.Imperator.administrators[room].executive.phaseOne();
                 break;
             case 1:
             case 2:
@@ -31,7 +31,7 @@ class Architect {
                 break;
             case 5:
                 //storage is built, time to switch to phase two
-                global.Imperator.administrators[room].initiator.phaseTwo();
+                global.Imperator.administrators[room].executive.phaseTwo();
                 break;
             case 6:
                 //storage has 100k energy, build bunker roads

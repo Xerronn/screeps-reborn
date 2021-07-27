@@ -70,11 +70,11 @@ class Illustrator {
         }
 
         let room = liveObj.room;
-        let originator = global.Imperator.administrators[room.name].originator;
+        let supervisor = global.Imperator.administrators[room.name].supervisor;
 
         if (liveObj.fatigue === undefined) {
             //is a structure
-            let origArr = originator.constructs[this.mapGameToClass(liveObj.structureType)];
+            let origArr = supervisor.constructs[this.mapGameToClass(liveObj.structureType)];
             for (let struc of origArr) {
                 if (struc.id == id) {
                     return struc;
@@ -83,7 +83,7 @@ class Illustrator {
             return undefined;
         } else {
             //is a creep
-            let origArr = originator.proletarian[liveObj.memory.type];
+            let origArr = supervisor.proletarian[liveObj.memory.type];
             for (let creep of origArr) {
                 if (creep.id == id) {
                     return creep;

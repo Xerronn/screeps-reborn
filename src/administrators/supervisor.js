@@ -9,7 +9,7 @@ const Nexus = require("../constructs/nexus");
 const Bastion = require("../constructs/bastion")
 
 //entity that initializes, refreshes, runs all roomObj in a room
-class Originator {
+class Supervisor {
     constructor(room) {
         this.room = room;
         this.proletarian = {};
@@ -17,9 +17,9 @@ class Originator {
     }
 
     /**
-     * Function that initializes the Originator with all GameObj
+     * Function that wraps all gameObj in the room with a wrapper class
      */
-    initialize(onlyStructures = false) {
+    wrap(onlyStructures = false) {
         //todo: make it initialize structures from archivist maybeeee
         let thisRoom = Game.rooms[this.room];
         //initialize all structures in the room to their respective classes
@@ -60,7 +60,7 @@ class Originator {
                         "type": creepMem.type,
                         "memory": creepMem
                     };
-                    this.getInitiator().initiate(template, true);
+                    this.initiate(template, true);
                 } else {
                     delete Memory.creeps[creepMem.name];
                 }
@@ -69,25 +69,10 @@ class Originator {
     }
 
     /**
-     * Function to initialize a newly created creep
-     * @param {String} creepName Name of the creep
-     */
-    initializeCreep(creepName) {
-        let creep = Game.creeps[creepName];
-        if (!this.proletarian[creep.memory.type]) {
-            this.proletarian[creep.memory.type] = [];
-        }
-        let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
-                    creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
-
-        eval(createObjStr);
-    }
-
-    /**
      * Function that updates all stored GameObj with live references.
      * Should be run each tick in the main loop
      */
-    refresh() {
+     refresh() {
         //refresh the live game object reference for every creep
         for (var type of Object.keys(this.proletarian)) {
             for (var pro of this.proletarian[type]) {
@@ -106,7 +91,7 @@ class Originator {
     /**
      * Function that runs all objects in the room
      */
-    run() {
+     run() {
         //first all creeps
         for (var type of Object.keys(this.proletarian)) {
             for (var pro of this.proletarian[type]) {
@@ -123,12 +108,85 @@ class Originator {
     }
 
     /**
-     * function to return the room's initiator
-     * @returns Initiator
+     * Function that takes a creep object and makes a new creep based on that object
+     * @param {Object} template An object that contains body, type, and memory
+     * @param {boolean} rebirth whether or not this is a rebirth
      */
-    getInitiator() {
-        return global.Imperator.administrators[this.room].initiator;
+     initiate(template, rebirth = false) {
+        //to make sure that we actually find a nexus that can spawn this request.
+        let foundNexus = false;
+        //loop through the spawns until an available one is found
+        for (let nexus of this.constructs["nexus"]) {
+            if (!nexus.spawning && !nexus.spawningThisTick) {
+                foundNexus = true;
+                //! these seem to be failing
+                if (rebirth) {
+                    if (!template.memory.generation) {
+                        template.memory.generation = 0
+                    }
+                    template.memory.generation++;
+                }
+
+                //use the body stored in memory if it exists, as it can contain evolutions
+                let newBody = template.memory.body;
+                if (!newBody) {
+                    newBody = template.body;
+                }
+                let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
+
+                //if the request fails, schedule it for 20 ticks in the future
+                if (success != OK) {
+                    //so we can reschedule
+                    foundNexus = false;
+                }
+            }
+        }
+
+        if (!foundNexus) {
+            let task = "global.Imperator.administrators[objArr[1]].supervisor.initiate(objArr[0]);";
+            global.TaskMaster.schedule(Game.time + 20, task, [{ ...template }, this.room]);
+        }
+
+        if (rebirth) {
+            this.dismiss(template);
+        }
+    }
+
+    /**
+     * Delete the class holding the dead creep
+     * @param {Proletarian} proletarian 
+     */
+    dismiss(proletarianType) {
+        //If the creep is replacing a dead creep, we delete it from memory
+        let origArr = this.proletarian[proletarianType.type];
+        let index = origArr.indexOf(proletarianType);
+        if (index >= 0) origArr.splice(index, 1);
+        //todo: we can use the absence of this to see when we missed a creep due to global reset
+        delete Memory.creeps[proletarianType.memory.name];
+    }
+
+    /**
+     * Function to wrap a newly created creep
+     * @param {String} creepName Name of the creep
+     */
+    wrapCreep(creepName) {
+        let creep = Game.creeps[creepName];
+        if (!this.proletarian[creep.memory.type]) {
+            this.proletarian[creep.memory.type] = [];
+        }
+        let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
+                    creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
+
+        eval(createObjStr);
+    }
+
+    /**
+     * function to return the room's executive
+     * @returns Executive
+     */
+    getExecutive() {
+        return global.Imperator.administrators[this.room].executive;
     }
 }
 
-module.exports = Originator;
+module.exports = Supervisor;

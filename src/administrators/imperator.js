@@ -1,5 +1,5 @@
-const Originator = require("./originator");
-const Initiator = require("./initiator");
+const Supervisor = require("./supervisor");
+const Executive = require("./executive");
 
 //highest entity, holds objects relating to rooms
 class Imperator {
@@ -9,18 +9,18 @@ class Imperator {
     }
 
     /**
-     * Function that creates Originators for every room
+     * Function that creates Supervisors for every room
      */
     initialize() {
-        //make an originator for every room that we own
+        //make an supervisor for every room that we own
         for (let room of this.dominion) {
             !(room in this.administrators) && (this.administrators[room] = {});
-            this.administrators[room].originator = new Originator(room);
-            this.administrators[room].initiator = new Initiator(room);
+            this.administrators[room].supervisor = new Supervisor(room);
+            this.administrators[room].executive = new Executive(room);
         }
         //it is important to get through the creation of the objects before referencing them. idiot
         for (let room of this.dominion) {
-            this.administrators[room].originator.initialize();
+            this.administrators[room].supervisor.wrap();
         }
     }
 
@@ -29,7 +29,7 @@ class Imperator {
      */
     refresh() {
         for (let room of this.dominion) {
-            this.administrators[room].originator.refresh();
+            this.administrators[room].supervisor.refresh();
         }
     }
 
@@ -38,8 +38,8 @@ class Imperator {
      */
     run() {
         for (let room of this.dominion) {
-            this.administrators[room].originator.run();
-            this.administrators[room].initiator.run();
+            this.administrators[room].supervisor.run();
+            this.administrators[room].executive.run();
         }
     }
 }

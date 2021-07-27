@@ -46,7 +46,7 @@ class Archivist {
 
         //This must be at the end of this method
         //it should only ever happen once, on the first build of the archivist
-        //it will auto renew as per defined in the refresh method using the executive
+        //it will auto renew as per defined in the refresh method using the taskMaster
         if (!Memory.gFlags.memoryInit) {
             this.refresh();
             Memory.gFlags.memoryInit = true;
@@ -88,7 +88,7 @@ class Archivist {
         //do it again in 100 ticks
         //! make sure this gets executed only once. Use gflags
         let task = "global.Archivist.refresh()";
-        global.Executive.schedule(Game.time + 100, task);
+        global.TaskMaster.schedule(Game.time + 100, task);
     }
 
     /////////////////
