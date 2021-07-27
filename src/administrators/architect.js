@@ -47,6 +47,7 @@ class Architect {
                 //build upgrader link
                 this.buildBunker(room);
                 this.buildControllerLink(room);
+                global.Imperator.administrators[room].executive.phaseThree();
                 break;
             case 9:
                 //just turned rcl 6
