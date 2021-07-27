@@ -6,7 +6,8 @@ const Runner = require("../proletariat/workers/runner");
 const Contractor = require("../proletariat/workers/contractor");
 
 const Nexus = require("../constructs/nexus");
-const Bastion = require("../constructs/bastion")
+const Bastion = require("../constructs/bastion");
+const Conduit = require("../constructs/conduit");
 
 //entity that initializes, refreshes, runs all roomObj in a room
 class Supervisor {
@@ -35,6 +36,16 @@ class Supervisor {
                 case STRUCTURE_TOWER:
                     !("bastion" in this.constructs) && (this.constructs["bastion"] = []);
                     this.constructs["bastion"].push(new Bastion(struc.id));
+                    break;
+                
+                case STRUCTURE_LINK:
+                    !("conduit" in this.constructs) && (this.constructs["conduit"] = []);
+                    //keep track of special link roles
+                    if (!this.controllerLink) {
+                        this.controllerLink = "none";
+                        this.storageLink = "none";
+                    }
+                    this.constructs["conduit"].push(new Conduit(struc.id));
                     break;
             }
         }
