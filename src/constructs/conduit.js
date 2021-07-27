@@ -1,7 +1,7 @@
 const Construct = require("./construct");
 
 //wrapper class for link object
-class Conduit extends Construct () {
+class Conduit extends Construct {
     constructor(linkId) {
         super(linkId);
 
@@ -10,7 +10,7 @@ class Conduit extends Construct () {
             filter: (structure) => {
                 return structure.structureType != STRUCTURE_LINK
                     && [STRUCTURE_STORAGE, STRUCTURE_CONTROLLER].includes(structure.structureType)
-                    && link.pos.inRangeTo(structure, 2)
+                    && this.pos.inRangeTo(structure, 2)
             }
         });
 
@@ -21,9 +21,9 @@ class Conduit extends Construct () {
 
             //set supervisor link references for roles
             if (sType == STRUCTURE_STORAGE) {
-                global.Imperator.administrators[this.room].supervisor.controllerLink = this;
-            } else {
                 global.Imperator.administrators[this.room].supervisor.storageLink = this;
+            } else {
+                global.Imperator.administrators[this.room].supervisor.controllerLink = this;
             }
         } else {
             this.type = "fill";
