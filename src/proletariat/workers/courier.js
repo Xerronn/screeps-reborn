@@ -30,6 +30,15 @@ class Courier extends Miner {
      * logic to run each tick
      */
     run() {
+        //if container no longer exists, its been replaced by a link
+        if (!this.container) {
+            //disable rebirth
+            delete this.memory.generation;
+            //rip
+            this.liveObj.suicide();
+            return;
+        }
+        
         //evolve if the container ever gets full. it means the transporter is underpowered
         if (this.container.store.getFreeCapacity(RESOURCE_ENERGY) == 0 && this.evolved == false) {
             this.evolve();
