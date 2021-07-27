@@ -1,234 +1,75 @@
 //entity for room planning
 class Architect {
     constructor() {
-
     }
 
     /**
-     * Function to do room planning whenever a room controller levels up
+     * Function to do room planning whenever gamestage changes
      * @param {String} room string representation of a room 
      */
-    design(room) {
-        let roomController = Game.rooms[room].controller;
-        if (global.Archivist.getRank(room) != roomController.level) {
-            //TODO: factory is not building for some reason
-            let bunkerSchema = global.Illustrator.getBunkerSchema();
-
-            //get anchor, if there isn't one, calculate a new one
-            let anchor = global.Archivist.getAnchor(room);
-            if (!anchor) {
-                anchor = this.calculateAnchor(room);
-            }
-
-            var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
-            var typesToBuild = [STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_TOWER, STRUCTURE_LAB, STRUCTURE_STORAGE, STRUCTURE_LINK, STRUCTURE_FACTORY, STRUCTURE_POWER_SPAWN, STRUCTURE_NUKER, STRUCTURE_OBSERVER, STRUCTURE_TERMINAL];
-
-            //hande reliable first spawn building
-            if (Game.rooms[room].find(FIND_MY_SPAWNS).length < 1) {
-                for (var i =0; i < 10; i++) { 
-                    let success = Game.rooms[room].createConstructionSite(
-                        roomAnchor.x + bunkerSchema["spawn"]["pos"][0].x, roomAnchor.y + bunkerSchema["spawn"]["pos"][0].y, STRUCTURE_SPAWN);
-                    
-                    if (success == 0) {
-                        break;
-                    }
-                }
-            }
-            //TODO: build ramparts surrounding our miner boiis
-            //builds the appropriate number of each structure type
-            for (var type of typesToBuild) {
-                this.buildNewStructures(type, room);
-            }
-            
-            if (roomController.level >= 3) {
-                //build containers once towers are unlocked so towers can handle repair
-                if (!global.Archivist.getContainersBuilt(room)) {
-                    let closest = []
-                    for (var source of Game.rooms[room].find(FIND_SOURCES)) {
-                        let pathToSource = roomAnchor.findPathTo(source.pos, {range: 1, ignoreCreeps: true})
-                        let closestPosition = new RoomPosition(pathToSource[pathToSource.length - 1]["x"], pathToSource[pathToSource.length - 1]["y"], room);
-                        closest.push(closestPosition); 
-                    }
-                    for (var close of closest) {
-                        close.createConstructionSite(STRUCTURE_CONTAINER);
-                    }
-                    global.Archivist.setContainersBuilt(room, true);
-                }
-            }
-
-            //     //build roads to sources
-            //     if (!Memory.roomsPersistent[room].roomPlanning.travelRoadsBuilt) {
-            //         Memory.roomsPersistent[room].roomPlanning.travelRoadsBuilt = true;
-
-            //         //define corners of the bunker
-            //         let topRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y, room);
-            //         let topLeft = roomAnchor;
-            //         let bottomLeft = new RoomPosition(roomAnchor.x, roomAnchor.y + 10, room);
-            //         let bottomRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 10, room);
-
-            //         let topMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y, room);
-            //         let bottomMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y + 10, room);
-            //         let leftMiddle = new RoomPosition(roomAnchor.x, roomAnchor.y + 5, room);
-            //         let rightMiddle = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 5, room);
-            //         let corners = [topRight, topLeft, bottomLeft, bottomRight, topMiddle, bottomMiddle, leftMiddle, rightMiddle];
-
-            //         let roadSites = [];
-
-            //         var travelSources = Game.rooms[room].find(FIND_SOURCES);
-            //         console.log(travelSources);
-            //         //build roads from the closest corner to the source
-            //         for (var source of travelSources) {
-            //             let selectedCorner = source.pos.findClosestByPath(corners);
-            //             roadSites.push(selectedCorner.findPathTo(source, {range: 1, ignoreCreeps: true}));
-            //         }
-
-            //         let selectedCorner = roomController.pos.findClosestByPath(corners);
-            //         roadSites.push(selectedCorner.findPathTo(roomController, {range: 1, ignoreCreeps: true}));
-
-            //         for (var sites of roadSites) {
-            //             for (var site of sites) {
-            //                 Game.rooms[room].createConstructionSite(site.x, site.y, STRUCTURE_ROAD);
-            //             }
-            //         }
-            //     }
-                
-            // }
-
-            // if (roomController.level >= 3) {
-            //     //build bunker roads
-            //     if (!Memory.roomsPersistent[room].roomPlanning.bunkerRoadsBuilt) {
-            //         Memory.roomsPersistent[room].roomPlanning.bunkerRoads= true;
-            //         for (var pos of bunkerSchema["road"]["pos"]) {
-            //             //do not build tunnels
-            //             if (Game.rooms[room].lookAt(roomAnchor.x + pos["x"], roomAnchor.y + pos["y"], LOOK_TERRAIN)["terrain"] != "wall") {
-            //                 Game.rooms[room].createConstructionSite(new RoomPosition(roomAnchor.x + pos["x"], roomAnchor.y + pos["y"], room), STRUCTURE_ROAD);
-                            
-            //             }
-            //         }
-            //     }
-            // }
-
-            // if (roomController.level >= 4) {
-            //     //build ramparts
-            //     var xMax = roomAnchor.x + 11;
-            //     var yMax = roomAnchor.y + 11;
-            //     for (var x = roomAnchor.x - 1; x <= xMax; x++) {
-            //         for (var y = roomAnchor.y - 1; y <= yMax; y++) {
-            //             if (x == roomAnchor.x - 1 || y == roomAnchor.y - 1 || x == xMax || y == yMax) {
-            //                 Game.rooms[room].createConstructionSite(new RoomPosition(x, y, room), STRUCTURE_RAMPART);
-            //             }
-            //         }
-            //     }
-            // }
-
-            // if (roomController.level >= 5) {
-            //     //build links
-            //     //find how many exist
-            //     let numExist = Game.rooms[room].find(FIND_STRUCTURES, {
-            //         filter: (structure) => {return structure.structureType == STRUCTURE_LINK}}).length;
-
-            //     //find how many are building
-            //     let numBuilding = Game.rooms[room].find(FIND_MY_CONSTRUCTION_SITES, {
-            //         filter: (structure) => {return structure.structureType == STRUCTURE_LINK}}).length;
-
-            //     //find how many are possible to build at the current level
-            //     let maxToBuild = CONTROLLER_STRUCTURES[STRUCTURE_LINK][Game.rooms[room].controller.level];
-            //     let numToBuild = maxToBuild - (numExist + numBuilding);
-
-            //     for (var i = 0; i < numToBuild; i++) {
-            //         //first build controller link
-            //         //TODO: this can break if the bunker is too close to the controller
-            //         if (!Memory.roomsPersistent[room].roomPlanning.controllerLink) {
-            //             let pathToController = roomAnchor.findPathTo(roomController.pos, {range: 2, ignoreCreeps: true})
-            //             let closestPosition = new RoomPosition(pathToController[pathToController.length - 1]["x"], pathToController[pathToController.length - 1]["y"], room);
-            //             closestPosition.createConstructionSite(STRUCTURE_LINK);
-            //             Memory.roomsPersistent[room].roomPlanning.controllerLink = true;
-            //             continue; //move to next iteration out of the num to build
-            //         }
-            //         let sources = Game.rooms[room].find(FIND_SOURCES);
-            //         sources = _.sortBy(sources, source => roomAnchor.getRangeTo(source));
-
-            //         //init sources room planning memory
-            //         if (!Memory.roomsPersistent[room].roomPlanning.sourceLinks) {
-            //             Memory.roomsPersistent[room].roomPlanning.sourceLinks = [];
-            //         }
-            //         if (Memory.roomsPersistent[room].roomPlanning.sourceLinks.length < sources.length) {
-            //             //loop through sources until you find one not in memory
-            //             for (var source of sources) {
-            //                 if (!Memory.roomsPersistent[room].roomPlanning.sourceLinks.includes(source.id)) {
-
-            //                     //find nearby container
-            //                     let sourceContainer = source.pos.findClosestByRange(FIND_STRUCTURES, {
-            //                         filter: (structure) => { return structure.structureType == STRUCTURE_CONTAINER 
-            //                             && source.pos.inRangeTo(structure, 2)
-            //                         }
-            //                     });
-
-            //                     //once a source not in the memory is found, route to it and build a link on the last step of the route
-            //                     let pathToContainer = roomAnchor.findPathTo(sourceContainer.pos, {range: 1, ignoreCreeps: true})
-            //                     let closestPosition = new RoomPosition(pathToContainer[pathToContainer.length - 1]["x"], pathToContainer[pathToContainer.length - 1]["y"], room);
-
-                                
-            //                     if (closestPosition.createConstructionSite(STRUCTURE_LINK) == 0) {
-            //                         Memory.roomsPersistent[room].roomPlanning.sourceLinks.push(source.id);
-                                    
-            //                         //remove sourceContainer if a link is successfully built
-            //                         if (sourceContainer) {
-            //                             sourceContainer.destroy();
-
-            //                             //do our cache a favor and remove the id
-            //                             let array = Memory.roomsCache[room].structures.containers;
-            //                             let index = array.indexOf(sourceContainer.id);
-            //                             if (index > -1) {
-            //                                 array.splice(index, 1);
-            //                                 Memory.roomsCache[room].structures.containers = array;
-            //                             }
-            //                         }
-            //                     }
-            //                     break;
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-
-            // //TODO: too tired to make this any good.
-            // if (roomController.level >= 6) {
-            //     if (!Memory.roomsPersistent[room].roomPlanning.mineralRoadsBuilt) {
-            //         Memory.roomsPersistent[room].roomPlanning.mineralRoadsBuilt = true;
-
-            //         //define corners of the bunker
-            //         let topRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y, room);
-            //         let topLeft = roomAnchor;
-            //         let bottomLeft = new RoomPosition(roomAnchor.x, roomAnchor.y + 10, room);
-            //         let bottomRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 10, room);
-
-            //         let topMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y, room);
-            //         let bottomMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y + 10, room);
-            //         let leftMiddle = new RoomPosition(roomAnchor.x, roomAnchor.y + 5, room);
-            //         let rightMiddle = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 5, room);
-            //         let corners = [topRight, topLeft, bottomLeft, bottomRight, topMiddle, bottomMiddle, leftMiddle, rightMiddle];
-
-            //         let roadSites = [];
-
-            //         var travelMineral = Game.rooms[room].find(FIND_MINERALS);
-                    
-            //         //build roads from the closest corner to the mineral
-            //         for (var min of travelMineral) {
-            //             let selectedCorner = min.pos.findClosestByPath(corners);
-            //             roadSites.push(selectedCorner.findPathTo(min, {range: 1, ignoreCreeps: true}));
-            //         }
-
-            //         for (var sites of roadSites) {
-            //             for (var site of sites) {
-            //                 Game.rooms[room].createConstructionSite(site.x, site.y, STRUCTURE_ROAD);
-            //             }
-            //         }
-            //     }
-                
-            // }
-        //once all this is done, we can update the rank to indicate that no more work is needed
-        global.Archivist.setRank(room, Game.rooms[room].controller.level);  
+    design(room, gameStage) {
+        switch (gameStage) {
+            case 0:
+                //calculate anchor and build spawn
+                this.buildBunker(room);
+                //start the room off with the five basic engineers
+                global.Imperator.administrators[room].initiator.phaseOne();
+                break;
+            case 1:
+            case 2:
+                //turning rcl 2 and 3
+                //build the first few extensions
+                this.buildBunker(room);
+                break;
+            case 3:
+                //towers are built, so build containers at sources
+                this.buildSourceContainers(room);
+                break;
+            case 4:
+                //just turned rcl 4
+                this.buildBunker(room);
+                break;
+            case 5:
+                //storage is built, time to switch to phase two
+                global.Imperator.administrators[room].initiator.phaseTwo();
+                break;
+            case 6:
+                //storage has 100k energy, build bunker roads
+                this.buildBunkerRoads(room);
+                break;
+            case 7:
+                //bunker roads are done, build roads to sources
+                this.buildUtilityRoads(room);
+                break;
+            case 8:
+                //just turned rcl 5
+                //build upgrader link
+                this.buildBunker(room);
+                this.buildControllerLink(room);
+                break;
+            case 9:
+                //just turned rcl 6
+                //build one source link
+                this.buildSourceLinks(room);
+                break;
+            case 10:
+                //build excavator and road to mineral
+                this.buildExcavator(room);
+                break;
+            case 11:
+                //just turned rcl 7
+                //build second source link
+                this.buildBunker();
+                this.buildSourceLinks(room);
+                break;
+            case 12:
+                //everything is done building and storage has > 100,000 energy
+                //TODO: start remote mining
+                break;
+            case 13:
+                //TODO: lots and lots
+                this.buildBunker();
+                break;    
         }
     }
 
@@ -337,6 +178,39 @@ class Architect {
     }
 
     /**
+     * Method that builds all newly unlocked bunker structures
+     */
+     buildBunker(room) {
+        let bunkerSchema = global.Illustrator.getBunkerSchema();
+
+        //get anchor, if there isn't one, calculate a new one
+        let anchor = global.Archivist.getAnchor(room);
+        if (!anchor) {
+            anchor = this.calculateAnchor(room);
+        }
+
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+        var typesToBuild = [STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_TOWER, STRUCTURE_LAB, STRUCTURE_STORAGE, STRUCTURE_LINK, STRUCTURE_FACTORY, STRUCTURE_POWER_SPAWN, STRUCTURE_NUKER, STRUCTURE_OBSERVER, STRUCTURE_TERMINAL];
+
+        //hande reliable first spawn building
+        if (Game.rooms[room].find(FIND_MY_SPAWNS).length < 1) {
+            for (var i =0; i < 10; i++) { 
+                let success = Game.rooms[room].createConstructionSite(
+                    roomAnchor.x + bunkerSchema["spawn"]["pos"][0].x, roomAnchor.y + bunkerSchema["spawn"]["pos"][0].y, STRUCTURE_SPAWN);
+                
+                if (success == 0) {
+                    break;
+                }
+            }
+        }
+        //TODO: build ramparts surrounding our miner boiis
+        //builds the appropriate number of each structure type
+        for (var type of typesToBuild) {
+            this.buildNewStructures(type, room);
+        }
+    }
+
+    /**
      * function to build new structures
      * @param {String} structureConstant structure type constant
      * @param {String} room string representing room
@@ -367,6 +241,195 @@ class Architect {
                 Game.rooms[room].createConstructionSite(new RoomPosition(roomAnchor.x + pos["x"], roomAnchor.y + pos["y"], room), structureConstant);
             }
         }
+    }
+
+    /**
+     * Method to build source containers
+     * @param {String} room string representing the room 
+     */
+    buildSourceContainers(room) {
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+        
+        //build paths from the roomAchor to the sources then build containers at the final step in that path
+        let closest = []
+        for (var source of Game.rooms[room].find(FIND_SOURCES)) {
+            let pathToSource = roomAnchor.findPathTo(source.pos, {range: 1, ignoreCreeps: true})
+            let closestPosition = new RoomPosition(pathToSource[pathToSource.length - 1]["x"], pathToSource[pathToSource.length - 1]["y"], room);
+            closest.push(closestPosition); 
+        }
+        for (var close of closest) {
+            close.createConstructionSite(STRUCTURE_CONTAINER);
+        }
+    }
+
+    /**
+     * Method that builds roads within the bunker
+     * @param {String} room string representing the room 
+     */
+    buildBunkerRoads(room) {
+        //get bunker schematics
+        let bunkerSchema = global.Illustrator.getBunkerSchema();
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+
+        for (var pos of bunkerSchema["road"]["pos"]) {
+            //do not build tunnels
+            if (Game.rooms[room].lookAt(roomAnchor.x + pos["x"], roomAnchor.y + pos["y"], LOOK_TERRAIN)["terrain"] != "wall") {
+                Game.rooms[room].createConstructionSite(new RoomPosition(roomAnchor.x + pos["x"], roomAnchor.y + pos["y"], room), STRUCTURE_ROAD);
+                
+            }
+        }
+    }
+
+    /**
+     * Method that builds ramparts surrounding the bunker
+     * @param {String} room String representing the room 
+     */
+    buildBunkerRamparts(room) {
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+
+        var xMax = roomAnchor.x + 11;
+        var yMax = roomAnchor.y + 11;
+        for (var x = roomAnchor.x - 1; x <= xMax; x++) {
+            for (var y = roomAnchor.y - 1; y <= yMax; y++) {
+                if (x == roomAnchor.x - 1 || y == roomAnchor.y - 1 || x == xMax || y == yMax) {
+                    Game.rooms[room].createConstructionSite(new RoomPosition(x, y, room), STRUCTURE_RAMPART);
+                }
+            }
+        }
+    }
+
+    /**
+     * Method that builds roads to all sources
+     * @param {String} room string representing the room
+     */
+    buildUtilityRoads(room) {
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+
+        //define corners of the bunker
+        let topRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y, room);
+        let topLeft = roomAnchor;
+        let bottomLeft = new RoomPosition(roomAnchor.x, roomAnchor.y + 10, room);
+        let bottomRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 10, room);
+
+        let topMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y, room);
+        let bottomMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y + 10, room);
+        let leftMiddle = new RoomPosition(roomAnchor.x, roomAnchor.y + 5, room);
+        let rightMiddle = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 5, room);
+        let corners = [topRight, topLeft, bottomLeft, bottomRight, topMiddle, bottomMiddle, leftMiddle, rightMiddle];
+
+        let roadSites = [];
+
+        var travelSources = Game.rooms[room].find(FIND_SOURCES);
+
+        //build roads from the closest corner to the source
+        for (var source of travelSources) {
+            let selectedCorner = source.pos.findClosestByPath(corners);
+            roadSites.push(selectedCorner.findPathTo(source, {range: 1, ignoreCreeps: true}));
+        }
+
+        let selectedCorner = roomController.pos.findClosestByPath(corners);
+        roadSites.push(selectedCorner.findPathTo(roomController, {range: 1, ignoreCreeps: true}));
+
+        for (var sites of roadSites) {
+            for (var site of sites) {
+                Game.rooms[room].createConstructionSite(site.x, site.y, STRUCTURE_ROAD);
+            }
+        }
+        
+    }
+
+    /**
+     * Method to build the controller link
+     * @param {String} room string representing the room
+     */
+    buildControllerLink(room) {
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+
+        //build link
+        let pathToController = roomAnchor.findPathTo(roomController.pos, {range: 2, ignoreCreeps: true})
+        let closestPosition = new RoomPosition(pathToController[pathToController.length - 1]["x"], pathToController[pathToController.length - 1]["y"], room);
+        closestPosition.createConstructionSite(STRUCTURE_LINK);
+    }
+
+    /**
+     * Method to build the source links
+     * @param {String} room string representing the room
+     */
+    buildSourceLinks(room) {
+        //find the sources and sort by distance
+        let sources = Game.rooms[room].find(FIND_SOURCES);
+        sources = _.sortBy(sources, source => roomAnchor.getRangeTo(source));
+
+        //loop through sources
+        for (var source of sources) {
+            //find nearby container
+            let sourceContainer = source.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (structure) => { return structure.structureType == STRUCTURE_CONTAINER 
+                    && source.pos.inRangeTo(structure, 2)
+                }
+            });
+
+            //if there is no container, there is already a link so move to next source
+            if (!sourceContainer) continue;
+
+            //once a source not in the memory is found, route to it and build a link on the last step of the route
+            let pathToContainer = roomAnchor.findPathTo(sourceContainer.pos, {range: 1, ignoreCreeps: true})
+            let closestPosition = new RoomPosition(pathToContainer[pathToContainer.length - 1]["x"], pathToContainer[pathToContainer.length - 1]["y"], room);
+
+            if (closestPosition.createConstructionSite(STRUCTURE_LINK) == 0) {
+                //remove sourceContainer if a link is successfully built
+                sourceContainer.destroy();
+
+                //refresh the cache since we destroyed a container
+                global.Archivist.refresh(true);
+                return; //end the function once we have built a link
+            }
+        }
+    }
+
+    /**
+     * Method to build road to the room's mineral and an excavator
+     * @param {String} room string representing the room
+     */
+    buildExtractor(room) {
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+
+        //define corners of the bunker
+        let topRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y, room);
+        let topLeft = roomAnchor;
+        let bottomLeft = new RoomPosition(roomAnchor.x, roomAnchor.y + 10, room);
+        let bottomRight = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 10, room);
+
+        let topMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y, room);
+        let bottomMiddle = new RoomPosition(roomAnchor.x + 5, roomAnchor.y + 10, room);
+        let leftMiddle = new RoomPosition(roomAnchor.x, roomAnchor.y + 5, room);
+        let rightMiddle = new RoomPosition(roomAnchor.x + 10, roomAnchor.y + 5, room);
+        let corners = [topRight, topLeft, bottomLeft, bottomRight, topMiddle, bottomMiddle, leftMiddle, rightMiddle];
+
+        var roomMineral = Game.rooms[room].find(FIND_MINERALS)[0];
+        
+        //build roads from the closest corner to the mineral
+        let selectedCorner = min.pos.findClosestByPath(corners);
+        let roadPath = selectedCorner.findPathTo(roomMineral, {range: 1, ignoreCreeps: true});
+
+        for (let pos of roadPath) {
+            Game.rooms[room].createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
+        }
+
+        //build extractor
+        roomMineral.pos.createConstructionSite(STRUCTURE_EXTRACTOR);
     }
 }
 
