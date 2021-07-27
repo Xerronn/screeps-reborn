@@ -42,20 +42,20 @@ class Nexus extends Construct {
         let spawnBody = body;
         //reduce move parts when roads are built
         if (global.Archivist.getRoadsBuilt(this.room)) {
-            let numMoves = 0;
+            //build a list of all non move body parts
+            let noMoves = [];
             for (let part of spawnBody) {
-                if (part == MOVE) {
-                    numMoves++;
+                if (part != MOVE) {
+                    noMoves.unshift(part);
                 }
             }
 
-            let targetMoves = Math.ceil(spawnBody.length / 4);
-            if (numMoves > targetMoves) {
-                for (let i = 0; i < numMoves - targetMoves; i++) {
-                    let index = spawnBody.indexOf(MOVE);
-                    if (index >= 0) spawnBody.splice(index, 1);
-                }
+            //add moves onto that list until moves are equal to half the non moves
+            let targetMoves = Math.ceil(noMoves.length / 2);
+            for (let i = 0; i < targetMoves; i++) {
+                noMoves.unshift(MOVE);
             }
+            spawnBody = noMoves;
         }
 
         if (!memory) {
