@@ -368,6 +368,10 @@ class Architect {
      * @param {String} room string representing the room
      */
     buildSourceLinks(room) {
+        //get anchor
+        let anchor = global.Archivist.getAnchor(room);
+        var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);
+
         //find the sources and sort by distance
         let sources = Game.rooms[room].find(FIND_SOURCES);
         sources = _.sortBy(sources, source => roomAnchor.getRangeTo(source));
