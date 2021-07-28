@@ -39,6 +39,11 @@ class Professor extends Worker {
             this.memory.task = "upgrade";
             this.upgradeController();
         }
+
+        //evolve the creep to meet expanding stored energy
+        if (this.ticksToLive < 2) {
+            this.evolve();
+        }
     }
     
     /**
@@ -58,7 +63,39 @@ class Professor extends Worker {
      * Method to evolve the upgrader depending on storage levels and link
      */
     evolve() {
+        if (this.link) {
+            //once we have a link, we don't need as many carry parts
+            this.memory.body = [
+                WORK, WORK, WORK, WORK, 
+                CARRY, CARRY,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ];
+        }
 
+        let roomStorage = Game.rooms[this.room].storage;
+        if (roomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > roomStorage.store.getCapacity(RESOURCE_ENERGY) / 3) {
+            let totalEnergy = Game.rooms[this.room].energyCapacityAvailable;
+            let newBody = this.memory.body;
+            //calculate current cost
+            let totalCost = 0;
+            for (let part of newBody) {
+                if (part == WORK) {
+                    totalCost += 100;
+                } else {
+                    totalCost += 50;
+                }
+            }
+
+            //the energy we have to work with
+            totalEnergy -= totalCost;
+
+            while(totalEnergy > 150) {
+                newBody.unshift(WORK);
+                newBody.push(MOVE);
+                totalEnergy -= 150;
+            }
+            this.memory.body = newBody;
+        }
     }
 }
 
