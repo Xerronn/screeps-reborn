@@ -46,7 +46,9 @@ class Nexus extends Construct {
             let noMoves = [];
             for (let part of spawnBody) {
                 if (part != MOVE) {
-                    noMoves.push(part);
+                    if (part == WORK) {
+                        noMoves.unshift(part);
+                    } else noMoves.push(part);
                 }
             }
 
