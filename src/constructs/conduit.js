@@ -27,6 +27,15 @@ class Conduit extends Construct {
             }
         } else {
             this.type = "fill";
+            
+            //assign this link to the source if it is near one
+            let nearSource = this.pos.findInRange(FIND_SOURCES, 3)[0]
+            if (nearSource) {
+                //set the link attribute on the source
+                let allSources = global.Archivist.getSources(this.room);
+
+                allSource[nearSource.id].link = this.id;
+            }
         }
     }
 
