@@ -16,6 +16,12 @@ class Miner extends Worker {
             this.containerId = container.id;
             this.memory.container = container.id;
         }
+
+        //if a source link exists
+        let sourceLink = global.Archivist.getSources(this.room)[this.sourceId].link;
+        if (sourceLink) {
+            this.linkId = sourceLink; 
+        }
         
         this.update(true);
     }
@@ -27,6 +33,17 @@ class Miner extends Worker {
             }
             //attributes that will change tick to tick
             this.container = Game.getObjectById(this.containerId);
+
+            //keep checking to see if a link exists every 25 seconds
+            if (this.linkId) {
+                this.link = Game.getObjectById(this.linkId);
+            } else if (Game.time % 25 == 0) {
+                let sourceLink = global.Archivist.getSources(this.room)[this.sourceId].link;
+                if (sourceLink) {
+                    this.linkId = sourceLink;
+                    this.link = Game.getObjectById(this.linkId);
+                }
+            }
         }
         return true;
     }
@@ -35,7 +52,22 @@ class Miner extends Worker {
      * logic run on every tick
      */
     run() {
-        this.harvest();
+        if (this.container) {
+            this.harvest();
+        } else {
+            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+                this.memory.task = "withdraw";
+                super.harvest();
+            } else {
+                this.memory.task = "deposit"
+                if (this.link) {
+                    this.depositLink();
+                } else {
+                    //if there is no link, build the link
+                    this.build();
+                }
+            }
+        } 
     }
 
     /**
@@ -47,6 +79,17 @@ class Miner extends Worker {
             this.liveObj.harvest(this.source);
         } else {
             this.liveObj.moveTo(this.container);
+        }
+    }
+
+    /**
+     * Method that empties all stored energy into the source link
+     */
+    depositLink() {
+        if (this.pos.inRangeTo(this.link, 0)) {
+            this.liveObj.transfer(this.link, RESOURCE_ENERGY);
+        } else {
+            this.liveObj.moveTo(this.link);
         }
     }
 }
