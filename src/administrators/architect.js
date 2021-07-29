@@ -9,66 +9,70 @@ class Architect {
      */
     design(room, gameStage) {
         switch (gameStage) {
-            case 0:
+            case "1":
                 //calculate anchor and build spawn
                 this.buildBunker(room);
                 //start the room off with the five basic engineers
                 global.Imperator.administrators[room].executive.phaseOne();
                 break;
-            case 1:
-            case 2:
+            case "2":
+            case "3":
                 //turning rcl 2 and 3
                 //build the first few extensions
                 this.buildBunker(room);
                 break;
-            case 3:
+            case "3.1":
                 //towers are built, so build containers at sources
                 this.buildSourceContainers(room);
                 break;
-            case 4:
+            case "4":
                 //just turned rcl 4
                 this.buildBunker(room);
                 break;
-            case 5:
+            case "4.1":
                 //storage is built, time to switch to phase two
                 global.Imperator.administrators[room].executive.phaseTwo();
                 break;
-            case 6:
+            case "4.2":
                 //storage has 100k energy, build bunker roads
                 this.buildBunkerRoads(room);
                 break;
-            case 7:
+            case "4.3":
                 //bunker roads are done, build roads to sources
                 this.buildUtilityRoads(room);
                 global.Archivist.setRoadsBuilt(room, true);
                 break;
-            case 8:
+            case "5":
                 //just turned rcl 5
                 //build upgrader link
                 this.buildBunker(room);
                 this.buildControllerLink(room);
                 global.Imperator.administrators[room].executive.phaseThree();
                 break;
-            case 9:
+            case "6":
                 //just turned rcl 6
-                //build one source link
+                //build lots of expensive stuff
+                this.buildBunker(room);
+                break;
+            case "6.1":
+                //build first source link
                 this.buildSourceLinks(room);
                 break;
-            case 10:
+            case "6.2":
                 //build excavator and road to mineral
                 this.buildExcavator(room);
                 break;
-            case 11:
+            case "7":
                 //just turned rcl 7
                 //build second source link
-                this.buildBunker();
+                this.buildBunker(room);
                 this.buildSourceLinks(room);
                 break;
-            case 12:
+            case "7.1":
                 //everything is done building and storage has > 100,000 energy
                 //TODO: start remote mining
                 break;
-            case 13:
+            case "8":
                 //TODO: lots and lots
                 this.buildBunker();
                 break;    

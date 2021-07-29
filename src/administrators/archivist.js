@@ -200,7 +200,7 @@ class Archivist {
     /**
      * Set the room planning gameStage for a given room
      * @param {String} room string representing the room
-     * @param {Integer} value value to set the flag
+     * @param {String} value value to set the flag
      */
     setGameStage(room, value) {
         Memory.rooms[room].flags.gameStage = value;
