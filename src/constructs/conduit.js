@@ -34,7 +34,7 @@ class Conduit extends Construct {
                 //set the link attribute on the source
                 let allSources = global.Archivist.getSources(this.room);
 
-                allSource[nearSource.id].link = this.id;
+                allSources[nearSource.id].link = this.id;
             }
         }
     }
