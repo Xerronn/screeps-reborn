@@ -59,8 +59,8 @@ class Architect {
                 this.buildSourceLinks(room);
                 break;
             case "6.2":
-                //build excavator and road to mineral
-                this.buildExcavator(room);
+                //build extractor and road to mineral
+                this.buildExtractor(room);
                 break;
             case "7":
                 //just turned rcl 7
@@ -433,7 +433,7 @@ class Architect {
         var roomMineral = Game.rooms[room].find(FIND_MINERALS)[0];
         
         //build roads from the closest corner to the mineral
-        let selectedCorner = min.pos.findClosestByPath(corners);
+        let selectedCorner = roomMineral.pos.findClosestByPath(corners);
         let roadPath = selectedCorner.findPathTo(roomMineral, {range: 1, ignoreCreeps: true});
 
         for (let pos of roadPath) {
