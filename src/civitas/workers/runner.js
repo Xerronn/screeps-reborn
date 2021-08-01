@@ -42,8 +42,8 @@ class Runner extends Worker {
             nexus = global.Illuminator.getWrapper(this.memory.closestSpawn);
         }
 
-        //reserve the spawn by spamming it with spawningthistick, then renew until its full or no energy left
-        nexus.spawningThisTick = true;
+        //reserve the spawn, then renew until its full or no energy left
+        nexus.reserve();
 
         if (Game.rooms[this.room].energyAvailable < 300 && this.memory.task == "renewFill") {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {

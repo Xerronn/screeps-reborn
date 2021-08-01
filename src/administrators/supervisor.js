@@ -129,7 +129,7 @@ class Supervisor {
         let foundNexus = false;
         //loop through the spawns until an available one is found
         for (let nexus of this.castrum["nexus"]) {
-            if (!nexus.spawning && !nexus.spawningThisTick) {
+            if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
                 foundNexus = true;
                 //! these seem to be failing
                 if (rebirth) {

@@ -7,6 +7,8 @@ class Nexus extends Castrum {
 
         //attributes that will not change from tick to tick
         this.name = this.liveObj.name;
+        this.reserved = false;
+        this.reservedCount = 0;
 
         this.update(true);
     }
@@ -18,6 +20,15 @@ class Nexus extends Castrum {
 
             //used to prevent trying to spawn multiple things on one tick
             this.spawningThisTick = false;
+
+            //used to prevent nexus spawning in case of renewal
+            if (this.reserved) {
+                if (this.reservedCount == 0) {
+                    this.reserved = false;
+                } else {
+                    this.reservedCount--;
+                }
+            }
         }
         return true;
     }
@@ -77,6 +88,14 @@ class Nexus extends Castrum {
             global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
         }
         return success;
+    }
+
+    /**
+     * Method to block spawning for three ticks
+     */
+    reserve() {
+        this.reserved = true;
+        this.reservedCount = 3;
     }
 }
 
