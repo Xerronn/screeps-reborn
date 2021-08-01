@@ -1,7 +1,7 @@
-const Construct = require("./construct");
+const Castrum = require("./castrum");
 
 //wrapper class for link object
-class Conduit extends Construct {
+class Conduit extends Castrum {
     constructor(linkId) {
         super(linkId);
 

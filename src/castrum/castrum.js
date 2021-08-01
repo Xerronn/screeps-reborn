@@ -1,7 +1,7 @@
 const GameObj = require("../gameObj");
 
 //the parent construct definition
-class Construct extends GameObj {
+class Castrum extends GameObj {
     constructor(constructId) {
         super(constructId);
 
@@ -31,4 +31,4 @@ class Construct extends GameObj {
     }
 }
 
-module.exports = Construct;
+module.exports = Castrum;

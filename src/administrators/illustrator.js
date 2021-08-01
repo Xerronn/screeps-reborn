@@ -74,7 +74,7 @@ class Illustrator {
 
         if (liveObj.fatigue === undefined) {
             //is a structure
-            let origArr = supervisor.constructs[this.mapGameToClass(liveObj.structureType)];
+            let origArr = supervisor.castrum[this.mapGameToClass(liveObj.structureType)];
             for (let struc of origArr) {
                 if (struc.id == id) {
                     return struc;
@@ -83,7 +83,7 @@ class Illustrator {
             return undefined;
         } else {
             //is a creep
-            let origArr = supervisor.proletarian[liveObj.memory.type];
+            let origArr = supervisor.civitates[liveObj.memory.type];
             for (let creep of origArr) {
                 if (creep.id == id) {
                     return creep;

@@ -1,7 +1,7 @@
-const Construct = require("./construct");
+const Castrum = require("./castrum");
 
 //spawn entity
-class Nexus extends Construct {
+class Nexus extends Castrum {
     constructor(spawnId) {
         super(spawnId);
 

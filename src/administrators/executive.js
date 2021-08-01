@@ -155,8 +155,8 @@ class Executive {
         let memory = { "generation": 0 };
         let creepsToSpawn = [
             { 'body': [CARRY, CARRY, MOVE, MOVE], 'type': 'runner', 'memory': memory },
-            { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'professor', 'memory': memory },
-            { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'professor', 'memory': memory }        ]
+            { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'scholar', 'memory': memory },
+            { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'scholar', 'memory': memory }        ]
 
         //! TODO: prioritization 
         for (let source of Object.keys(sources)) {

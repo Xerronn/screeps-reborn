@@ -1,7 +1,7 @@
-const Construct = require("./construct");
+const Castrum = require("./castrum");
 
 //tower entity
-class Bastion extends Construct {
+class Bastion extends Castrum {
     constructor(towerId) {
         super(towerId);
 

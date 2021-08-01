@@ -1,6 +1,6 @@
 const Worker = require("./worker");
 
-class Professor extends Worker {
+class Scholar extends Worker {
     constructor(creepId) {
         super(creepId);
 
@@ -99,4 +99,4 @@ class Professor extends Worker {
     }
 }
 
-module.exports = Professor;
+module.exports = Scholar;

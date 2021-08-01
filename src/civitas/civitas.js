@@ -1,14 +1,14 @@
 const GameObj = require("../gameObj");
 
 //the parent creep definition
-class Proletarian extends GameObj {
+class Civitas extends GameObj {
     constructor(creepId) {
         super(creepId);
 
         //attributes that will not change tick to tick
         if (!this.liveObj.memory.type) {
             //this should never happen
-            this.type = "proletarian";
+            this.type = "civitates";
         } else {
             this.type = this.liveObj.memory.type;
         }
@@ -41,4 +41,4 @@ class Proletarian extends GameObj {
     }
 }
 
-module.exports = Proletarian;
+module.exports = Civitas;

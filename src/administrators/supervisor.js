@@ -1,21 +1,21 @@
-const Miner = require("../proletariat/workers/miner");
-const Engineer = require("../proletariat/workers/engineer");
-const Courier = require("../proletariat/workers/courier");
-const Professor = require("../proletariat/workers/professor");
-const Runner = require("../proletariat/workers/runner");
-const Contractor = require("../proletariat/workers/contractor");
-const Arbiter = require("../proletariat/workers/arbiter");
+const Miner = require("../civitas/workers/miner");
+const Engineer = require("../civitas/workers/engineer");
+const Courier = require("../civitas/workers/courier");
+const Scholar = require("../civitas/workers/scholar");
+const Runner = require("../civitas/workers/runner");
+const Contractor = require("../civitas/workers/contractor");
+const Arbiter = require("../civitas/workers/arbiter");
 
-const Nexus = require("../constructs/nexus");
-const Bastion = require("../constructs/bastion");
-const Conduit = require("../constructs/conduit");
+const Nexus = require("../castrum/nexus");
+const Bastion = require("../castrum/bastion");
+const Conduit = require("../castrum/conduit");
 
 //entity that initializes, refreshes, runs all roomObj in a room
 class Supervisor {
     constructor(room) {
         this.room = room;
-        this.proletarian = {};
-        this.constructs = {};
+        this.civitates = {};
+        this.castrum = {};
     }
 
     /**
@@ -25,28 +25,28 @@ class Supervisor {
         //todo: make it initialize structures from archivist maybeeee
         let thisRoom = Game.rooms[this.room];
         //initialize all structures in the room to their respective classes
-        this.constructs = {};
+        this.castrum = {};
         for (var struc of thisRoom.find(FIND_MY_STRUCTURES)) {
             switch (struc.structureType) {
                 case STRUCTURE_SPAWN:
                     //init the list in the dictionary if it doesn't exist
-                    !("nexus" in this.constructs) && (this.constructs["nexus"] = []);
-                    this.constructs["nexus"].push(new Nexus(struc.id));
+                    !("nexus" in this.castrum) && (this.castrum["nexus"] = []);
+                    this.castrum["nexus"].push(new Nexus(struc.id));
                     break;
                 
                 case STRUCTURE_TOWER:
-                    !("bastion" in this.constructs) && (this.constructs["bastion"] = []);
-                    this.constructs["bastion"].push(new Bastion(struc.id));
+                    !("bastion" in this.castrum) && (this.castrum["bastion"] = []);
+                    this.castrum["bastion"].push(new Bastion(struc.id));
                     break;
                 
                 case STRUCTURE_LINK:
-                    !("conduit" in this.constructs) && (this.constructs["conduit"] = []);
+                    !("conduit" in this.castrum) && (this.castrum["conduit"] = []);
                     //keep track of special link roles
                     if (!this.controllerLink) {
                         this.controllerLink = "none";
                         this.storageLink = "none";
                     }
-                    this.constructs["conduit"].push(new Conduit(struc.id));
+                    this.castrum["conduit"].push(new Conduit(struc.id));
                     break;
             }
         }
@@ -54,12 +54,12 @@ class Supervisor {
         if (onlyStructures) return;
 
         //initialize all creeps in the room to their respective classes
-        this.proletarian = {};
+        this.civitates = {};
         for (let creepMem of _.filter(Memory.creeps, c => c.spawnRoom == this.room && !c.spawning)) {
-            !(creepMem.type in this.proletarian) && (this.proletarian[creepMem.type] = []);
+            !(creepMem.type in this.civitates) && (this.civitates[creepMem.type] = []);
 
             if (Game.creeps[creepMem.name]) {
-                let createObjStr = "this.proletarian[\"" + creepMem.type + "\"].push(new " + creepMem.type.charAt(0).toUpperCase() + 
+                let createObjStr = "this.civitates[\"" + creepMem.type + "\"].push(new " + creepMem.type.charAt(0).toUpperCase() + 
                     creepMem.type.slice(1) + "(Game.creeps[\"" + creepMem.name + "\"].id));";
 
                 eval(createObjStr);
@@ -86,15 +86,15 @@ class Supervisor {
      */
      refresh() {
         //refresh the live game object reference for every creep
-        for (var type of Object.keys(this.proletarian)) {
-            for (var pro of this.proletarian[type]) {
+        for (var type of Object.keys(this.civitates)) {
+            for (var pro of this.civitates[type]) {
                 pro.update();
             }
         }
 
         //refresh the live game object reference for every structure
-        for (var type of Object.keys(this.constructs)) {
-            for (var struc of this.constructs[type]) {
+        for (var type of Object.keys(this.castrum)) {
+            for (var struc of this.castrum[type]) {
                 struc.update();
             }
         }
@@ -105,15 +105,15 @@ class Supervisor {
      */
      run() {
         //first all creeps
-        for (var type of Object.keys(this.proletarian)) {
-            for (var pro of this.proletarian[type]) {
+        for (var type of Object.keys(this.civitates)) {
+            for (var pro of this.civitates[type]) {
                 pro.run();
             }
         }
 
         //then all structures
-        for (var type of Object.keys(this.constructs)) {
-            for (var struc of this.constructs[type]) {
+        for (var type of Object.keys(this.castrum)) {
+            for (var struc of this.castrum[type]) {
                 struc.run();
             }
         }
@@ -128,7 +128,7 @@ class Supervisor {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
         //loop through the spawns until an available one is found
-        for (let nexus of this.constructs["nexus"]) {
+        for (let nexus of this.castrum["nexus"]) {
             if (!nexus.spawning && !nexus.spawningThisTick) {
                 foundNexus = true;
                 //! these seem to be failing
@@ -166,15 +166,15 @@ class Supervisor {
 
     /**
      * Delete the class holding the dead creep
-     * @param {Proletarian} proletarian 
+     * @param {Civitas} civitates 
      */
-    dismiss(proletarianType) {
+    dismiss(civitatesType) {
         //If the creep is replacing a dead creep, we delete it from memory
-        let origArr = this.proletarian[proletarianType.type];
-        let index = origArr.indexOf(proletarianType);
+        let origArr = this.civitates[civitatesType.type];
+        let index = origArr.indexOf(civitatesType);
         if (index >= 0) origArr.splice(index, 1);
         //todo: we can use the absence of this to see when we missed a creep due to global reset
-        delete Memory.creeps[proletarianType.memory.name];
+        delete Memory.creeps[civitatesType.memory.name];
     }
 
     /**
@@ -183,10 +183,10 @@ class Supervisor {
      */
     wrapCreep(creepName) {
         let creep = Game.creeps[creepName];
-        if (!this.proletarian[creep.memory.type]) {
-            this.proletarian[creep.memory.type] = [];
+        if (!this.civitates[creep.memory.type]) {
+            this.civitates[creep.memory.type] = [];
         }
-        let createObjStr = "this.proletarian[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
+        let createObjStr = "this.civitates[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
                     creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
 
         eval(createObjStr);

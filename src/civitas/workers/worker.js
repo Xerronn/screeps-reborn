@@ -1,7 +1,7 @@
-const Proletarian = require("../proletarian");
+const Civitas = require("../civitas");
 
 //the parent harvester definition
-class Worker extends Proletarian {
+class Worker extends Civitas {
     constructor(creepId) {
         super(creepId);
         
