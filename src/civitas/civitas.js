@@ -39,6 +39,14 @@ class Civitas extends GameObj {
         }
         return true;
     }
+
+    /**
+     * Method to shorthand if a creep is the edge
+     * @returns Boolean on if the creep is on an edge tile
+     */
+    getOnEdge() {
+        return this.pos.x == 0 || this.pos.y == 0 || this.pos.x == 49 || this.pos.y == 49;
+    }
 }
 
 module.exports = Civitas;
