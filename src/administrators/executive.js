@@ -21,7 +21,7 @@ class Executive {
         }
 
         //once gamestage 5 is active, phasetwo is in effect
-        if (global.Archivist.getGameStage(this.room) >= 5) {
+        if (parseInt(global.Archivist.getGameStage(this.room)) >= 5) {
             if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
                 let contractors = global.Archivist.getNumContractors(this.room);
 
@@ -62,69 +62,71 @@ class Executive {
         let liveRoom = Game.rooms[room];
         let rcl = liveRoom.controller.level;
         let currentStage = global.Archivist.getGameStage(room);
-        if (rcl == "1") {
+        let calculation = "-1"; //hopefully never calculation = s this
+
+        if (rcl == 1) {
             //activate phase 1
-            return "1";
+            calculation = "1";
         }
-        if (rcl == "2") {
+        if (rcl == 2) {
             //nothing special happens
-            return "2";
+            calculation = "2";
         }
-        if (rcl == "3") {
+        if (rcl == 3) {
             //nothing special
-            return "3";
+            calculation = "3";
         }
-        if (rcl == "3" && global.Archivist.getStructures(room, STRUCTURE_TOWER).length > 0) {
+        if (rcl == 3 && global.Archivist.getStructures(room, STRUCTURE_TOWER).length > 0) {
             //tower is built, time to build containers
-            return "3.1";
+            calculation = "3.1";
         }
-        if (rcl == "4") {
+        if (rcl == 4) {
             //nothing special
-            return "4";
+            calculation = "4";
         }
-        if (rcl == "4" && liveRoom.storage) {
+        if (rcl == 4 && liveRoom.storage) {
             //storage is built, time to switch to phase 2
-            return "4.1";
+            calculation = "4.1";
         }
-        if (rcl == "4" && liveRoom.storage && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
+        if (rcl == 4 && liveRoom.storage && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
             //storage is built, has 100,000 energy. time to build bunker roads
-            return "4.2";
+            calculation = "4.2";
         }
-        if (rcl == "4" && currentStage == "4.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES) == 0) {
+        if (rcl == 4 && currentStage == "4.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
             //bunker roads are built, build roads to sources
-            return "4.3";
+            calculation = "4.3";
         }
-        if (rcl == "5") {
+        if (rcl == 5) {
             //links are available, time to build controller link and storage link
-            return "5";
+            calculation = "5";
         }    
-        if (rcl == "6") {
+        if (rcl == 6) {
             //rcl 6 has lots of expensive stuff to build
-            return "6";
+            calculation = "6";
         }
-        if (rcl == "6" && currentStage == "6" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES) == 0) {
+        if (rcl == 6 && currentStage == "6" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
             //lots of expensive stuff is done building, time to build one source link
-            return "6.1";
+            calculation = "6.1";
         }
-        if (rcl == "6" && currentStage == "6.1" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES) == 0) {
+        if (rcl == 6 && currentStage == "6.1" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
             //build excavator and roads to it
-            return "6.2";
+            calculation = "6.2";
         }
-        if (rcl == "7") {
+        if (rcl == 7) {
             //build second source link
-            return "7";
+            calculation = "7";
         }
-        if (rcl == "7" && currentStage == "7" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES) == 0
+        if (rcl == 7 && currentStage == "7" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0
             && liveRoom.storage && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
             //Start remote mining
-            return "7.1";
+            calculation = "7.1";
         }
-        if (rcl == "8") {
+        if (rcl == 8) {
             //todo: lots
-            return "8";
+            calculation = "8";
         }
 
-        return -1;
+        return calculation;
     }
 
     /**
