@@ -18,6 +18,7 @@ class Scholar extends Worker {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //creep is dead
+                return false;
             }
             //attributes that will change tick to tick
             this.controller = Game.getObjectById(this.controllerId);

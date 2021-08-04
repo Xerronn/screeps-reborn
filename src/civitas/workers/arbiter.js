@@ -13,6 +13,7 @@ class Arbiter extends Runner {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //creep is dead
+                return false;
             }
             //attributes that will change tick to tick
             this.link = Game.getObjectById(this.linkId);
@@ -75,7 +76,7 @@ class Arbiter extends Runner {
                 this.liveObj.withdraw(this.link, RESOURCE_ENERGY);
             }
         } else {
-            this.liveobj.moveTo(this.link);
+            this.liveObj.moveTo(this.link);
         }
     }
 
