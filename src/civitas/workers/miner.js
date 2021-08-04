@@ -30,6 +30,7 @@ class Miner extends Worker {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //creep is dead
+                return false;
             }
             //attributes that will change tick to tick
             this.container = Game.getObjectById(this.containerId);
@@ -86,7 +87,7 @@ class Miner extends Worker {
      * Method that empties all stored energy into the source link
      */
     depositLink() {
-        if (this.pos.inRangeTo(this.link, 0)) {
+        if (this.pos.inRangeTo(this.link, 1)) {
             this.liveObj.transfer(this.link, RESOURCE_ENERGY);
         } else {
             this.liveObj.moveTo(this.link);
