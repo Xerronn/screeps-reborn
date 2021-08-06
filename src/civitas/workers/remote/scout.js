@@ -1,7 +1,7 @@
-const Legionnaire = require("./legionnaire");
+const Remotus = require("./remotus");
 
 //creep tasked with scouting around a room for suitable remotes
-class Scout extends Legionnaire {
+class Scout extends Remotus {
     constructor(creepId) {
         super(creepId);
 

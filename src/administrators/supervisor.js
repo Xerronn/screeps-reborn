@@ -7,8 +7,12 @@ const Runner = require("../civitas/workers/runner");
 const Contractor = require("../civitas/workers/contractor");
 const Arbiter = require("../civitas/workers/arbiter");
 
+//remote workers
+const Scout = require("../civitas/workers/remote/scout");
+
 //legionnaire
-const Scout = require("../civitas/legion/scout");
+const Scutarius = require("../civitas/legion/scutarius");
+const Physician = require("../civitas/legion/physician");
 
 //castrum
 const Nexus = require("../castrum/nexus");
