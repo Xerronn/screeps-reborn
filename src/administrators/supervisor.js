@@ -136,11 +136,8 @@ class Supervisor {
         for (let nexus of this.castrum["nexus"]) {
             if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
                 foundNexus = true;
-                //! these seem to be failing
-                if (rebirth) {
-                    if (!template.memory.generation) {
-                        template.memory.generation = 0
-                    }
+                
+                if (template.memory.generation) {
                     template.memory.generation++;
                 }
 
@@ -164,6 +161,7 @@ class Supervisor {
             global.TaskMaster.schedule(Game.time + 20, task, [{ ...template }, this.room]);
         }
 
+        //if this is a rebirth, delete the old wrapper
         if (rebirth) {
             this.dismiss(template);
         }
