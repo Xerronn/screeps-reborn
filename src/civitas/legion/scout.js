@@ -27,10 +27,6 @@ class Scout extends Legionnaire {
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
-                //creep is dead
-                if (this.memory.targets.length > 0) {
-                    global.Archivist.setScouting(this.memory.spawnRoom, true);
-                }
                 //creep was killed
                 if (this.ticksToLive > 2) {
                     //log that room is dangerous
@@ -57,7 +53,10 @@ class Scout extends Legionnaire {
                 this.arrived = false;
                 this.march();
             } else {
-                
+                //signal that we are ready to start building up to the remotes
+                global.Archivist.setDoneScouting(this.room, true);
+                //scouting is done, no need to have rebirth
+                delete this.memory.generation;
             }
         } else {
             //once we are there, we can do some logging
