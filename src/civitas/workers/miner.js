@@ -79,7 +79,7 @@ class Miner extends Worker {
         }
 
         //make sure to spawn new miner before the current one dies, to maintain 100% uptime
-        if (!this.replaced && this.ticksToLive <= this.timeToSpawn) {
+        if (this.memory.generation !== undefined && !this.replaced && this.ticksToLive <= this.timeToSpawn) {
             //basically rebirth but without the dying first
             this.getSupervisor().initiate({
                 'body': [...this.body],
@@ -114,14 +114,6 @@ class Miner extends Worker {
         } else {
             this.liveObj.moveTo(this.link);
         }
-    }
-
-    /**
-     * Method to spawn the successor creep that will arrive 
-     * at the source right when the current miner dies
-     */
-    spawnSuccessor() {
-
     }
 }
 
