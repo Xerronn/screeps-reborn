@@ -13,15 +13,15 @@ class Executive {
             let calculation = this.calculateGameStage(this.room);
             let current = global.Archivist.getGameStage(this.room);
             //if gamestage is valid and different from what we have stored
-            if (calculation != -1 && current != calculation) {
+            if (calculation != "-1" && current != calculation) {
                 //do some architect stuff
-                //global.Architect.design(this.room, calculation);
+                //! global.Architect.design(this.room, calculation);
                 global.Archivist.setGameStage(this.room, calculation);
             }
         }
 
         //once gamestage 5 is active, phasetwo is in effect
-        if (parseInt(global.Archivist.getGameStage(this.room)) >= 5) {
+        if (parseFloat(global.Archivist.getGameStage(this.room)) >= 4.1) {
             if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
                 let contractors = global.Archivist.getNumContractors(this.room);
 
@@ -42,6 +42,17 @@ class Executive {
                     global.Archivist.setNumContractors(this.room, contractors + 1);
                 }
             }
+        }
+
+        if (global.Archivist.getScouting(this.room) === true) {
+            //spawn a scout
+            this.getSupervisor().initiate({
+                'body': [MOVE],
+                'type': 'scout',
+                'memory': {}
+            });
+
+            global.Archivist.setScouting(this.room, false);
         }
     }
 
@@ -111,6 +122,10 @@ class Executive {
         if (rcl == 6 && currentStage == "6.1" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
             //build excavator and roads to it
             calculation = "6.2";
+        }
+        if (rcl == 6 && currentStage == "6.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //time to start scouting
+            calculation = "6.3";
         }
         if (rcl == 7) {
             //build second source link

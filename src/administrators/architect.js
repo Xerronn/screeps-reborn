@@ -62,6 +62,13 @@ class Architect {
                 //build extractor and road to mineral
                 this.buildExtractor(room);
                 break;
+            case "6.3":
+                //start scouting for remotes
+                global.Archivist.setScouting(room, true);
+                break;
+            case "6.4":
+                //start remote mining
+                break;
             case "7":
                 //just turned rcl 7
                 //build second source link

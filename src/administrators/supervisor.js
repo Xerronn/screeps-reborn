@@ -1,3 +1,4 @@
+//workers
 const Miner = require("../civitas/workers/miner");
 const Engineer = require("../civitas/workers/engineer");
 const Courier = require("../civitas/workers/courier");
@@ -6,6 +7,10 @@ const Runner = require("../civitas/workers/runner");
 const Contractor = require("../civitas/workers/contractor");
 const Arbiter = require("../civitas/workers/arbiter");
 
+//legionnaire
+const Scout = require("../civitas/legion/scout");
+
+//castrum
 const Nexus = require("../castrum/nexus");
 const Bastion = require("../castrum/bastion");
 const Conduit = require("../castrum/conduit");

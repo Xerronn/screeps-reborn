@@ -92,6 +92,19 @@ class Archivist {
         global.TaskMaster.schedule(Game.time + 100, task);
     }
 
+    /**
+     * Method that logs some information about a scouted remote to memory
+     * @param {String} ownerRoom string representing the room that owns the remote
+     * @param {String} remoteRoom string representing the remote
+     * @param {Object} data data to store in the memory
+     */
+    logRemote(ownerRoom, remoteRoom, data) {
+        if (!Memory.rooms[ownerRoom].remotes) {
+            Memory.rooms[ownerRoom].remotes = {};
+        }
+        Memory.rooms[ownerRoom].remotes[remoteRoom] = data;
+    }
+
     /////////////////
     /////GETTERS/////
     /////////////////
@@ -142,12 +155,30 @@ class Archivist {
     }
 
     /**
+     * Get all data on remotes for a room
+     * @param {String} room string representing the room
+     * @returns remotes object
+     */
+    getRemotes(room) {
+        return Memory.rooms[room].remotes || [];
+    }
+
+    /**
      * Get roads built flag for a given room
      * @param {String} room string representing the room
      * @returns value of roadsBuilt flag
      */
     getRoadsBuilt(room) {
         return Memory.rooms[room].flags.roadsBuilt;
+    }
+
+    /**
+     * Get roads built flag for a given room
+     * @param {String} room string representing the room
+     * @returns value of the scouting flag
+     */
+    getScouting(room) {
+        return Memory.rooms[room].flags.scouting;
     }
 
     /**
@@ -222,6 +253,15 @@ class Archivist {
      */
     setRoadsBuilt(room, value) {
         Memory.rooms[room].flags.roadsBuilt = value;
+    }
+
+    /**
+     * Set the scouting flag for a given room
+     * @param {String} room string representing the room
+     * @param {Boolean} value boolean to set the flag to
+     */
+    setScouting(room, value) {
+        Memory.rooms[room].flags.scouting = value;
     }
 
     /**
