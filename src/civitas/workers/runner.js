@@ -45,13 +45,17 @@ class Runner extends Worker {
         //reserve the spawn, then renew until its full or no energy left
         nexus.reserve();
 
-        if (Game.rooms[this.room].energyAvailable < 300 && this.memory.task == "renewFill") {
+        if (Game.rooms[this.room].energyAvailable < global.Illustrator.calculateBodyCost(this.memory.body) && this.memory.task == "renewFill") {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
                 this.withdrawStorage();
             } else {
                 this.fillExtensions();
             }
             return;
+        }
+
+        if (this.evolve() && this.memory.task == "renewFill") {
+            return; //if evolving, just stop here
         }
 
         //if we get to this point, energyAvailable is > 300, so we can set task to just renew fully
@@ -73,21 +77,39 @@ class Runner extends Worker {
 
     /**
      * Method to make the creep stronger to meet higher demands
+     * @returns {boolean} if the creep is evolving
      */
     evolve() {
         let controllerLevel = Game.rooms[this.room].controller.level;
-        let newBody = [];
-
-        for (let i = 0; i++; i< controllerLevel) {
-            newBody.unshift(CARRY)
-            newBody.push(MOVE);
+        if (controllerLevel % 2 == 1) {
+            //lower the controller level to nearest even number
+            //for a good move:carry ratio
+            controllerLevel--;
         }
 
-        if (this.memory.body.length != newBody.length) {
-            this.memory.body = newbody;
+        //count carry parts in current body
+        let carryCount = 0;
+        for (let part of this.body) {
+            if (part == CARRY) {
+                carryCount++;
+            }
+        }
+
+        //if the carry count is lower than the controllerLevel, upgrade body
+        if (carryCount < controllerLevel) {
+            let newBody = this.body;
+            for (let i = 0; i < controllerLevel; i++) {
+                newBody.unshift(CARRY)
+                newBody.push(MOVE);
+            }
+
+            this.memory.body = newBody;
+            this.memory.task = "withdraw";
             //the runner will never die without it suiciding, so it has to be done
             this.liveObj.suicide();
+            return true;
         }
+        return false;
     }
 }
 
