@@ -111,6 +111,20 @@ class Illustrator {
         }
 
     }
+
+    /**
+     * Method that takes a body array and returns the energy cost
+     * @param {Array} body A body parts array
+     * @returns the energy cost of a body
+     */
+    calculateBodyCost(body) {
+        let cost = 0;
+        for (let part of body) {
+            cost += BODYPART_COST[part];
+        }
+
+        return cost;
+    }
 }
 
 module.exports = Illustrator;
