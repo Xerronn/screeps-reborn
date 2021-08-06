@@ -63,12 +63,15 @@ class Nexus extends Castrum {
                 }
             }
 
-            //add moves onto that list until moves are equal to half the non moves
-            let targetMoves = Math.ceil(noMoves.length / 2);
-            for (let i = 0; i < targetMoves; i++) {
-                noMoves.push(MOVE);
+            //if noMoves is empty, body was entirely moves
+            if (noMoves.length > 0) {
+                //add moves onto that list until moves are equal to half the non moves
+                let targetMoves = Math.ceil(noMoves.length / 2);
+                for (let i = 0; i < targetMoves; i++) {
+                    noMoves.push(MOVE);
+                }
+                spawnBody = noMoves;
             }
-            spawnBody = noMoves;
         }
 
         if (!memory) {
