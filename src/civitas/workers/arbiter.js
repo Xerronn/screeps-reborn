@@ -106,6 +106,14 @@ class Arbiter extends Runner {
             this.liveObj.moveTo(roomStorage);
         }
     }
+
+    /**
+     * Overrides runner evolve so that arbiter does not evolve from inherited renew method
+     */
+    evolve() {
+        //do nothing
+        return false;
+    }
 }
 
 module.exports = Arbiter;
