@@ -47,7 +47,7 @@ class Architect {
                 //build upgrader link
                 this.buildBunker(room);
                 this.buildControllerLink(room);
-                global.Imperator.administrators[room].executive.phaseThree();
+                global.Imperator.administrators[room].executive.spawnArbiter();
                 break;
             case "6":
                 //just turned rcl 6
@@ -64,10 +64,10 @@ class Architect {
                 break;
             case "6.3":
                 //start scouting for remotes
-                global.Archivist.setScouting(room, true);
+                global.Imperator.administrators[room].executive.spawnScout();
                 break;
             case "6.4":
-                //start remote mining
+                //start building roads to remotes
                 break;
             case "7":
                 //just turned rcl 7
