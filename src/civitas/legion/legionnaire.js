@@ -1,12 +1,15 @@
 const Civitas = require("../civitas");
 
 //the parent combat creep definition
+//must be passed a targetRoom in memory
 class Legionnaire extends Civitas {
     constructor(creepId) {
         super(creepId);
 
         //attributes that do not change tick to tick
-        this.targetRoom = this.memory.targetRoom;
+        if (this.memory.targetRoom) {
+            this.targetRoom = this.memory.targetRoom;
+        }
         this.arrived = false;
 
         this.update(true);
@@ -16,6 +19,7 @@ class Legionnaire extends Civitas {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //creep is dead
+                return false;
             }
             //attributes that will change tick to tick
 
@@ -25,7 +29,7 @@ class Legionnaire extends Civitas {
 
     run() {
         if (!this.arrived) {
-            //! todo: will never leave the room
+            //march to assigned room
             this.march();
         }
     }
@@ -35,10 +39,10 @@ class Legionnaire extends Civitas {
      */
     march() {
         //if on an edge, path into current room
-        if (this.getOnEdge()) {
+        if (this.isOnEdge()) {
             this.liveObj.moveTo(new RoomPosition(25,25, this.room));
         } else if (this.targetRoom != this.room) {
-            this.travelTo(new RoomPosition(25,25, this.targetRoom));
+            this.liveObj.moveTo(new RoomPosition(25,25, this.targetRoom));
         } else {
             this.arrived = true;
         } 
