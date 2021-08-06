@@ -70,6 +70,25 @@ class Runner extends Worker {
             this.memory.task = "none";
         }
     }
+
+    /**
+     * Method to make the creep stronger to meet higher demands
+     */
+    evolve() {
+        let controllerLevel = Game.rooms[this.room].controller.level;
+        let newBody = [];
+
+        for (let i = 0; i++; i< controllerLevel) {
+            newBody.unshift(CARRY)
+            newBody.push(MOVE);
+        }
+
+        if (this.memory.body.length != newBody.length) {
+            this.memory.body = newbody;
+            //the runner will never die without it suiciding, so it has to be done
+            this.liveObj.suicide();
+        }
+    }
 }
 
 module.exports = Runner;
