@@ -90,7 +90,7 @@ class Scholar extends Worker {
             //the energy we have to work with
             totalEnergy -= totalCost;
 
-            while(totalEnergy > 150) {
+            while(totalEnergy >= 150) {
                 newBody.unshift(WORK);
                 newBody.push(MOVE);
                 totalEnergy -= 150;
