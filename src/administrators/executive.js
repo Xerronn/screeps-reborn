@@ -13,7 +13,7 @@ class Executive {
             let calculation = this.calculateGameStage(this.room);
             let current = global.Archivist.getGameStage(this.room);
             //if gamestage is valid and different from what we have stored
-            if (calculation != "-1" && current != calculation) {
+            if (calculation != "-1" && current < calculation) {
                 //do some architect stuff
                 //! global.Architect.design(this.room, calculation);
                 global.Archivist.setGameStage(this.room, calculation);
@@ -42,17 +42,6 @@ class Executive {
                     global.Archivist.setNumContractors(this.room, contractors + 1);
                 }
             }
-        }
-
-        if (global.Archivist.getScouting(this.room) === true) {
-            //spawn a scout
-            this.getSupervisor().initiate({
-                'body': [MOVE],
-                'type': 'scout',
-                'memory': {}
-            });
-
-            global.Archivist.setScouting(this.room, false);
         }
     }
 
@@ -127,6 +116,10 @@ class Executive {
             //time to start scouting
             calculation = "6.3";
         }
+        if (rcl == 6 && currentStage == "6.3" && global.Archivist.getDoneScouting(this.room) == true) {
+            //time to build road to the remote
+            calculation = "6.4";
+        }
         if (rcl == 7) {
             //build second source link
             calculation = "7";
@@ -190,9 +183,9 @@ class Executive {
     }
 
     /**
-     * Method that starts phase three, the manager creep
+     * Method that starts phase three, the arbiter creep
      */
-    phaseThree() {
+    spawnArbiter() {
         let arbiter = { 
             'body': [
                 CARRY, CARRY,
@@ -211,6 +204,17 @@ class Executive {
         }`
 
         global.TaskMaster.schedule(Game.time, task, [this.room, arbiter, task]);
+    }
+
+    /**
+     * Method that spawns a single scout creep
+     */
+    spawnScout() {
+        this.getSupervisor().initiate({
+            'body': [MOVE],
+            'type': 'scout',
+            'memory': {'generation' : 0}
+        });
     }
 }
 
