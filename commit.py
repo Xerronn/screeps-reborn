@@ -56,14 +56,20 @@ for subdir, dirs, files in os.walk("src"):
                 #split by each part of the path
                 splitpath = path.replace("\"", "").replace('\'', "").split('/')
                 splitreq = filepath.replace("src\\", "").split(os.sep)
+                firstUp = False
+
                 for split in splitpath:
                     #if . move up one split
                     if split == ".":
                         splitreq.pop()
                     #if .. move up two splits
                     elif split == "..":
-                        splitreq.pop()
-                        splitreq.pop()
+                        if not firstUp:
+                            splitreq.pop()
+                            splitreq.pop()
+                            firstUp = True
+                        else:
+                            splitreq.pop()
                     else:
                         splitreq.append(split)
 
