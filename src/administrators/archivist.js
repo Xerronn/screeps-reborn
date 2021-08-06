@@ -119,6 +119,15 @@ class Archivist {
     }
 
     /**
+     * Get the done scouting flag for a given room
+     * @param {String} room string representation of a room 
+     * @returns the done Scouting flag
+     */
+    getDoneScouting(room) {
+        return Memory.rooms[room].flags.doneScouting;
+    }
+
+    /**
      * Get extensions filled flag for a given room
      * @param {String} room string representing the room
      * @returns value of the extensionsfilled flag
@@ -173,15 +182,6 @@ class Archivist {
     }
 
     /**
-     * Get roads built flag for a given room
-     * @param {String} room string representing the room
-     * @returns value of the scouting flag
-     */
-    getScouting(room) {
-        return Memory.rooms[room].flags.scouting;
-    }
-
-    /**
      * Get all sources in a room
      * @param {String} room string representing the room
      * @returns  room sources object
@@ -220,6 +220,15 @@ class Archivist {
     }
     
     /**
+     * Set the done scouting of a room
+     * @param {String} room string representation of a room 
+     * @param {Boolean} value true or false value to set the flag
+     */
+     setDoneScouting(room, value) {
+        Memory.rooms[room].flags.doneScouting = value;
+    }
+
+    /**
      * Set extensions filled flag for a given room
      * @param {String} room string representing the room
      * @param {Boolean} value true or false value to set the flag
@@ -253,15 +262,6 @@ class Archivist {
      */
     setRoadsBuilt(room, value) {
         Memory.rooms[room].flags.roadsBuilt = value;
-    }
-
-    /**
-     * Set the scouting flag for a given room
-     * @param {String} room string representing the room
-     * @param {Boolean} value boolean to set the flag to
-     */
-    setScouting(room, value) {
-        Memory.rooms[room].flags.scouting = value;
     }
 
     /**
