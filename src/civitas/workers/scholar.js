@@ -6,7 +6,7 @@ class Scholar extends Worker {
 
         //attributes that will not change tick to tick
         this.controllerId = Game.rooms[this.room].controller.id;
-        this.linkId = global.Imperator.administrators[this.room].supervisor.controllerLink.id;
+        this.linkId = this.getSupervisor().controllerLink.id;
 
         this.update(true);
     }

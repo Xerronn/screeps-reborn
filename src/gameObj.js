@@ -36,6 +36,22 @@ class GameObj {
     info() {
         return this.constructor.name + "<" + this.id + "> last updated on tick " + this.updateTick;
     }
+
+    /**
+     * Method to get the creep's supervisor
+     * @returns Supervisor
+     */
+    getSupervisor() {
+        return global.Imperator.administrators[this.room].supervisor;
+    }
+
+    /**
+     * Method to get the creep's executive
+     * @returns Executive
+     */
+    getExecutive() {
+        return global.Imperator.administrators[this.room].executive;
+    }
 }
 
 module.exports = GameObj;

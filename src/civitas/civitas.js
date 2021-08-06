@@ -25,10 +25,10 @@ class Civitas extends GameObj {
             if (!super.update(force)) {
                 //only rebirth if the generation flag is there. If you want a creep to rebirth, set generation = 0 in the memory
                 if (this.memory.generation !== undefined) {
-                    global.Imperator.administrators[this.room].supervisor.initiate(this, true);
+                    this.getSupervisor().initiate(this, true);
                 } else {
                     //delete this object
-                    global.Imperator.administrators[this.room].supervisor.dismiss(this);
+                    this.getSupervisor().dismiss(this);
                 }
                 return false;
             }

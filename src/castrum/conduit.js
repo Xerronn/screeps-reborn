@@ -21,9 +21,9 @@ class Conduit extends Castrum {
 
             //set supervisor link references for roles
             if (sType == STRUCTURE_STORAGE) {
-                global.Imperator.administrators[this.room].supervisor.storageLink = this;
+                this.getSupervisor().storageLink = this;
             } else {
-                global.Imperator.administrators[this.room].supervisor.controllerLink = this;
+                this.getSupervisor().controllerLink = this;
             }
         } else {
             this.type = "fill";
@@ -43,8 +43,8 @@ class Conduit extends Castrum {
      * link logic run each tick
      */
     run() {
-        let controllerLink = global.Imperator.administrators[this.room].supervisor.controllerLink;
-        let storageLink = global.Imperator.administrators[this.room].supervisor.storageLink;
+        let controllerLink = this.getSupervisor().controllerLink;
+        let storageLink = this.getSupervisor().storageLink;
         try {
             switch (this.type) {
                 case STRUCTURE_STORAGE:

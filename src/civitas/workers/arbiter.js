@@ -4,7 +4,7 @@ const Runner = require('./runner');
 class Arbiter extends Runner {
     constructor(creepId) {
         super(creepId);
-        this.linkId = global.Imperator.administrators[this.room].supervisor.storageLink.id;
+        this.linkId = this.getSupervisor().storageLink.id;
 
         this.update(true);
     }
