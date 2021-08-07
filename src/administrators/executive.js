@@ -216,6 +216,17 @@ class Executive {
             'memory': {'generation' : 0}
         });
     }
+
+    /**
+     * Method that spawns an emissary to reserve a remote room
+     */
+    spawnEmissary(targetRoom) {
+        this.getSupervisor().initiate({
+            'body': [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE],
+            'type': 'emissary',
+            'memory': {'generation' : 0, 'task': 'reserve', 'targetRoom': targetRoom}
+        }, false, false);
+    }
 }
 
 module.exports = Executive;
