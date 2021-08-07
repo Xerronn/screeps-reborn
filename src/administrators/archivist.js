@@ -169,7 +169,7 @@ class Archivist {
      * @returns remotes object
      */
     getRemotes(room) {
-        return Memory.rooms[room].remotes || [];
+        return Memory.rooms[room].remotes || {};
     }
 
     /**
