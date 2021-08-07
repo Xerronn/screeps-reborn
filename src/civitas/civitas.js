@@ -47,6 +47,22 @@ class Civitas extends GameObj {
     isOnEdge() {
         return this.pos.x == 0 || this.pos.y == 0 || this.pos.x == 49 || this.pos.y == 49;
     }
+
+    /**
+     * Method to get the creep's supervisor
+     * @returns Supervisor
+     */
+     getSupervisor() {
+        return global.Imperator.administrators[this.memory.spawnRoom].supervisor;
+    }
+
+    /**
+     * Method to get the creep's executive
+     * @returns Executive
+     */
+     getExecutive() {
+        return global.Imperator.administrators[this.memory.spawnRoom].executive;
+    }
 }
 
 module.exports = Civitas;
