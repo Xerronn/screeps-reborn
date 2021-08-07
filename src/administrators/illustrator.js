@@ -4,6 +4,13 @@ class Illustrator {
     }
 
     /**
+     * Method that draws map and room visuals
+     */
+    illustrate() {
+        //todo: map and room visuals
+    }
+
+    /**
      * Bunker schema adopted from HallowNest 2.0
      * @returns bunker Schema Object
      */
@@ -70,7 +77,12 @@ class Illustrator {
         }
 
         let room = liveObj.room;
-        let supervisor = global.Imperator.administrators[room.name].supervisor;
+        let supervisor = undefined;
+        try {
+            supervisor = global.Imperator.administrators[room.name].supervisor;
+        } catch (err) {
+            supervisor = global.Imperator.administrators[liveObj.memory.spawnRoom].supervisor;
+        }
 
         if (liveObj.fatigue === undefined) {
             //is a structure
