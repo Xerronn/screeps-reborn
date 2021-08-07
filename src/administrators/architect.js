@@ -67,7 +67,8 @@ class Architect {
                 global.Imperator.administrators[room].executive.spawnScout();
                 break;
             case "6.4":
-                //start building roads to remotes
+                //start reserving and build roads to remote
+                this.buildRemote(room);
                 break;
             case "7":
                 //just turned rcl 7
@@ -449,6 +450,58 @@ class Architect {
 
         //build extractor
         roomMineral.pos.createConstructionSite(STRUCTURE_EXTRACTOR);
+    }
+
+    /**
+     * Method to start spawning emissaries and build roads to the remote
+     */
+    buildRemote(room) {
+        //! todo: what if the sources in the room are unaccessible behind walls
+        //this could be tweaked to just remote at all 'safe' rooms
+
+        //first find the room that we want to remote in.
+        let selectedRemote = undefined;
+        let remotes = global.Archivist.getRemotes(room);
+
+        let viable = [];
+        for (let r of Object.keys(remotes)) {
+            if (remotes[r].status == "safe") {
+                viable.push(r);
+            }
+        }
+
+        if (viable.length == 0) {
+            selectedRemote = undefined;
+        } else if (viable.length == 1) {
+            selectedRemote = viable[0];
+        } else {
+
+            let best = 10000;
+            let bestRoom = "none";
+            for (let option of viable) {
+                let distances = remotes[option].distances;
+                let avg = (distances[0] + distances[1]) / 2;
+                if (avg < best) {
+                    best = avg;
+                    bestRoom = option;
+                }
+            }
+
+            selectedRemote = bestRoom;
+        }
+
+        remotes[selectedRemote].selected = true;
+
+        //now we need to spawn the reserver with that room as a target
+        //! global.Imperator.administrators[room].executive.spawnEmissary(selectedRemote);
+
+        //now lets build a road to that exit
+        let storage = Game.rooms[room].storage;
+        let roadPath = storage.pos.findPathTo(new RoomPosition(10, 10, selectedRemote), {range: 1, ignoreCreeps: true});
+
+        for (let pos of roadPath) {
+            //! Game.rooms[room].createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
+        }
     }
 }
 
