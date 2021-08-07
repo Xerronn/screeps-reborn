@@ -62,12 +62,12 @@ for subdir, dirs, files in os.walk("src"):
                 firstStay = False
 
                 for split in splitpath:
-                    #if . move up one split
+                    #if . move up one split, but only the first time
                     if split == ".":
                         if not firstStay:
                             splitreq.pop()
                             firstStay = True
-                    #if .. move up two splits
+                    #if .. move up two splits but only if the first time, after the first only move once
                     elif split == "..":
                         if not firstUp:
                             splitreq.pop()
