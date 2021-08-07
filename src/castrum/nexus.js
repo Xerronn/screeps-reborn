@@ -47,12 +47,12 @@ class Nexus extends Castrum {
      * @param {Object} memory an optional memory object to spawn the creep with. Recommended only for rebirth. Do other memory stuff in objects
      * @returns 
      */
-    spawnCreep(body, type, memory=undefined) {
+    spawnCreep(body, type, memory=undefined, changeBody=true) {
         let name = type + "<" + Game.time + ">"
 
         let spawnBody = body;
         //reduce move parts when roads are built
-        if (global.Archivist.getRoadsBuilt(this.room)) {
+        if (global.Archivist.getRoadsBuilt(this.room) && changeBody) {
             //build a list of all non move body parts
             let noMoves = [];
             for (let part of spawnBody) {
