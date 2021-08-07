@@ -29,15 +29,15 @@ class Emissary extends Remotus {
             //basically rebirth but without the dying first
 
             let task = `
-                this.getSupervisor().initiate({
-                    'body': [...objArr[0]],
+                global.Imperator.administrators[\"` + this.memory.spawnRoom + `\"].supervisor.initiate({
+                    'body': objArr[0],
                     'type': objArr[1],
-                    'memory': {...objArr[2]}
+                    'memory': objArr[2]
                 });
             `
 
             let reservedTicks = Game.rooms[this.room].controller.reservation.ticksToEnd;
-            global.TaskMaster.schedule(Game.time + reservedTicks - (travelTime * 2), task, [this.body, this.memory.type, this.memory]);
+            global.TaskMaster.schedule(Game.time + reservedTicks - (travelTime * 2), task, [[...this.body], this.memory.type, {...this.memory}]);
             //no more rebirth for you
             delete this.memory.generation;
         }
