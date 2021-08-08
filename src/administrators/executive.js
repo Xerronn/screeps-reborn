@@ -120,6 +120,10 @@ class Executive {
             //time to build road to the remote
             calculation = "6.4";
         }
+        if (rcl == 6 && currentStage == "6.4" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //time to build the insides of the remote and miners
+            calculation = "6.5";
+        }
         if (rcl == 7) {
             //build second source link
             calculation = "7";
@@ -213,7 +217,7 @@ class Executive {
         this.getSupervisor().initiate({
             'body': [MOVE],
             'type': 'scout',
-            'memory': {'generation' : 0}
+            'memory': {'generation' : 0, 'noRoads': true}
         });
     }
 
@@ -224,8 +228,22 @@ class Executive {
         this.getSupervisor().initiate({
             'body': [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE],
             'type': 'emissary',
-            'memory': {'generation' : 0, 'task': 'reserve', 'targetRoom': targetRoom}
-        }, false, false);
+            'memory': {'generation' : 0, 'task': 'reserve', 'targetRoom': targetRoom, 'noRoads': true}
+        });
+    }
+
+    /**
+     * Method that spawns the two miners that will build the roads and containers in the remote
+     * @param {String} targetRoom string representing the room they should move to first
+     */
+    spawnProspectors(targetRoom) {
+        for (let i = 0; i < 2; i++) {
+            this.getSupervisor().initiate({
+                'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+                'type': 'prospector',
+                'memory': {'generation' : 0, 'targetRoom': targetRoom, 'noRoads': true}
+            });
+        }
     }
 }
 
