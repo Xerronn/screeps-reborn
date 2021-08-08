@@ -67,8 +67,18 @@ class Architect {
                 global.Imperator.administrators[room].executive.spawnScout();
                 break;
             case "6.4":
-                //start reserving and build roads to remote
-                this.buildRemote(room);
+                //start reserving and build roads to remote exit
+                this.prepareForRemote(room);
+                break;
+            case "6.5":
+                //send remote builders
+                let remotes = global.Archivist.getRemotes(room);
+                for (let r of Object.keys(remotes)) {
+                    if (remotes[r].selected) {
+                        global.Imperator.administrators[room].executive.spawnProspectors(r);
+                        break;
+                    }
+                }
                 break;
             case "7":
                 //just turned rcl 7
@@ -455,7 +465,7 @@ class Architect {
     /**
      * Method to start spawning emissaries and build roads to the remote
      */
-    buildRemote(room) {
+    prepareForRemote(room) {
         //! todo: what if the sources in the room are unaccessible behind walls
         //this could be tweaked to just remote at all 'safe' rooms
 
@@ -493,14 +503,14 @@ class Architect {
         remotes[selectedRemote].selected = true;
 
         //now we need to spawn the reserver with that room as a target
-        //! global.Imperator.administrators[room].executive.spawnEmissary(selectedRemote);
+        global.Imperator.administrators[room].executive.spawnEmissary(selectedRemote);
 
         //now lets build a road to that exit
         let storage = Game.rooms[room].storage;
         let roadPath = storage.pos.findPathTo(new RoomPosition(10, 10, selectedRemote), {range: 1, ignoreCreeps: true});
 
         for (let pos of roadPath) {
-            //! Game.rooms[room].createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
+            Game.rooms[room].createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
         }
     }
 }
