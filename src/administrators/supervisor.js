@@ -11,6 +11,7 @@ const Arbiter = require("../civitas/workers/arbiter");
 const Scout = require("../civitas/workers/remote/scout");
 const Emissary = require("../civitas/workers/remote/emissary");
 const Prospector = require("../civitas/workers/remote/prospector");
+const Curator = require("../civitas/workers/remote/curator");
 
 //legionnaire
 const Scutarius = require("../civitas/legion/scutarius");

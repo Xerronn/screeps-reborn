@@ -119,6 +119,15 @@ class Archivist {
     }
 
     /**
+     * Get the curator spawned flag for a given room
+     * @param {String} room string representation of a room
+     * @returns the curator spawned flag
+     */
+    getCuratorSpawned(room) {
+        return Memory.rooms[room].flags.curatorSpawned;
+    }
+
+    /**
      * Get the done scouting flag for a given room
      * @param {String} room string representation of a room 
      * @returns the done Scouting flag
@@ -226,6 +235,16 @@ class Archivist {
      */
     setAnchor(room, value) {
         Memory.rooms[room].flags.anchor = value;
+    }
+
+    /**
+     * Set the curator spawned flag for a given room
+     * @param {String} room string representation of a room
+     * @param {Boolean} value true or false value to set the flag
+     * 
+     */
+     setCuratorSpawned(room, value) {
+        Memory.rooms[room].flags.curatorSpawned = value;
     }
     
     /**

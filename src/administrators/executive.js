@@ -239,10 +239,25 @@ class Executive {
     spawnProspectors(targetRoom) {
         for (let i = 0; i < 2; i++) {
             this.getSupervisor().initiate({
-                'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+                'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
                 'type': 'prospector',
                 'memory': {'generation' : 0, 'targetRoom': targetRoom, 'noRoads': true}
             });
+        }
+    }
+
+    /**
+     * Method that spawns the two miners that will build the roads and containers in the remote
+     * @param {String} targetRoom string representing the room they should move to first
+     */
+     spawnCurator(targetRoom) {
+        if (!global.Archivist.getCuratorSpawned(this.room)) {
+            this.getSupervisor().initiate({
+                'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+                'type': 'curator',
+                'memory': {'generation' : 0, 'targetRoom': targetRoom}
+            });
+            global.Archivist.setCuratorSpawned(this.room, true);
         }
     }
 }
