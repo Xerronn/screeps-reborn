@@ -10,6 +10,7 @@ const Arbiter = require("../civitas/workers/arbiter");
 //remote workers
 const Scout = require("../civitas/workers/remote/scout");
 const Emissary = require("../civitas/workers/remote/emissary");
+const Prospector = require("../civitas/workers/remote/prospector");
 
 //legionnaire
 const Scutarius = require("../civitas/legion/scutarius");
@@ -134,7 +135,7 @@ class Supervisor {
      * @param {Object} template An object that contains body, type, and memory
      * @param {boolean} rebirth whether or not this is a rebirth
      */
-     initiate(template, rebirth=false, changeBody=true) {
+     initiate(template, rebirth=false) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
         //loop through the spawns until an available one is found
@@ -151,7 +152,7 @@ class Supervisor {
                 if (!newBody) {
                     newBody = template.body;
                 }
-                let success = nexus.spawnCreep(newBody, template.type, { ...template.memory }, changeBody);
+                let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
 
                 //if the request fails, schedule it for 20 ticks in the future
                 if (success != OK) {
@@ -162,8 +163,8 @@ class Supervisor {
         }
 
         if (!foundNexus) {
-            let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1], false, objArr[2]);";
-            global.TaskMaster.schedule(Game.time + 20, task, [this.room, { ...template }, changeBody]);
+            let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
+            global.TaskMaster.schedule(Game.time + 20, task, [this.room, { ...template }]);
         }
 
         //if this is a rebirth, delete the old wrapper
