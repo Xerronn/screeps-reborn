@@ -82,15 +82,19 @@ class Nexus extends Castrum {
         memory["spawnRoom"] = this.room;
         memory["body"] = spawnBody;
         memory["spawning"] = true;
-        let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
 
-        if (success == OK) {
-            let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
-            this.spawningThisTick = true;
-            global.Archivist.setExtensionsFilled(this.room, false);
-            global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
+        if (!this.spawningThisTick) {
+            let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
+
+            if (success == OK) {
+                let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
+                this.spawningThisTick = true;
+                global.Archivist.setExtensionsFilled(this.room, false);
+                global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
+            }
+            return success;
         }
-        return success;
+        return ERR_BUSY;
     }
 
     /**
