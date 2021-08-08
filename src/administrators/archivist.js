@@ -173,6 +173,15 @@ class Archivist {
     }
 
     /**
+     * Get remotes built flag for a given room
+     * @param {String} room string representing the room
+     * @returns value of Remotes built flag
+     */
+     getRemoteBuilt(room) {
+        return Memory.rooms[room].flags.remoteBuilt;
+    }
+
+    /**
      * Get roads built flag for a given room
      * @param {String} room string representing the room
      * @returns value of roadsBuilt flag
@@ -249,10 +258,19 @@ class Archivist {
     /**
      * Set num contractors flag for a given room
      * @param {String} room string representing the room
-     * @param {Boolean} value integer to set the flag to
+     * @param {Integer} value integer to set the flag to
      */
     setNumContractors(room, value) {
         Memory.rooms[room].flags.numContractors = value;
+    }
+
+    /**
+     * Set remote built flag for a given room
+     * @param {String} room string representing the room
+     * @param {Boolean} value boolean to set the flag to
+     */
+     setRemoteBuilt(room, value) {
+        Memory.rooms[room].flags.remoteBuilt = value;
     }
 
     /**
