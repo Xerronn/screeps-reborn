@@ -32,6 +32,7 @@ class Prospector extends Remotus {
     }
 
     run() {
+        //! todo: spawn the replacement before the prospector dies, exactly like the emissary
         if (!this.arrived) {
             //march to assigned room
             this.march();
@@ -61,6 +62,7 @@ class Prospector extends Remotus {
             this.memory.task = "dropHarvesting";
             if (!this.evolved) this.evolve();
             if (!this.memory.container) {
+                let allContainers = Game.rooms[this.room].find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
                 let container = this.source.pos.findInRange(allContainers, 1)[0];
 
                 if (container) {
@@ -69,11 +71,24 @@ class Prospector extends Remotus {
                 }
             }
             
-            if (this.container.hits < this.container.hitsMax) {
+            //repair the container whenever it gets low
+            if (this.container && this.container.hits < this.container.hitsMax) {
                 this.memory.task = "repair";
                 this.repairContainer();
-            } else if (this.source.ticksToRegeneration > 0) {
+            } else if (this.container && this.source.ticksToRegeneration > 0) {
                 this.harvest(this.container, 0);
+            }
+        }
+
+        //every 100 ticks check to see if a road is below 2000 hits
+        let curatorSpawned = global.Archivist.getCuratorSpawned(this.memory.spawnRoom);
+        if (Game.time % 100 == 0 && !curatorSpawned) {
+            let allRoads = Game.rooms[this.room].find(FIND_STRUCTURES, {filter:{structureType: STRUCTURE_ROAD}});
+
+            for (let road of allRoads) {
+                if (road.hits < road.hitsMax / 2.5) {
+                    this.getExecutive().spawnCurator(this.room);
+                }
             }
         }
     }
@@ -164,7 +179,7 @@ class Prospector extends Remotus {
         }
 
         //set the flag so it only happens once
-        global.Archivist.setRemoteBuilt(this.room, true);
+        global.Archivist.setRemoteBuilt(this.memory.spawnRoom, true);
     }
 
     /**
