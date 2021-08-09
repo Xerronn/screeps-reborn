@@ -20,6 +20,7 @@ class Contractor extends Worker {
             if (this.memory.generation !== undefined && this.ticksToLive < 2) {
                 this.conclude();
             }
+            this.memory.task = "upgrade";
             this.upgradeController();
         }
     }
