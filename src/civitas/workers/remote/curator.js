@@ -62,7 +62,10 @@ class Curator extends Remotus {
             );
 
             liveClosestContainer = this.pos.findClosestByRange(allContainers);
-            this.memory.closestContainer = liveClosestContainer.id;
+
+            if (liveClosestContainer) {
+                this.memory.closestContainer = liveClosestContainer.id;
+            } else return;
         }
 
         if (this.pos.inRangeTo(liveClosestContainer, 1)) {

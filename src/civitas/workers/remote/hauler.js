@@ -49,12 +49,25 @@ class Hauler extends Remotus {
      * Function to withdraw energy from the container
      */
     withdrawContainer() {
-        if (this.pos.inRangeTo(this.container, 1)) {
-            if (this.container.store.getUsedCapacity(RESOURCE_ENERGY) > this.store.getFreeCapacity(RESOURCE_ENERGY)) {
-                this.liveObj.withdraw(this.container, RESOURCE_ENERGY);
+        if (this.container) {
+            if (this.pos.inRangeTo(this.container, 1)) {
+                if (this.container.store.getUsedCapacity(RESOURCE_ENERGY) > this.store.getFreeCapacity(RESOURCE_ENERGY)) {
+                    this.liveObj.withdraw(this.container, RESOURCE_ENERGY);
+                }
+            } else {
+                this.liveObj.moveTo(this.container);
             }
         } else {
-            this.liveObj.moveTo(this.container);
+            //wait until new container is built, then assign it again
+            if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+                this.container = this.source.pos.findInRange(allContainers, 1)[0].id;
+                if (this.container) {
+                    this.memory.container = this.container.id;
+                }
+            }
+            if (!this.pos.inRangeTo(this.source, 2)) {
+                this.liveObj.moveTo(this.source);
+            }
         }
     }
 

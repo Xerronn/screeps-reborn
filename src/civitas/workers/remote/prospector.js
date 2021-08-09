@@ -31,6 +31,12 @@ class Prospector extends Remotus {
 
             if (this.memory.container) {
                 this.container = Game.getObjectById(this.memory.container);
+
+                if (!this.container && this.arrived) {
+                    //rebuild the container
+                    this.planRoads(true);
+                    delete this.memory.container;
+                }
             }
         }
         return true;
@@ -58,7 +64,7 @@ class Prospector extends Remotus {
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";
             this.harvest(this.source, 1);
-        } else if (Game.rooms[this.room].find(FIND_CONSTRUCTION_SITES).length > 0) {
+        } else if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
             //now build the roads and the containers
             this.memory.task = "build";
             this.build();
@@ -187,7 +193,7 @@ class Prospector extends Remotus {
     /**
      * Method that builds construction sites to their designated source
      */
-    planRoads() {
+    planRoads(justContainer = false) {
         let roadSites = [];
         let sources = Game.rooms[this.room].find(FIND_SOURCES);
 
@@ -200,7 +206,9 @@ class Prospector extends Remotus {
         for (var sites of roadSites) {
             for (let i = 0; i < sites.length; i++) {
                 if (i < sites.length - 1) {
-                    Game.rooms[this.room].createConstructionSite(sites[i].x, sites[i].y, STRUCTURE_ROAD);
+                    if (!justContainer) {
+                        Game.rooms[this.room].createConstructionSite(sites[i].x, sites[i].y, STRUCTURE_ROAD);
+                    }
                 } else {
                     //build a container on the last step in the path
                     Game.rooms[this.room].createConstructionSite(sites[i].x, sites[i].y, STRUCTURE_CONTAINER);
