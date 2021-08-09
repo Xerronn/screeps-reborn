@@ -8,6 +8,12 @@ class Prospector extends Remotus {
         this.initialized = false;
         this.evolved = false;
 
+        if (this.memory.travelTime) {
+            //calculate the time that you need to spawn a replacement
+            //distance to travel + time to spawn + 10 buffer ticks
+            this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
+        }
+
         this.update(true);
     }
 
@@ -15,7 +21,6 @@ class Prospector extends Remotus {
         if (this.updateTick != Game.time || force == true) {
             if (!super.update(force)) {
                 //creep is dead
-                
                 return false;
             }
 
@@ -58,7 +63,7 @@ class Prospector extends Remotus {
             this.memory.task = "build";
             this.build();
         } else {
-            //done building time for full drop mining mode
+            //done building, time for full drop mining mode
             this.memory.task = "dropHarvesting";
             if (!this.evolved) this.evolve();
             if (!this.memory.container) {
@@ -70,12 +75,17 @@ class Prospector extends Remotus {
                     this.memory.container = container.id;
                 }
             }
+
+            //spawn haulers
+            if (!this.memory.haulersSpawned) {
+                this.spawnHauler();
+            }
             
             //repair the container whenever it gets low
             if (this.container && this.container.hits < this.container.hitsMax) {
                 this.memory.task = "repair";
                 this.repairContainer();
-            } else if (this.container && this.source.ticksToRegeneration > 0) {
+            } else if (this.container && this.source.energy > 0) {
                 this.harvest(this.container, 0);
             }
         }
@@ -91,6 +101,20 @@ class Prospector extends Remotus {
                 }
             }
         }
+
+        //make sure to spawn new miner before the current one dies, to maintain 100% uptime
+        if (this.memory.generation !== undefined && this.ticksToLive <= this.timeToSpawn) {
+            //basically rebirth but without the dying first
+            this.getSupervisor().initiate({
+                'body': [...this.body],
+                'type': this.memory.type,
+                'memory': {...this.memory}
+            });
+
+            //no more rebirth for you
+            delete this.memory.generation;
+            this.replaced = true;
+        }
     }
 
     /**
@@ -99,6 +123,12 @@ class Prospector extends Remotus {
     harvest(target, distance) {
         if (this.pos.inRangeTo(target, distance)) {
             this.liveObj.harvest(this.source);
+
+            //if traveltime to replace isn't calculated do it now
+            if (!this.memory.travelTime) {
+                this.memory.travelTime = PathFinder.search(this.pos, Game.rooms[this.memory.spawnRoom].storage.pos).path.length;
+                this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
+            }
         } else {
             this.liveObj.moveTo(this.source);
         }
@@ -143,10 +173,10 @@ class Prospector extends Remotus {
 
             //ensure unique source claim
             for (let source of sources) {
-                if (thisRemote[source] !== "claimed") {
+                if (thisRemote[source.id] !== "claimed") {
                     this.memory.source = source.id;
                     this.source = source;
-                    thisRemote[source] = "claimed";
+                    thisRemote[source.id] = "claimed";
                     break;
                 }
             }
@@ -180,6 +210,37 @@ class Prospector extends Remotus {
 
         //set the flag so it only happens once
         global.Archivist.setRemoteBuilt(this.memory.spawnRoom, true);
+    }
+
+    /**
+     * Method to spawn hauler(s) to take the energy back to the main room
+     */
+    spawnHauler() {
+        let travelLength = this.memory.travelTime * 12 * 2;
+        let carryCount = Math.ceil(travelLength / 50);
+        let numHaulers = Math.ceil(carryCount / 30);
+
+        let body = [];
+        for (let i = 0; i < Math.ceil(carryCount / numHaulers); i++) {
+            body.push(MOVE);
+            body.unshift(CARRY);
+        }
+
+        for (let i = 0; i < numHaulers; i++) {
+            this.getSupervisor().initiate({
+                'body': body,
+                'type': 'hauler',
+                'memory': {
+                    'generation' : 0, 
+                    'targetRoom': this.targetRoom, 
+                    'noRoads': false,
+                    'container': this.memory.container,
+                    'source': this.memory.source
+                }
+            });
+        }
+
+        this.memory.haulersSpawned = true;
     }
 
     /**
