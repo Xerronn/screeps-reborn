@@ -68,7 +68,7 @@ class Supervisor {
 
         //initialize all creeps in the room to their respective classes
         this.civitates = {};
-        for (let creepMem of _.filter(Memory.creeps, c => c.spawnRoom == this.room && !c.spawning)) {
+        for (let creepMem of _.filter(Memory.creeps, c => c.spawnRoom == this.room)) {
             !(creepMem.type in this.civitates) && (this.civitates[creepMem.type] = []);
 
             if (Game.creeps[creepMem.name]) {
@@ -197,10 +197,13 @@ class Supervisor {
         if (!this.civitates[creep.memory.type]) {
             this.civitates[creep.memory.type] = [];
         }
-        let createObjStr = "this.civitates[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
-                    creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
+        //check if the creep has already been wrapped
+        if (!global.Illustrator.getWrapper(creep.id)) {
+            let createObjStr = "this.civitates[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
+                creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
 
-        eval(createObjStr);
+            eval(createObjStr);
+        }
     }
 
     /**

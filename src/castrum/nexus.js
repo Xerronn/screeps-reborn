@@ -18,6 +18,10 @@ class Nexus extends Castrum {
             if (!super.update(force)) return false;
             this.spawning = this.liveObj.spawning;
 
+            if (!this.spawning) {
+                this.wrapped = false;
+            }
+
             //used to prevent trying to spawn multiple things on one tick
             this.spawningThisTick = false;
 
@@ -36,6 +40,11 @@ class Nexus extends Castrum {
     run() {
         if (this.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
             global.Archivist.setExtensionsFilled(this.room, false);
+        }
+
+        if (this.spawning && !this.wrapped) {
+            global.Imperator.administrators[this.room].supervisor.wrapCreep(this.spawning.name);
+            this.wrapped = true;
         }
         return;
     }
@@ -83,18 +92,15 @@ class Nexus extends Castrum {
         memory["body"] = spawnBody;
         memory["spawning"] = true;
 
-        if (!this.spawningThisTick) {
-            let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
+        let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
 
-            if (success == OK) {
-                let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
-                this.spawningThisTick = true;
-                global.Archivist.setExtensionsFilled(this.room, false);
-                global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
-            }
-            return success;
+        if (success == OK) {
+            this.spawningThisTick = true;
+            // let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
+            // global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
+            global.Archivist.setExtensionsFilled(this.room, false);
         }
-        return ERR_BUSY;
+        return success;
     }
 
     /**
