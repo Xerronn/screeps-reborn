@@ -12,6 +12,7 @@ const Scout = require("../civitas/workers/remote/scout");
 const Emissary = require("../civitas/workers/remote/emissary");
 const Prospector = require("../civitas/workers/remote/prospector");
 const Curator = require("../civitas/workers/remote/curator");
+const Hauler = require("../civitas/workers/remote/hauler");
 
 //legionnaire
 const Scutarius = require("../civitas/legion/scutarius");
@@ -144,7 +145,7 @@ class Supervisor {
             if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
                 foundNexus = true;
                 
-                if (template.memory.generation) {
+                if (template.memory.generation !== undefined) {
                     template.memory.generation++;
                 }
 
