@@ -149,10 +149,6 @@ class Supervisor {
                 if (!nexus.spawning && !nexus.spawningThisTick) {
                     foundNexus = true;
                     
-                    if (template.memory.generation !== undefined) {
-                        template.memory.generation++;
-                    }
-
                     //use the body stored in memory if it exists, as it can contain evolutions
                     let newBody = template.memory.body;
                     if (!newBody) {
@@ -162,6 +158,9 @@ class Supervisor {
 
                     //if the request fails, schedule it for 20 ticks in the future
                     if (success == OK) {
+                        if (template.memory.generation !== undefined) {
+                            template.memory.generation++;
+                        }
                         break;
                     } else {
                         //so we can reschedule
