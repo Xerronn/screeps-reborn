@@ -90,7 +90,6 @@ class Nexus extends Castrum {
         memory["type"] = type;
         memory["spawnRoom"] = this.room;
         memory["body"] = spawnBody;
-        memory["spawning"] = true;
 
         let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
 
