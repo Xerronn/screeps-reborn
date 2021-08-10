@@ -85,7 +85,7 @@ class Architect {
                 //build second source link and get rid of one professor
                 this.buildBunker(room);
                 this.buildSourceLinks(room);
-                global.Imperator.administrators[room].executive.downscaleProfessors();
+                global.Imperator.administrators[room].executive.downscale();
                 break;
             case "7.1":
                 //everything is done building and storage has > 100,000 energy
