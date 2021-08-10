@@ -82,6 +82,30 @@ class Hauler extends Remotus {
             this.liveObj.moveTo(this.storage);
         }
     }
+
+    /**
+     * Method that makes the hauler twice as large
+     * called by executive when rcl reaches 7
+     */
+    evolve() {
+        let numCarry = 0;
+        for (let part of this.body) {
+            if (part == CARRY) {
+                numCarry++;
+            }
+        }
+
+        let targetMoves = Math.min((numCarry * 2), 32);
+        let newBody = [];
+        for (let i = 0; i < targetMoves; i++) {
+            newBody.unshift(CARRY);
+            if (i % 2 != 0) {
+                newBody.push(MOVE);
+            }
+        }
+
+        this.memory.body = newBody;
+    }
 }
 
 module.exports = Hauler;
