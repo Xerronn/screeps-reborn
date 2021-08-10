@@ -30,8 +30,7 @@ class Supervisor {
         this.civitates = {};
         this.castrum = {};
 
-        this.reserved = false;
-        this.reservedCount = 0;
+        this.reservedTick = 0;
     }
 
     /**
@@ -147,7 +146,7 @@ class Supervisor {
         if (this.reservedTick < Game.time) {
             //loop through the spawns until an available one is found
             for (let nexus of this.castrum["nexus"]) {
-                if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
+                if (!nexus.spawning && !nexus.spawningThisTick) {
                     foundNexus = true;
                     
                     if (template.memory.generation !== undefined) {
@@ -215,10 +214,9 @@ class Supervisor {
     }
 
     /**
-     * Method to block spawning for three ticks
+     * Method to block spawning for 5 ticks
      */
      reserve() {
-        this.reserved = true;
         this.reservedTick = Game.time + 5;
     }
 
