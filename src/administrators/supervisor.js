@@ -144,7 +144,7 @@ class Supervisor {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
 
-        if (this.reservedTick > Game.time) {
+        if (this.reservedTick < Game.time) {
             //loop through the spawns until an available one is found
             for (let nexus of this.castrum["nexus"]) {
                 if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
