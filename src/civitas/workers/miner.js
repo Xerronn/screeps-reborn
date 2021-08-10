@@ -82,7 +82,6 @@ class Miner extends Worker {
 
             //no more rebirth for you
             delete this.memory.generation;
-            this.replaced = true;
         }
 
         //evolve the creep if it has a link
