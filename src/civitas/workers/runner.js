@@ -15,7 +15,7 @@ class Runner extends Worker {
                 this.memory.task = "renewFill";
             }
             this.renew();
-        } else if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+        } else if (this.store.getUsedCapacity(RESOURCE_ENERGY) < EXTENSION_ENERGY_CAPACITY[Game.rooms[this.room].controller.level] || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
             this.withdrawStorage();
         } else if (!global.Archivist.getTowersFilled(this.room)) {
@@ -80,12 +80,12 @@ class Runner extends Worker {
      * @returns {boolean} if the creep is evolving
      */
     evolve() {
-        let controllerLevel = Game.rooms[this.room].controller.level;
-        if (controllerLevel % 2 == 1) {
-            //lower the controller level to nearest even number
-            //for a good move:carry ratio
-            controllerLevel--;
-        }
+        //cap controller level at 7
+        let controllerLevel = Math.min(Game.rooms[this.room].controller.level, 7);
+        let roomEnergy = EXTENSION_ENERGY_CAPACITY[controllerLevel] * CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][controllerLevel];
+        let numCarry = Math.ceil(roomEnergy / 100 / 2);
+        //always make it even for most efficient move parts
+        if (numCarry % 2 != 0) numCarry--;
 
         //count carry parts in current body
         let carryCount = 0;
@@ -95,10 +95,10 @@ class Runner extends Worker {
             }
         }
 
-        //if the carry count is lower than the controllerLevel, upgrade body
-        if (carryCount < controllerLevel) {
+        //if the carry count is lower than the calculation and there are no construction sites, upgrade body
+        if (carryCount < numCarry && Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
             let newBody = this.body;
-            for (let i = 0; i < controllerLevel; i++) {
+            for (let i = 0; i < numCarry; i++) {
                 newBody.unshift(CARRY)
                 newBody.push(MOVE);
             }
