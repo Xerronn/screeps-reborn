@@ -96,8 +96,26 @@ class Nexus extends Castrum {
             // let task = "delete Memory.creeps[\"" + name + "\"].spawning; global.Imperator.administrators[\"" + this.room + "\"].supervisor.wrapCreep(\"" + name + "\");";
             // global.TaskMaster.schedule(Game.time + spawnBody.length * CREEP_SPAWN_TIME, task);
             global.Archivist.setExtensionsFilled(this.room, false);
+
+            //keeping some energy expenditure stats
+            if (["hauler", "emissary", "prospector", "curator"].includes(type)) {
+                console.log("YEEEHAWWW");
+                this.statTracking(type, body);
+            }
         }
         return success;
+    }
+
+    /**
+     * Method that sets some statistics
+     * @param {String} type the type of the creep
+     * @param {String} body the body of the creep
+     */
+    statTracking(type, body) {
+        let bodyCost = global.Illustrator.calculateBodyCost(body);
+
+        let currentValue = global.Archivist.getStatistic(this.memory.spawnRoom, "RemoteEnergySpent");
+        global.Archivist.setStatistic(this.memory.spawnRoom, "RemoteEnergySpent", currentValue + bodyCost);
     }
 }
 

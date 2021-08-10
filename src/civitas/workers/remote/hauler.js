@@ -2,7 +2,6 @@ const Remotus = require("./remotus");
 
 //class declaration for a remote room hauler creep
 //source and container must be passed by prospector
-//! TODO: cache path and also pickup dropped energy on roads
 class Hauler extends Remotus {
     constructor(creepId) {
         super(creepId);
@@ -92,6 +91,9 @@ class Hauler extends Remotus {
      depositStorage() {
         if (this.pos.inRangeTo(this.storage, 1)) {
             this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
+            //stat tracking
+            let currentEnergy = global.Archivist.getStatistic(this.memory.spawnRoom, "RemoteEnergyGained");
+            global.Archivist.setStatistic(this.memory.spawnRoom, "RemoteEnergyGained", currentEnergy + this.store.getUsedCapacity(RESOURCE_ENERGY));
         } else {
             this.liveObj.moveTo(this.storage);
         }

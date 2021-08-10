@@ -209,6 +209,20 @@ class Archivist {
     }
 
     /**
+     * Get a room statistic
+     * @param {String} room string representing the room
+     * @param {String} stat the statistic to return
+     * @returns  room sources object
+     */
+    getStatistic(room, stat) {
+        try {
+            return Memory.rooms[room].statistics[stat];
+        } catch (err) {
+            return 0;
+        }
+    }
+
+    /**
      * Get all instances of a certain structure within a room
      * @param {String} room string representing the room
      * @param {String} structure screeps constant type of structure to get
@@ -299,6 +313,19 @@ class Archivist {
      */
     setRoadsBuilt(room, value) {
         Memory.rooms[room].flags.roadsBuilt = value;
+    }
+
+    /**
+     * Set a room statistic
+     * @param {String} room string representing the room
+     * @param {String} stat the statistic to return
+     * @returns  room sources object
+     */
+    setStatistic(room, stat, value) {
+        if (!Memory.rooms[room].statistics) {
+        Memory.rooms[room].statistics = {};
+        }
+        Memory.rooms[room].statistics[stat] = value;
     }
 
     /**
