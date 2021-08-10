@@ -260,6 +260,14 @@ class Executive {
             global.Archivist.setCuratorSpawned(this.room, true);
         }
     }
+
+    /**
+     * Method that removes one of the professors upon reaching rcl 7. They become very beefy
+     */
+    downscaleProfessors() {
+        let supervisor = this.getSupervisor();
+        delete supervisor.civitates.scholar[0].memory.generation;
+    }
 }
 
 module.exports = Executive;

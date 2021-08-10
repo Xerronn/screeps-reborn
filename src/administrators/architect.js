@@ -82,9 +82,10 @@ class Architect {
                 break;
             case "7":
                 //just turned rcl 7
-                //build second source link
+                //build second source link and get rid of one professor
                 this.buildBunker(room);
                 this.buildSourceLinks(room);
+                global.Imperator.administrators[room].executive.downscaleProfessors();
                 break;
             case "7.1":
                 //everything is done building and storage has > 100,000 energy
