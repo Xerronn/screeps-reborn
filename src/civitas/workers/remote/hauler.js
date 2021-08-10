@@ -31,6 +31,7 @@ class Hauler extends Remotus {
     }
 
     run() {
+        //todo: path caching and traversal
         if (!this.arrived) {
             this.march();
             return;
@@ -38,6 +39,19 @@ class Hauler extends Remotus {
 
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
+
+            let resources = this.pos.lookFor(LOOK_RESOURCES);
+            if (resources) {
+                for (let res of resources) {
+                    if (res.resourceType == RESOURCE_ENERGY) {
+                        this.liveObj.pickup(res);
+                        if (res.amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && res.amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 2) {
+                            this.memory.task = "deposit";
+                        }
+                    }
+                }
+            }
+
             this.withdrawContainer();
         } else {
             this.memory.task = "deposit"
