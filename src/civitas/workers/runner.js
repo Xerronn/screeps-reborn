@@ -43,7 +43,7 @@ class Runner extends Worker {
         }
 
         //reserve the spawn, then renew until its full or no energy left
-        nexus.reserve();
+        this.getSupervisor().reserve();
 
         if (Game.rooms[this.room].energyAvailable < global.Illustrator.calculateBodyCost(this.memory.body) && this.memory.task == "renewFill") {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
