@@ -19,17 +19,10 @@ class Miner extends Worker {
             }
         }
 
-        //if a source link exists
-        let sourceLink = global.Archivist.getSources(this.room)[this.sourceId].link;
-        if (sourceLink) {
-            this.linkId = sourceLink; 
-        }
-
         //calculate when to spawn a new miner
         let distanceToSource = Game.rooms[this.room].find(FIND_MY_SPAWNS)[0].pos.findPathTo(this.source).length;
         let spawnTime = this.body.length * 3;
         this.timeToSpawn = distanceToSource + spawnTime;
-        this.replaced = false;
         
         this.update(true);
     }
@@ -44,13 +37,13 @@ class Miner extends Worker {
             this.container = Game.getObjectById(this.containerId);
 
             //keep checking to see if a link exists every 25 ticks
-            if (this.linkId) {
-                this.link = Game.getObjectById(this.linkId);
+            if (this.memory.link) {
+                this.link = Game.getObjectById(this.memory.link);
             } else if (Game.time % 25 == 0) {
                 let sourceLink = global.Archivist.getSources(this.room)[this.sourceId].link;
                 if (sourceLink) {
-                    this.linkId = sourceLink;
-                    this.link = Game.getObjectById(this.linkId);
+                    this.memory.link = sourceLink;
+                    this.link = Game.getObjectById(this.memory.link);
                 }
             }
         }
@@ -79,7 +72,7 @@ class Miner extends Worker {
         }
 
         //make sure to spawn new miner before the current one dies, to maintain 100% uptime
-        if (this.memory.generation !== undefined && !this.replaced && this.ticksToLive <= this.timeToSpawn) {
+        if (this.memory.generation !== undefined && this.ticksToLive <= this.timeToSpawn) {
             //basically rebirth but without the dying first
             this.getSupervisor().initiate({
                 'body': [...this.body],
@@ -90,6 +83,11 @@ class Miner extends Worker {
             //no more rebirth for you
             delete this.memory.generation;
             this.replaced = true;
+        }
+
+        //evolve the creep if it has a link
+        if (this.ticksToLive < 2 && this.link) {
+            this.evolve();
         }
     }
 
@@ -114,6 +112,17 @@ class Miner extends Worker {
         } else {
             this.liveObj.moveTo(this.link);
         }
+    }
+
+    /**
+     * Method to evolve the body after getting a link
+     */
+    evolve() {
+        this.memory.body = [
+            WORK, WORK, WORK, WORK, WORK, WORK, 
+            CARRY, CARRY, CARRY, CARRY, 
+            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+        ]
     }
 }
 
