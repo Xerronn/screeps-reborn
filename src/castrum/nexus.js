@@ -99,8 +99,7 @@ class Nexus extends Castrum {
 
             //keeping some energy expenditure stats
             if (["hauler", "emissary", "prospector", "curator"].includes(type)) {
-                console.log("YEEEHAWWW");
-                this.statTracking(type, body);
+                this.statTracking(body);
             }
         }
         return success;
@@ -111,11 +110,11 @@ class Nexus extends Castrum {
      * @param {String} type the type of the creep
      * @param {String} body the body of the creep
      */
-    statTracking(type, body) {
+    statTracking(body) {
         let bodyCost = global.Illustrator.calculateBodyCost(body);
 
-        let currentValue = global.Archivist.getStatistic(this.memory.spawnRoom, "RemoteEnergySpent");
-        global.Archivist.setStatistic(this.memory.spawnRoom, "RemoteEnergySpent", currentValue + bodyCost);
+        let currentValue = global.Archivist.getStatistic(this.room, "RemoteEnergySpent");
+        global.Archivist.setStatistic(this.room, "RemoteEnergySpent", currentValue + bodyCost);
     }
 }
 
