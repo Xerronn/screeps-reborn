@@ -162,7 +162,9 @@ class Supervisor {
                     let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
 
                     //if the request fails, schedule it for 20 ticks in the future
-                    if (success != OK) {
+                    if (success == OK) {
+                        break;
+                    } else {
                         //so we can reschedule
                         foundNexus = false;
                     }
