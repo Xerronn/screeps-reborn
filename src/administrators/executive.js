@@ -262,11 +262,24 @@ class Executive {
     }
 
     /**
-     * Method that removes one of the professors upon reaching rcl 7. They become very beefy
+     * Method that removes one of the scholars and two haulers upon reaching rcl 7 and max creeps are available
      */
-    downscaleProfessors() {
+    downscale() {
         let supervisor = this.getSupervisor();
-        delete supervisor.civitates.scholar[0].memory.generation;
+        // delete supervisor.civitates.scholar[0].memory.generation;
+        let haulers = supervisor.civitates.hauler;
+
+        let sources = [];
+        for (let hauler of haulers) {
+            if (!sources.includes(hauler.memory.source)) {
+                sources.push(hauler.memory.source);
+                delete hauler.memory.generation;
+            } else {
+                //make the hauler bigger to make up for the loss of his buddy
+                //lose out on some energy, but the cpu savings are worth it
+                hauler.evolve();
+            }
+        }
     }
 }
 
