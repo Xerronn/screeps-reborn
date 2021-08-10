@@ -4,6 +4,8 @@ const Remotus = require("./remotus");
 class Defender extends Remotus {
     constructor(creepId) {
         super(creepId);
+
+        this.update(true);
     }
 
     run() {
@@ -30,7 +32,7 @@ class Defender extends Remotus {
     }
 
     heal() {
-        if (this.target || this.hits < this.hitsMax) {
+        if (!this.target && this.hits < this.hitsMax) {
             this.liveObj.heal(this.liveObj);
         }
     }
