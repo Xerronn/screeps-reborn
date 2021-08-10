@@ -104,6 +104,7 @@ class Prospector extends Remotus {
             for (let road of allRoads) {
                 if (road.hits < road.hitsMax / 2.5) {
                     this.getExecutive().spawnCurator(this.room);
+                    global.Archivist.setCuratorSpawned(this.memory.spawnRoom, true);
                 }
             }
         }
