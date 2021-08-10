@@ -136,7 +136,7 @@ class Prospector extends Remotus {
                 this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
             }
         } else {
-            this.liveObj.moveTo(this.source);
+            this.liveObj.moveTo(target);
         }
     }
 

@@ -60,7 +60,8 @@ class Hauler extends Remotus {
         } else {
             //wait until new container is built, then assign it again
             if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-                this.container = this.source.pos.findInRange(allContainers, 1)[0].id;
+                let allContainers = Game.rooms[this.room].find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
+                this.container = this.source.pos.findInRange(allContainers, 1)[0];
                 if (this.container) {
                     this.memory.container = this.container.id;
                 }
