@@ -29,6 +29,9 @@ class Supervisor {
         this.room = room;
         this.civitates = {};
         this.castrum = {};
+
+        this.reserved = false;
+        this.reservedCount = 0;
     }
 
     /**
@@ -140,26 +143,29 @@ class Supervisor {
      initiate(template, rebirth=false) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
-        //loop through the spawns until an available one is found
-        for (let nexus of this.castrum["nexus"]) {
-            if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
-                foundNexus = true;
-                
-                if (template.memory.generation !== undefined) {
-                    template.memory.generation++;
-                }
 
-                //use the body stored in memory if it exists, as it can contain evolutions
-                let newBody = template.memory.body;
-                if (!newBody) {
-                    newBody = template.body;
-                }
-                let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
+        if (this.reservedTick > Game.time) {
+            //loop through the spawns until an available one is found
+            for (let nexus of this.castrum["nexus"]) {
+                if (!nexus.spawning && !nexus.spawningThisTick && !nexus.reserved) {
+                    foundNexus = true;
+                    
+                    if (template.memory.generation !== undefined) {
+                        template.memory.generation++;
+                    }
 
-                //if the request fails, schedule it for 20 ticks in the future
-                if (success != OK) {
-                    //so we can reschedule
-                    foundNexus = false;
+                    //use the body stored in memory if it exists, as it can contain evolutions
+                    let newBody = template.memory.body;
+                    if (!newBody) {
+                        newBody = template.body;
+                    }
+                    let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
+
+                    //if the request fails, schedule it for 20 ticks in the future
+                    if (success != OK) {
+                        //so we can reschedule
+                        foundNexus = false;
+                    }
                 }
             }
         }
@@ -204,6 +210,14 @@ class Supervisor {
 
             eval(createObjStr);
         }
+    }
+
+    /**
+     * Method to block spawning for three ticks
+     */
+     reserve() {
+        this.reserved = true;
+        this.reservedTick = Game.time + 5;
     }
 
     /**

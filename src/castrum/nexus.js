@@ -7,8 +7,6 @@ class Nexus extends Castrum {
 
         //attributes that will not change from tick to tick
         this.name = this.liveObj.name;
-        this.reserved = false;
-        this.reservedCount = 0;
 
         this.update(true);
     }
@@ -100,14 +98,6 @@ class Nexus extends Castrum {
             global.Archivist.setExtensionsFilled(this.room, false);
         }
         return success;
-    }
-
-    /**
-     * Method to block spawning for three ticks
-     */
-    reserve() {
-        this.reserved = true;
-        this.reservedCount = 3;
     }
 }
 
