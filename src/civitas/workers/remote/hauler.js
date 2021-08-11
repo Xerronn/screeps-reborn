@@ -5,6 +5,12 @@ const Remotus = require("./remotus");
 class Hauler extends Remotus {
     constructor(creepId) {
         super(creepId);
+
+        if (this.memory.travelTime) {
+            //calculate the time that you need to spawn a replacement
+            //distance to travel + time to spawn + 10 buffer ticks
+            this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
+        }
         
         this.update(true);
     }
@@ -57,6 +63,19 @@ class Hauler extends Remotus {
             this.memory.task = "deposit"
             this.depositStorage();
         }
+
+        //make sure to spawn new hauler before the current one dies, to maintain better uptime
+        if (this.memory.generation !== undefined && this.ticksToLive <= this.timeToSpawn) {
+            //basically rebirth but without the dying first
+            this.getSupervisor().initiate({
+                'body': [...this.body],
+                'type': this.memory.type,
+                'memory': {...this.memory}
+            });
+
+            //no more rebirth for you
+            delete this.memory.generation;
+        }
     }
 
     /**
@@ -67,6 +86,12 @@ class Hauler extends Remotus {
             if (this.pos.inRangeTo(this.container, 1)) {
                 if (this.container.store.getUsedCapacity(RESOURCE_ENERGY) > this.store.getFreeCapacity(RESOURCE_ENERGY)) {
                     this.liveObj.withdraw(this.container, RESOURCE_ENERGY);
+
+                    //calculate travelTime
+                    if (!this.memory.travelTime) {
+                        this.memory.travelTime = PathFinder.search(this.pos, Game.rooms[this.memory.spawnRoom].storage.pos).path.length;
+                        this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
+                    }
                 }
             } else {
                 this.liveObj.moveTo(this.container);
