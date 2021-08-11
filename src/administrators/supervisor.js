@@ -17,7 +17,7 @@ const Hauler = require("../civitas/workers/remote/hauler");
 //legionnaire
 const Scutarius = require("../civitas/legion/scutarius");
 const Physician = require("../civitas/legion/physician");
-const Defender = require("../civitas/workers/remote/defender");
+const Garrison = require("../civitas/legion/garrison");
 
 //castrum
 const Nexus = require("../castrum/nexus");
