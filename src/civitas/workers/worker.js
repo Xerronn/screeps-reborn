@@ -39,6 +39,13 @@ class Worker extends Civitas {
             this.sourceId = currentBest;
             this.memory.source = currentBest;
         }
+
+        this.numWork = 0;
+        for (let part of this.body) {
+            if (part == WORK) {
+                this.numWork++;
+            }
+        }
         
 
         this.update(true);

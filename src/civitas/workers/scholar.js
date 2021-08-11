@@ -31,7 +31,7 @@ class Scholar extends Worker {
      * logic to run each tick
      */
     run() {
-        if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+        if (this.store.getUsedCapacity(RESOURCE_ENERGY) < this.numWork || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
             if (!this.link) {
                 this.withdrawStorage();
