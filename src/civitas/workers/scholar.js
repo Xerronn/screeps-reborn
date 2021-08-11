@@ -75,26 +75,27 @@ class Scholar extends Worker {
 
         let roomStorage = Game.rooms[this.room].storage;
         if (roomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > roomStorage.store.getCapacity(RESOURCE_ENERGY) / 3) {
-            let totalEnergy = Game.rooms[this.room].energyCapacityAvailable;
-            let newBody = this.memory.body;
-            //calculate current cost
-            let totalCost = 0;
-            for (let part of newBody) {
-                if (part == WORK) {
-                    totalCost += 100;
-                } else {
-                    totalCost += 50;
+            //total energy minus the two carry parts
+            let totalEnergy = Game.rooms[this.room].energyCapacityAvailable - 100;
+            let newBody = [CARRY, CARRY, MOVE];
+            let roadsBuilt = global.Archivist.getRoadsBuilt(this.room);
+            let maxCount = 48;
+            if (roadsBuilt) {
+                maxCount = 33;
+            } else {
+                newBody.push(MOVE);
+            }
+            
+
+            let index = 0;
+            while(totalEnergy >= 150 && newBody.length < maxCount) {
+                newBody.unshift(WORK);
+
+                if ((roadsBuilt && index % 2 != 0) || !roadsBuilt) {
+                    newBody.push(MOVE);
                 }
             }
 
-            //the energy we have to work with
-            totalEnergy -= totalCost;
-
-            while(totalEnergy >= 150) {
-                newBody.unshift(WORK);
-                newBody.push(MOVE);
-                totalEnergy -= 150;
-            }
             this.memory.body = newBody;
         }
     }
