@@ -21,7 +21,7 @@ class GameObj {
             this.pos = this.liveObj.pos;
             this.room = this.liveObj.room.name;
             this.hits = this.liveObj.hits;
-            this.maxHits = this.liveObj.hitsMax;
+            this.hitsMax = this.liveObj.hitsMax;
         }
         return true;
     }
