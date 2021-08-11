@@ -98,7 +98,7 @@ class Nexus extends Castrum {
             global.Archivist.setExtensionsFilled(this.room, false);
 
             //keeping some energy expenditure stats
-            if (["hauler", "emissary", "prospector", "curator"].includes(type)) {
+            if (["hauler", "emissary", "prospector", "curator", "garrison"].includes(type)) {
                 this.statTracking(body);
             }
         }
