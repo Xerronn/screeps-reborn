@@ -30,7 +30,7 @@ class Remotus extends Civitas {
     }
 
     run() {
-        if (!this.arrived) {
+        if (!this.arrived && !this.fleeing) {
             //march to assigned room
             this.march();
             return true;
@@ -49,6 +49,9 @@ class Remotus extends Civitas {
             this.flee();
             return true;
         }
+
+        //if we get here, we are not fleeing
+        this.fleeing = false;
     }
 
     /**
@@ -67,6 +70,7 @@ class Remotus extends Civitas {
      * Method to flee to origin room when enemies are detected
      */
     flee() {
+        this.fleeing = true;
         let position = new RoomPosition(25,25, this.memory.spawnRoom);
         if (!this.pos.inRangeTo(position, 15)) {
             this.liveObj.moveTo(position);
