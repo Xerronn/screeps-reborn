@@ -23,9 +23,24 @@ class Garrison extends Legionnaire {
             global.Archivist.setGarrisonSpawned(this.memory.spawnRoom, false);
         }
 
-        if (this.hits <= this.hitsMax - 300 || this.hits < this.hitsMax && this.memory.task == "selfHeal") {
+        if (this.hits <= this.hitsMax - 300 || (this.hits < this.hitsMax && this.memory.task == "selfHeal") || (!this.target && this.hits < this.hitsMax)) {
             this.memory.task = "selfHeal";
             this.selfHeal();
+        } else {
+            if (!this.medic()) {
+                this.garrison();
+            }
+            
+        }
+    }
+
+    /**
+     * Method to move towards middle of the room and hold position
+     */
+    garrison() {
+        let position = new RoomPosition(25,25, this.targetRoom);
+        if (!this.pos.inRangeTo(position, 10)) {
+            this.liveObj.moveTo(position);
         }
     }
 }

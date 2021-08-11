@@ -51,6 +51,28 @@ class Legionnaire extends Remotus {
     selfHeal() {
         this.liveObj.heal(this.liveObj);
     }
+
+    /**
+     * Method for a creep to heal others
+     */
+    medic() {
+        let targetCreep = Game.getObjectById(this.memory.healTarget);
+
+        if (!targetCreep || targetCreep.hits == targetCreep.hitsMax) {
+            let myCreeps = Game.rooms[this.room].find(FIND_MY_CREEPS, {
+                filter : (creep) => creep.hits < creep.hitsMax});
+            if (!myCreeps || myCreeps.length == 0) return false;
+            
+            targetCreep = this.pos.findClosestByRange(myCreeps);
+            this.memory.healTarget = targetCreep.id;
+        }
+
+        if (this.pos.inRangeTo(targetCreep, 1)) {
+            this.liveObj.heal(targetCreep);
+        } else {
+            this.liveObj.moveTo(targetCreep);
+        }
+    }
 }
 
 module.exports = Legionnaire;
