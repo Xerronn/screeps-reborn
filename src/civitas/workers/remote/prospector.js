@@ -43,12 +43,8 @@ class Prospector extends Remotus {
     }
 
     run() {
-        //! todo: spawn the replacement before the prospector dies, exactly like the emissary
-        if (!this.arrived) {
-            //march to assigned room
-            this.march();
-            return;
-        }
+        //march to room and flee if enemies
+        super.run();
 
         //once we get to the room
         if (!this.initialized) {

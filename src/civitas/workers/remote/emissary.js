@@ -12,15 +12,13 @@ class Emissary extends Remotus {
     }
 
     run() {
-        if (!this.arrived) {
-            //march to assigned room
-            this.march();
-        } else {
-            if (this.memory.task == "reserve") {
-                this.reserve();
-            } else if (this.memory.task == "claim") {
-                this.claim();
-            }
+        //march to room and flee if enemies
+        super.run();
+        
+        if (this.memory.task == "reserve") {
+            this.reserve();
+        } else if (this.memory.task == "claim") {
+            this.claim();
         }
 
         //make sure to spawn new emissary before the current one dies, to maintain 100% uptime

@@ -11,6 +11,7 @@ class Remotus extends Civitas {
             this.targetRoom = this.memory.targetRoom;
         }
         this.arrived = false;
+        this.fleeing = false;
 
         this.update(true);
     }
@@ -31,6 +32,19 @@ class Remotus extends Civitas {
         if (!this.arrived) {
             //march to assigned room
             this.march();
+            return;
+        }
+
+        let targetRoom = Game.rooms[this.memory.targetRoom];
+        let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
+        //todo: check for attack parts?
+        if (this.fleeing || (targetRoom && hostileCreeps.length > 0)) {
+            if (hostileCreeps.length == 0) {
+                this.fleeing = false
+            } else {
+                this.flee();
+                return;
+            }
         }
     }
 
@@ -46,6 +60,18 @@ class Remotus extends Civitas {
         } else {
             this.arrived = true;
         } 
+    }
+
+    /**
+     * Method to flee to origin room when enemies are detected
+     */
+    flee() {
+        this.fleeing = true;
+        if (this.isOnEdge()) {
+            this.liveObj.moveTo(new RoomPosition(25,25, this.memory.spawnRoom));
+        } else if (this.memory.spawnRoom != this.room) {
+            this.liveObj.moveTo(new RoomPosition(25,25, this.memory.spawnRoom));
+        }
     }
 }
 

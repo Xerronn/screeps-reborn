@@ -31,10 +31,8 @@ class Hauler extends Remotus {
 
     run() {
         //todo: path caching and traversal
-        if (!this.arrived) {
-            this.march();
-            return;
-        }
+        //march to room and flee if enemies
+        super.run();
 
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";

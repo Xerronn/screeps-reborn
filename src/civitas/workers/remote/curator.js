@@ -7,11 +7,8 @@ class Curator extends Remotus {
     }
 
     run() {
-        if (!this.arrived) {
-            //march to assigned room
-            this.march();
-            return;
-        }
+        //march to room and flee if enemies
+        super.run();
 
         //steal from one of the two containers
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
