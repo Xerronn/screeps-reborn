@@ -23,6 +23,9 @@ class Remotus extends Civitas {
                 return false;
             }
             //attributes that will change tick to tick
+            if (this.targetRoom != this.room) {
+                this.arrived = false
+            }
 
         }
         return true;
@@ -32,19 +35,21 @@ class Remotus extends Civitas {
         if (!this.arrived) {
             //march to assigned room
             this.march();
-            return;
+            return true;
+        }
+
+        if (global.Archivist.getGarrisonSpawned(this.memory.spawnRoom)) {
+            this.flee();
+            return true;
         }
 
         let targetRoom = Game.rooms[this.memory.targetRoom];
         let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
         //todo: check for attack parts?
-        if (this.fleeing || (targetRoom && hostileCreeps.length > 0)) {
-            if (hostileCreeps.length == 0) {
-                this.fleeing = false
-            } else {
-                this.flee();
-                return;
-            }
+        if (targetRoom && hostileCreeps.length > 0) {
+            this.getExecutive().spawnGarrison(this.memory.targetRoom);
+            this.flee();
+            return true;
         }
     }
 
@@ -57,20 +62,16 @@ class Remotus extends Civitas {
             this.liveObj.moveTo(new RoomPosition(25,25, this.room));
         } else if (this.targetRoom != this.room) {
             this.liveObj.moveTo(new RoomPosition(25,25, this.targetRoom));
-        } else {
-            this.arrived = true;
-        } 
+        }
     }
 
     /**
      * Method to flee to origin room when enemies are detected
      */
     flee() {
-        this.fleeing = true;
-        if (this.isOnEdge()) {
-            this.liveObj.moveTo(new RoomPosition(25,25, this.memory.spawnRoom));
-        } else if (this.memory.spawnRoom != this.room) {
-            this.liveObj.moveTo(new RoomPosition(25,25, this.memory.spawnRoom));
+        let position = new RoomPosition(25,25, this.memory.spawnRoom);
+        if (!this.pos.inRangeTo(position, 15)) {
+            this.liveObj.moveTo(position);
         }
     }
 }

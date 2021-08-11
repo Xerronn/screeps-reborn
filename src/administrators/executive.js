@@ -262,6 +262,25 @@ class Executive {
     }
 
     /**
+     * Method that spawns defenders for remote rooms
+     * @param {String} targetRoom string representing the room
+     */
+    spawnGarrison(targetRoom) {
+        if (!global.Archivist.getGarrisonSpawned(this.room)) {
+            this.getSupervisor().initiate({
+                'body': [
+                    TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
+                    ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, 
+                    HEAL, HEAL, HEAL
+                ],
+                'type': 'garrison',
+                'memory': {'targetRoom': targetRoom}
+            });
+            global.Archivist.setGarrisonSpawned(this.room, true);
+        }
+    }
+
+    /**
      * Method that removes one of the scholars and two haulers upon reaching rcl 7 and max creeps are available
      */
     downscale() {

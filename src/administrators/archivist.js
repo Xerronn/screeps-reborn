@@ -155,6 +155,15 @@ class Archivist {
     }
 
     /**
+     * Get the garrison spawned flag for a given room
+     * @param {String} room string representation of a room
+     * @returns the garrison spawned flag
+     */
+     getGarrisonSpawned(room) {
+        return Memory.rooms[room].flags.garrisonSpawned;
+    }
+
+    /**
      * Get towers filled flag for a given room
      * @param {String} room string representing the room 
      * @returns value of the towersFilled flag
@@ -286,6 +295,16 @@ class Archivist {
      */
     setGameStage(room, value) {
         Memory.rooms[room].flags.gameStage = value;
+    }
+
+    /**
+     * Set the garrison spawned flag for a given room
+     * @param {String} room string representation of a room
+     * @param {Boolean} value true or false value to set the flag
+     * 
+     */
+     setGarrisonSpawned(room, value) {
+        Memory.rooms[room].flags.garrisonSpawned = value;
     }
 
     /**

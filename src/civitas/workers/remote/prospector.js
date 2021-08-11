@@ -44,7 +44,7 @@ class Prospector extends Remotus {
 
     run() {
         //march to room and flee if enemies
-        super.run();
+        if (super.run()) return;
 
         //once we get to the room
         if (!this.initialized) {

@@ -25,6 +25,7 @@ class Hauler extends Remotus {
             if (this.memory.container) {
                 this.container = Game.getObjectById(this.memory.container);
             }
+            
         }
         return true;
     }
@@ -32,7 +33,9 @@ class Hauler extends Remotus {
     run() {
         //todo: path caching and traversal
         //march to room and flee if enemies
-        super.run();
+        if (this.memory.task != "deposit") {
+            if (super.run()) return;
+        }
 
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
