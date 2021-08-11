@@ -116,7 +116,6 @@ class Prospector extends Remotus {
 
             //no more rebirth for you
             delete this.memory.generation;
-            this.replaced = true;
         }
     }
 
