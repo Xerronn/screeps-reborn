@@ -23,9 +23,7 @@ class Remotus extends Civitas {
                 return false;
             }
             //attributes that will change tick to tick
-            if (this.targetRoom != this.room) {
-                this.arrived = false
-            }
+            this.arrived = this.targetRoom == this.room
 
         }
         return true;
