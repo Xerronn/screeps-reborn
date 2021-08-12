@@ -32,7 +32,7 @@ class Prospector extends Remotus {
             if (this.memory.container) {
                 this.container = Game.getObjectById(this.memory.container);
 
-                if (!this.container && this.arrived) {
+                if (!this.container && this.room == this.targetRoom) {
                     //rebuild the container
                     this.planRoads(true);
                     delete this.memory.container;
