@@ -23,14 +23,13 @@ class Remotus extends Civitas {
                 return false;
             }
             //attributes that will change tick to tick
-            this.arrived = this.targetRoom == this.room
 
         }
         return true;
     }
 
-    run() {
-        if (!this.arrived && !this.fleeing) {
+    run(shouldMarch = true) {
+        if (shouldMarch && !this.arrived && !this.fleeing) {
             //march to assigned room
             this.march();
             return true;
@@ -52,17 +51,21 @@ class Remotus extends Civitas {
 
         //if we get here, we are not fleeing
         this.fleeing = false;
+        return false;
     }
 
     /**
      * Method to move the combat creep to their assigned room
+     * @param {RoomObject} targetRoom room to march towards
      */
-    march() {
+    march(targetRoom = this.targetRoom) {
         //if on an edge, path into current room
         if (this.isOnEdge()) {
             this.liveObj.moveTo(new RoomPosition(25,25, this.room));
-        } else if (this.targetRoom != this.room) {
-            this.liveObj.moveTo(new RoomPosition(25,25, this.targetRoom));
+        } else if (targetRoom != this.room) {
+            this.liveObj.moveTo(new RoomPosition(25,25, targetRoom));
+        } else {
+            this.arrived = true;
         }
     }
 
