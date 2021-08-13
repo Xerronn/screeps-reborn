@@ -12,12 +12,17 @@ class Castrum extends GameObj {
             this.hasStore = true;
         }
 
+        this.type = global.Illustrator.mapGameToClass(this.liveObj.structureType);
+
         this.update(true);
     }
 
     update(force=false) {
         if (this.updateTick != Game.time || force == true) {
-            if (!super.update(force)) return false;
+            if (!super.update(force)) {
+                //structure is dead
+                return false;
+            }
 
             if (this.hasStore) {
                 this.store = this.liveObj.store;

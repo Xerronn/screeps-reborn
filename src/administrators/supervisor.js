@@ -196,6 +196,16 @@ class Supervisor {
     }
 
     /**
+     * Delete the class holding the dead tower
+     * @param {Castrum} castrumType
+     */
+    decommission(castrumType) {
+        let origArr = this.castrum[castrumType.type];
+        let index = origArr.indexOf(castrumtype);
+        if (index >= 0) origArr.splice(index, 1);
+    }
+
+    /**
      * Function to wrap a newly created creep
      * @param {String} creepName Name of the creep
      */
