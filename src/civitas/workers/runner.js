@@ -39,7 +39,7 @@ class Runner extends Worker {
             let allSpawns = global.Archivist.getStructures(this.room, STRUCTURE_SPAWN);
             let closestSpawn = Game.rooms[this.room].storage.pos.findClosestByRange(allSpawns)
             this.memory.closestSpawn = closestSpawn.id;
-            nexus = global.Illuminator.getWrapper(this.memory.closestSpawn);
+            nexus = global.Illustrator.getWrapper(this.memory.closestSpawn);
         }
 
         //reserve the spawn, then renew until its full or no energy left
@@ -83,7 +83,7 @@ class Runner extends Worker {
         //cap controller level at 7
         let controllerLevel = Math.min(Game.rooms[this.room].controller.level, 7);
         let roomEnergy = EXTENSION_ENERGY_CAPACITY[controllerLevel] * CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][controllerLevel];
-        let numCarry = Math.ceil(roomEnergy / 100 / 2);
+        let numCarry = Math.min(Math.ceil(roomEnergy / 100 / 2), 32);
         //always make it even for most efficient move parts
         if (numCarry % 2 != 0) numCarry--;
 
@@ -96,8 +96,8 @@ class Runner extends Worker {
         }
 
         //if the carry count is lower than the calculation and there are no construction sites, upgrade body
-        if (carryCount < numCarry && Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            let newBody = this.body;
+        if (carryCount != numCarry && Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            let newBody = [];
             for (let i = 0; i < numCarry; i++) {
                 newBody.unshift(CARRY)
                 newBody.push(MOVE);
