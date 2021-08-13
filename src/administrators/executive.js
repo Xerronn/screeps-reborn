@@ -15,13 +15,14 @@ class Executive {
             //if gamestage is valid and different from what we have stored
             if (calculation != "-1" && current < calculation) {
                 //do some architect stuff
-                //! global.Architect.design(this.room, calculation);
+                global.Architect.design(this.room, calculation);
                 global.Archivist.setGameStage(this.room, calculation);
             }
         }
 
         //once gamestage 5 is active, phasetwo is in effect
-        if (parseFloat(global.Archivist.getGameStage(this.room)) >= 4.1) {
+        let gameStage = parseFloat(global.Archivist.getGameStage(this.room));
+        if (gameStage >= 4.1) {
             if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
                 let contractors = global.Archivist.getNumContractors(this.room);
 
@@ -29,13 +30,27 @@ class Executive {
                     contractors = 0;
                 }
 
-                if (contractors < 2) {
+                let numToSpawn = 2;
+                let spawnBody = [
+                    WORK, WORK, WORK, WORK,
+                    CARRY, CARRY, CARRY, CARRY,
+                    MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+                ]
+
+                //once we reach rcl 7, we downscale to a single double powerful contractor
+                if (gameStage >= 7) {
+                    numToSpawn = 1;
+                    spawnBody = [
+                        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                        CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+                        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+                        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+                    ]
+                }
+
+                if (contractors < numToSpawn) {
                     this.getSupervisor().initiate({
-                        'body': [
-                            WORK, WORK, WORK, WORK,
-                            CARRY, CARRY, CARRY, CARRY,
-                            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
-                        ],
+                        'body': spawnBody,
                         'type': 'contractor',
                         'memory': { "generation": 0 }
                     });
