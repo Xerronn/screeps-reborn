@@ -4,11 +4,15 @@ const Civitas = require("../civitas");
 class Excavator extends Civitas {
     constructor(creepId) {
         super(creepId);
+        
+        if (!this.memory.mineral) {
+            this.memory.mineral = Game.rooms[this.room].find(FIND_MINERALS)[0].id;
+        }
+        if (!this.memory.extractor) {
+            this.memory.extractor = Game.rooms[this.room].find(FIND_STRUCTURES, {filter: {structureType : STRUCTURE_EXTRACTOR}})[0].id;
 
-        this.mineralId = Game.rooms[this.room].find(FIND_MINERALS)[0].id;
-        this.mineral = Game.getObjectById(this.mineralId);
-        this.extractorId = Game.rooms[this.room].lookAt(this.mineral.pos.x, this.mineral.pos.y, LOOK_STRUCTURES)[0].id;
-
+        }
+        
         this.update(true);
     }
 
@@ -20,14 +24,22 @@ class Excavator extends Civitas {
             }
             //any attributes to update
 
-            this.mineral = Game.getObjectById(this.mineralId);
-            this.extractor = Game.getObjectById(this.extractorId);
+            if (this.memory.mineral) {
+                this.mineral = Game.getObjectById(this.memory.mineral);
+            }
+            if (this.memory.extractor) {
+                this.extractor = Game.getObjectById(this.memory.extractor);
+            }
 
-            if (this.containerId) {
-                this.container = Game.getObjectById(this.containerId);
-            } else {
+            if (!this.memory.container) {
                 let allContainers = global.Archivist.getStructures(this.room, STRUCTURE_CONTAINER);
-                this.containerId = Game.getObjectById(this.mineralId).pos.findInRange(allContainers, 1)[0];
+                let container = this.mineral.pos.findInRange(allContainers, 1)[0];
+                if (container) {
+                    this.memory.container = container.id
+                    this.container = Game.getObjectById(this.memory.container);
+                }
+            } else {
+                this.container = Game.getObjectById(this.memory.container);
             }
         }
         return true;
