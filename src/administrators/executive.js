@@ -189,11 +189,8 @@ class Executive {
 
         //! TODO: prioritization 
         for (let source of Object.keys(sources)) {
-            //one miner per source
+            //one miner per source. they spawn their own courier
             creepsToSpawn.push({ 'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'miner', 'memory': memory });
-            //one courier per source
-            //todo: maybe build the body based on how far the transporter has to go between container and storage
-            creepsToSpawn.push({ 'body': [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'type': 'courier', 'memory': memory });
         }
 
         for (let creepToSpawn of creepsToSpawn) {

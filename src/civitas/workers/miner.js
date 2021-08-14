@@ -56,6 +56,11 @@ class Miner extends Worker {
     run() {
         if (this.container) {
             this.harvest();
+
+            //spawn courier
+            if (!this.memory.courierSpawned) {
+                this.spawnCourier();
+            }
         } else {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
@@ -111,6 +116,22 @@ class Miner extends Worker {
         } else {
             this.liveObj.moveTo(this.link);
         }
+    }
+
+    /**
+     * Method to spawn couriers that take the energy from the container to the storage
+     */
+     spawnCourier() {
+        this.getSupervisor().initiate({
+            'body': [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+            'type': 'courier',
+            'memory': {
+                'generation' : 0, 
+                'container': this.memory.container
+            }
+        });
+        
+        this.memory.courierSpawned = true;
     }
 
     /**
