@@ -1,7 +1,7 @@
-const Miner = require("./miner");
+const Civitas = require("../civitas");
 
 //creep tasked with transporting energy from miners to storage
-class Courier extends Miner {
+class Courier extends Civitas {
     constructor(creepId) {
         super(creepId);
 
@@ -23,6 +23,25 @@ class Courier extends Miner {
             }
             //attributes that will change tick to tick
             this.storage = Game.getObjectById(this.storageId);
+            this.container = Game.getObjectById(this.memory.container);
+
+            //cached path for movement defined after we have a container to path to
+            if (!this.path && this.container) {
+                this.path = PathFinder.search(
+                    this.storage.pos, 
+                    {
+                        "pos" : this.container.pos,
+                        "range" : 1
+                    },
+                    {
+                        "roomCallback": global.Illustrator.getCostMatrix,
+                        "plainCost": 2,
+                        "swampCost": 10
+                    }
+                ).path;
+
+                this.reversedPath = [...this.path].reverse();
+            }
         }
         return true;
     }
@@ -41,39 +60,69 @@ class Courier extends Miner {
         }
         
         //evolve if the container ever gets full. it means the transporter is underpowered
-        if (this.container.store.getFreeCapacity(RESOURCE_ENERGY) == 0 && this.evolved == false) {
+        if (this.container.store.getFreeCapacity() == 0 && this.evolved == false) {
             this.evolve();
         }
 
-        if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+        if (this.store.getUsedCapacity() == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity() > 0)) {
             this.memory.task = "withdraw";
+            this.moveByPath();
             this.withdrawContainer();
         } else {
-            this.memory.task = "deposit"
+            this.memory.task = "deposit";
+            this.moveByPath(true);
             this.depositStorage();
+        }
+    }
+
+    /**
+     * Method to travel along the cached path
+     * @param {Boolean} reversed go in the opposite direction
+     * @param {Boolean} reset reset the path to the start
+     */
+     moveByPath(reversed) {
+        //detect if creep is stuck, and path normally if necessary
+        if (this.stuckPos.x != this.pos.x || this.stuckPos.y != this.pos.y) {
+            this.stuckPos = this.pos;
+            this.stuckTick = 0;
+        } else {
+            this.stuckPos = this.pos;
+            this.stuckTick++;
+        }
+
+        if (this.stuckTick > 3) {
+            //do something
+            this.pathing = false;
+        }
+        if (!reversed) {
+            this.liveObj.moveByPath(this.path);
+        } else {
+            this.liveObj.moveByPath(this.reversedPath);
         }
     }
 
     /**
      * Move to assigned container and withdraw if the container can fill the creep
      */
-    withdrawContainer() {
+    withdrawContainer(resourceType=RESOURCE_ENERGY) {
         if (this.pos.inRangeTo(this.container, 1)) {
-            if (this.container.store.getUsedCapacity(RESOURCE_ENERGY) > this.store.getFreeCapacity(RESOURCE_ENERGY)) {
-                this.liveObj.withdraw(this.container, RESOURCE_ENERGY);
+            if (this.container.store.getUsedCapacity(resourceType) > this.store.getFreeCapacity(resourceType)) {
+                this.liveObj.withdraw(this.container, resourceType);
             }
         } else {
-            this.liveObj.moveTo(this.container);
+            if (!this.pathing) {
+                this.liveObj.moveTo(this.container);
+            }
         }
     }
 
     /**
      * Move to storage and deposit all stored energy
      */
-    depositStorage() {
+    depositStorage(resourceType=RESOURCE_ENERGY) {
         if (this.pos.inRangeTo(this.storage, 1)) {
-            this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
-        } else {
+            this.liveObj.transfer(this.storage, resourceType);
+        } else if (!this.pathing) {
             this.liveObj.moveTo(this.storage);
         }
     }
