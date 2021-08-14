@@ -8,6 +8,18 @@ class Garrison extends Legionnaire {
         this.update(true);
     }
 
+    update(force=false) {
+        if (this.updateTick != Game.time || force == true) {
+            if (!super.update(force)) {
+                //creep is dead, set flag so a new one can be spawned
+                global.Archivist.setGarrisonSpawned(this.memory.spawnRoom, false);
+                return false;
+            }
+            //attributes that change tick to tick
+        }
+        return true;
+    }
+
     run() {
         //move to garrison target
         if (!this.arrived) {
