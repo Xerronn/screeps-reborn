@@ -41,12 +41,14 @@ class Remotus extends Civitas {
         }
 
         let targetRoom = Game.rooms[this.memory.targetRoom];
-        let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
-        //todo: check for attack parts?
-        if (targetRoom && hostileCreeps.length > 0) {
-            this.getExecutive().spawnGarrison(this.memory.targetRoom);
-            this.flee();
-            return true;
+        if (targetRoom) {
+            let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
+            //todo: check for attack parts?
+            if (hostileCreeps.length > 0) {
+                this.getExecutive().spawnGarrison(this.memory.targetRoom);
+                this.flee();
+                return true;
+            }
         }
 
         //if we get here, we are not fleeing
@@ -74,6 +76,7 @@ class Remotus extends Civitas {
      */
     flee() {
         this.fleeing = true;
+        this.arrived = false;
         let position = new RoomPosition(25,25, this.memory.spawnRoom);
         if (!this.pos.inRangeTo(position, 15)) {
             this.liveObj.moveTo(position);

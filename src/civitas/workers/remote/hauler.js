@@ -83,8 +83,9 @@ class Hauler extends Remotus {
             } else {
                 this.moveByPath();
             }
-
-            this.withdrawContainer();
+            if (this.room == this.targetRoom) {
+                this.withdrawContainer();
+            }
             
         } else {
             this.memory.task = "deposit"
@@ -97,7 +98,9 @@ class Hauler extends Remotus {
             } else {
                 this.moveByPath(true);
             }
-            this.depositStorage();
+            if (this.room == this.memory.spawnRoom) {
+                this.depositStorage();
+            }
         }
 
         //make sure to spawn new hauler before the current one dies, to maintain better uptime
