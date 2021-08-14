@@ -64,6 +64,7 @@ class Architect {
                 break;
             case "6.3":
                 //start scouting for remotes
+                global.Imperator.administrators[room].executive.spawnExcavator();
                 global.Imperator.administrators[room].executive.spawnScout();
                 break;
             case "6.4":

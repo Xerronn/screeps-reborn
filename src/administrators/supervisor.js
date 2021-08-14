@@ -6,6 +6,7 @@ const Scholar = require("../civitas/workers/scholar");
 const Runner = require("../civitas/workers/runner");
 const Contractor = require("../civitas/workers/contractor");
 const Arbiter = require("../civitas/workers/arbiter");
+const Excavator = require("../civitas/workers/excavator");
 
 //remote workers
 const Scout = require("../civitas/workers/remote/scout");

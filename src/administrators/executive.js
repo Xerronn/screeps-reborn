@@ -128,7 +128,7 @@ class Executive {
             calculation = "6.2";
         }
         if (rcl == 6 && currentStage == "6.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            //time to start scouting
+            //time to start scouting and spawn the excavator
             calculation = "6.3";
         }
         if (rcl == 6 && currentStage == "6.3" && global.Archivist.getDoneScouting(this.room) == true) {
@@ -290,6 +290,22 @@ class Executive {
             });
             global.Archivist.setGarrisonSpawned(this.room, true);
         }
+    }
+
+    /**
+     * Method that spawns the excavator to mine out minerals
+     */
+    spawnExcavator() {
+        this.getSupervisor().initiate({
+            'body': [
+                WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+            ],
+            'type': 'excavator',
+            'memory': {'generation':0}
+        });
     }
 
     /**
