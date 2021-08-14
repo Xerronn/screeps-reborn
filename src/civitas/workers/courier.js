@@ -7,6 +7,9 @@ class Courier extends Civitas {
 
         //! TODO: what if the storage is killed
         this.storageId = Game.rooms[this.room].storage.id;
+        if (Game.rooms[this.room].terminal) {
+            this.terminalId = Game.rooms[this.room].terminal.id;
+        }
         this.evolved = false;
 
         this.update(true);
@@ -24,6 +27,9 @@ class Courier extends Civitas {
             //attributes that will change tick to tick
             this.storage = Game.getObjectById(this.storageId);
             this.container = Game.getObjectById(this.memory.container);
+            if (this.terminalId) {
+                this.terminal = Game.getObjectById(this.terminalId);
+            }
 
             //cached path for movement defined after we have a container to path to
             if (!this.path && this.container) {
@@ -67,11 +73,11 @@ class Courier extends Civitas {
         if (this.store.getUsedCapacity() == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity() > 0)) {
             this.memory.task = "withdraw";
             this.moveByPath();
-            this.withdrawContainer();
+            this.withdrawContainer(this.memory.resource);
         } else {
             this.memory.task = "deposit";
             this.moveByPath(true);
-            this.depositStorage();
+            this.depositStorage(this.memory.resource);
         }
     }
 
@@ -124,6 +130,14 @@ class Courier extends Civitas {
             this.liveObj.transfer(this.storage, resourceType);
         } else if (!this.pathing) {
             this.liveObj.moveTo(this.storage);
+        }
+    }
+
+    depositTerminal() {
+        if (this.pos.inRangeTo(this.terminal, 1)) {
+            this.liveObj.transfer(this.terminal, resourceType);
+        } else if (!this.pathing) {
+            this.liveObj.moveTo(this.terminal);
         }
     }
 

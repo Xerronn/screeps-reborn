@@ -127,7 +127,8 @@ class Miner extends Worker {
             'type': 'courier',
             'memory': {
                 'generation' : 0, 
-                'container': this.memory.container
+                'container': this.memory.container,
+                'resource': RESOURCE_ENERGY
             }
         });
         
