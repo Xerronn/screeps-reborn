@@ -72,6 +72,7 @@ class Legionnaire extends Remotus {
         } else {
             this.liveObj.moveTo(targetCreep);
         }
+        return true;
     }
 }
 
