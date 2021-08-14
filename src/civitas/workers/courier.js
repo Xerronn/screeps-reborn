@@ -77,7 +77,12 @@ class Courier extends Civitas {
         } else {
             this.memory.task = "deposit";
             this.moveByPath(true);
-            this.depositStorage(this.memory.resource);
+            //only put energy into storage, the rest goes to terminal
+            if (this.memory.resource == RESOURCE_ENERGY) {
+                this.depositStorage(this.memory.resource);
+            } else {
+                this.depositTerminal(this.memory.resource);
+            }
         }
     }
 
@@ -133,7 +138,11 @@ class Courier extends Civitas {
         }
     }
 
-    depositTerminal() {
+    /**
+     * Method to deposit minerals to the terminal
+     * @param {STRING} resourceType 
+     */
+    depositTerminal(resourceType=RESOURCE_ENERGY) {
         if (this.pos.inRangeTo(this.terminal, 1)) {
             this.liveObj.transfer(this.terminal, resourceType);
         } else if (!this.pathing) {
