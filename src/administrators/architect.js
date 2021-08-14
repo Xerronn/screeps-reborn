@@ -455,8 +455,13 @@ class Architect {
         let selectedCorner = roomMineral.pos.findClosestByPath(corners);
         let roadPath = selectedCorner.findPathTo(roomMineral, {range: 1, ignoreCreeps: true});
 
-        for (let pos of roadPath) {
-            Game.rooms[room].createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
+        for (let i in roadPath) {
+            if (i < roadPath.length - 1) {
+                Game.rooms[room].createConstructionSite(roadPath[i].x, roadPath[i].y, STRUCTURE_ROAD);
+            } else {
+                Game.rooms[room].createConstructionSite(roadPath[i].x, roadPath[i].y, STRUCTURE_CONTAINER);
+
+            }
         }
 
         //build extractor
