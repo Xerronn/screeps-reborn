@@ -29,7 +29,7 @@ class Remotus extends Civitas {
     }
 
     run(shouldMarch = true) {
-        if (shouldMarch && !this.arrived && !this.fleeing) {
+        if (shouldMarch && this.room != this.targetRoom && !this.fleeing) {
             //march to assigned room
             this.march();
             return true;
