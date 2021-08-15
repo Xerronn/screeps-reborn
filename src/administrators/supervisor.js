@@ -156,13 +156,16 @@ class Supervisor {
                     if (!newBody) {
                         newBody = template.body;
                     }
+
+                    if (template.memory.generation !== undefined) {
+                        template.memory.generation++;
+                    }
+
                     let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
 
                     //if the request fails, schedule it for 20 ticks in the future
                     if (success == OK) {
-                        if (template.memory.generation !== undefined) {
-                            template.memory.generation++;
-                        }
+                        //don't try spawning on another spawn
                         break;
                     } else {
                         //so we can reschedule
