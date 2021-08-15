@@ -141,7 +141,13 @@ class Illustrator {
         return cost;
     }
 
+    /**
+     * Method that returns the strcutre matrix of a room
+     * @param {String} roomName 
+     * @returns a roomcache
+     */
     getCostMatrix(roomName) {
+        //! TODO: figure out why the cacheing isnt working
         //if (this.matrixCache[roomName]) return this.matrixCache[roomName];
         let room = Game.rooms[roomName];
         let matrix = new PathFinder.CostMatrix();
