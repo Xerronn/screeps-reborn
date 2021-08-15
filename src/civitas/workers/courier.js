@@ -12,6 +12,10 @@ class Courier extends Civitas {
         }
         this.evolved = false;
 
+        this.stuckTick = 0;
+        this.stuckPos = this.pos;
+        this.pathing = true;
+
         this.update(true);
     }
 
@@ -32,7 +36,7 @@ class Courier extends Civitas {
             }
 
             //cached path for movement defined after we have a container to path to
-            if (!this.path && this.container) {
+            if (!this.path && this.container && this.storage) {
                 this.path = PathFinder.search(
                     this.storage.pos, 
                     {
