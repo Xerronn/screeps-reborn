@@ -53,7 +53,7 @@ class Excavator extends Civitas {
         }
 
         // this mineral courier will not rebirth due to it not being spawned very often
-        if (this.memory.courierSpawned && this.container.store.getUsedCapacity() == 0) {
+        if (this.memory.courierSpawned && this.container.store.getUsedCapacity() < 1000) {
             this.memory.courierSpawned = false;
         }
 
@@ -94,7 +94,7 @@ class Excavator extends Civitas {
      */
     spawnCourier() {
         this.getSupervisor().initiate({
-            'body': [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+            'body': [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
             'type': 'courier',
             'memory': {
                 'container': this.memory.container,
