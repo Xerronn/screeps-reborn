@@ -31,7 +31,7 @@ class Excavator extends Civitas {
                 this.extractor = Game.getObjectById(this.memory.extractor);
             }
 
-            if (!this.memory.container) {
+            if (!this.memory.container && this.mineral) {
                 let allContainers = global.Archivist.getStructures(this.room, STRUCTURE_CONTAINER);
                 let container = this.mineral.pos.findInRange(allContainers, 1)[0];
                 if (container) {
@@ -46,6 +46,10 @@ class Excavator extends Civitas {
     }
 
     run() {
+        //when the mineral is empty, do nothing until death.
+        //premature suicide leaves energy in the container
+        if (this.memory.generation == undefined) return;
+
         this.harvest();
 
         if (this.container.store.getUsedCapacity() > 1500 && !this.memory.courierSpawned) {
@@ -58,7 +62,7 @@ class Excavator extends Civitas {
         }
 
         //spawn a new excavator when the mineral is regenerated
-        if (this.memory.generation !== undefined && this.mineral.ticksToRegeneration && this.ticksToLive < this.mineral.ticksToRegeneration) {
+        if (this.memory.generation !== undefined && this.mineral.mineralAmount == 0 && this.mineral.ticksToRegeneration && this.ticksToLive < this.mineral.ticksToRegeneration) {
 
             let task = `
                 global.Imperator.administrators[\"` + this.memory.spawnRoom + `\"].supervisor.initiate({
@@ -71,7 +75,6 @@ class Excavator extends Civitas {
             global.TaskMaster.schedule(Game.time + this.mineral.ticksToRegeneration, task, [[...this.body], this.memory.type, {...this.memory}]);
             //no more rebirth for you
             delete this.memory.generation;
-            this.liveObj.suicide();
         }
     }
 
