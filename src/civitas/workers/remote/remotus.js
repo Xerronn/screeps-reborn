@@ -62,9 +62,9 @@ class Remotus extends Civitas {
      */
     march(targetRoom = this.targetRoom) {
         //if on an edge, path into current room
-        if (this.isOnEdge()) {
-            this.liveObj.moveTo(new RoomPosition(25,25, this.room));
-        } else if (targetRoom != this.room) {
+        if (this.moveEdge()) return;
+
+        if (targetRoom != this.room) {
             this.liveObj.moveTo(new RoomPosition(25,25, targetRoom));
         } else {
             this.arrived = true;

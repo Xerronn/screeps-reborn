@@ -41,11 +41,28 @@ class Civitas extends GameObj {
     }
 
     /**
-     * Method to shorthand if a creep is the edge
-     * @returns Boolean on if the creep is on an edge tile
+     * Method to automatically move a creep off the edge in the correct direction
+     * @returns Boolean on if the creep is on an edge tile and moving
      */
-    isOnEdge() {
-        return this.pos.x == 0 || this.pos.y == 0 || this.pos.x == 49 || this.pos.y == 49;
+    moveEdge() {
+        switch(this.pos.x) {
+			case 0: 
+				this.liveObj.move(RIGHT);
+				return true;
+			case 49: 
+				this.liveObj.move(LEFT);
+				return true;
+		}
+		switch(this.pos.y) {
+			case 0:
+				this.liveObj.move(BOTTOM);
+				return true;
+			case 49: 
+				this.liveObj.move(TOP);
+				return true;
+		}
+
+        return false;
     }
 
     /**
