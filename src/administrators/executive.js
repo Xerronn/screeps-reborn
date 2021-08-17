@@ -282,7 +282,7 @@ class Executive {
             this.getSupervisor().initiate({
                 'body': [
                     TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
-                    ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, 
+                    ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, RANGED_ATTACK, 
                     HEAL, HEAL, HEAL
                 ],
                 'type': 'garrison',
