@@ -31,6 +31,7 @@ class Garrison extends Legionnaire {
         if (this.target) {
             this.memory.task = "attack";
             this.melee();
+            this.beam();
         } else {
             global.Archivist.setGarrisonSpawned(this.memory.spawnRoom, false);
         }
@@ -38,7 +39,7 @@ class Garrison extends Legionnaire {
         if (this.hits <= this.hitsMax - 300 || (this.hits < this.hitsMax && this.memory.task == "selfHeal") || (!this.target && this.hits < this.hitsMax)) {
             this.memory.task = "selfHeal";
             this.selfHeal();
-        } else {
+        } else if (!this.target) {
             if (!this.medic()) {
                 this.garrison();
             }
