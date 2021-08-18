@@ -12,10 +12,18 @@ class Architect {
             case "1":
                 //calculate anchor and build spawn
                 this.buildBunker(room);
-                //start the room off with the five basic engineers
-                global.Imperator.administrators[room].executive.phaseOne();
+                if (Game.rooms[room].find(FIND_MY_SPAWNS).length > 0) {
+                    //start the room off with the five basic engineers
+                    global.Imperator.administrators[room].executive.phaseOne();
+                }
                 break;
             case "2":
+                this.buildBunker(room);
+                //activate phaseOne at gamestage 2 if this isn't the first room
+                if (global.Imperator.dominion.length > 1) {
+                    global.Imperator.administrators[room].executive.phaseOne();
+                }
+                break;
             case "3":
                 //turning rcl 2 and 3
                 //build the first few extensions
@@ -111,7 +119,7 @@ class Architect {
         if (!dry) {
             //clear out any buildings left by enemies
             let enemyBuildings = Game.rooms[room].find(FIND_STRUCTURES, {
-                filter: (structure) => {return structure.my == false && struc.structureType != STRUCTURE_STORAGE && struc.structureType != STRUCTURE_TERMINAL}});
+                filter: (struc) => {return struc.my == false && struc.structureType != STRUCTURE_STORAGE && struc.structureType != STRUCTURE_TERMINAL}});
             for (var struct of enemyBuildings) {
                 struct.destroy();
             }
@@ -128,7 +136,8 @@ class Architect {
             if (!dry) {
                 global.Archivist.setAnchor(room, spawnPos)
             }
-            return JSON.stringify(spawnPos);
+            console.log(JSON.stringify(spawnPos));
+            return spawnPos;
         } else {
             //find positions the bunker could fit
             var candidates = [];
@@ -199,7 +208,8 @@ class Architect {
             if (!dry) {
                 global.Archivist.setAnchor(room, bestCandidate)
             }
-            return JSON.stringify(bestCandidate);
+            console.log(JSON.stringify(bestCandidate));
+            return bestCandidate;
         }
     }
 
@@ -510,7 +520,7 @@ class Architect {
         remotes[selectedRemote].selected = true;
 
         //now we need to spawn the reserver with that room as a target
-        global.Imperator.administrators[room].executive.spawnEmissary(selectedRemote);
+        global.Imperator.administrators[room].executive.spawnEmissary(selectedRemote, 'reserve');
 
         //now lets build a road to that exit
         let storage = Game.rooms[room].storage;
