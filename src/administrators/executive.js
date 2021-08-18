@@ -300,6 +300,25 @@ class Executive {
     }
 
     /**
+     * Method to spawn a remote engineer
+     * @param {String} targetRoom String representing the room
+     */
+     spawnDevelopers(targetRoom) {
+        for (let i = 0; i < 2; i++) {
+            this.getSupervisor().initiate({
+                'body': [
+                    WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                    CARRY, CARRY, CARRY, CARRY, CARRY,
+                    MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+                    MOVE, MOVE, MOVE, MOVE, MOVE
+                ],
+                'type': 'developer',
+                'memory': {'generation':0, 'targetRoom': targetRoom, 'noRoads': true}
+            });
+        }
+    }
+
+    /**
      * Method that spawns the excavator to mine out minerals
      */
     spawnExcavator() {
