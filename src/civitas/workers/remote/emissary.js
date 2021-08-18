@@ -19,6 +19,9 @@ class Emissary extends Remotus {
             this.reserve();
         } else if (this.memory.task == "claim") {
             this.claim();
+        } else if (this.memory.task == "doneClaiming") {
+            global.Imperator.initRoom(this.room);
+            this.liveObj.suicide();
         }
 
         //make sure to spawn new emissary before the current one dies, to maintain 100% uptime
@@ -63,8 +66,46 @@ class Emissary extends Remotus {
         let controller = Game.rooms[this.room].controller;
         if (this.pos.inRangeTo(controller, 1)) {
             this.liveObj.claimController(controller);
+            this.sign();
+            //disable rebirth because this creep will never need to come back
+            delete this.memory.generation;
+            this.memory.task = 'doneClaiming';
         } else {
             this.liveObj.moveTo(controller);
+        }
+    }
+
+    /**
+     * Method to sign the controller with a latin saying
+     */
+    sign() {
+        let choices = [
+            "Omnium Rerum Principia Parva Sunt",                            //The beginnings of all things are small.
+            "Pecunia Nervus Belli",                                         //Money is the soul (or sinew) of war
+            "Male Parta Male Dilabuntur",                                   //What has been wrongly gained is wrongly lost
+            "Aere Perennius",                                               //More lasting than bronze
+            "Nil Desperandum",                                              //Never despair!
+            "Timendi Causa Est Nescire",                                    //The cause of fear is ignorance
+            "Per Aspera Ad Astra",                                          //Through hardship to the stars
+            "Vitam Impendere Vero",                                         //Dedicate your life to truth
+            "Ars Longa, Vita Brevis",                                       //Art is long, life is short
+            "Alea Jacta Est",                                               //The die is cast
+            "Festina lente",                                                //Make haste slowly
+            "Una salus victis nullam sperare salutem",                      //The one well being of the defeated is to not hope for well being
+            "Optimum est pati quod emendare non possis",                    //It is best to endure what you cannot change
+            "Quod scripsi, scripsi",                                        //What I have written, I have written
+            "Quemadmoeum gladis nemeinum occidit, occidentis telum est",    //a sword is never a killer, it is a tool in a killer's hand
+            "Flamma fumo est proxima",                                      //Where there is smoke, there is fire
+            "Multi famam, conscientiam pauci verentur"                      //Many fear their reputation, few their conscience
+        ]
+
+        let controller = Game.rooms[this.room].controller;
+        if (this.pos.inRangeTo(controller, 1)) {
+            //selected a random message from the message array then sign it with that message
+            let selectedMessage = choices[Math.floor(Math.random() * choices.length)];
+            this.liveObj.signController(controller, selectedMessage);
+        } else {
+            this.moveTo(controller);
         }
     }
 }
