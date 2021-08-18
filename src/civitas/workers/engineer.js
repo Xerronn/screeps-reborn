@@ -8,6 +8,7 @@ const Worker = require("./worker");
 class Engineer extends Worker {
     constructor(creepId) {
         super(creepId);
+        this.noPillage = false;
         
     }
 
@@ -42,18 +43,23 @@ class Engineer extends Worker {
         //good priorities up to rcl 4, where engineers will begin to be phased out
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";
+            if (!this.noPillage) {
+                if (this.pillage()) return;
+            }
+            this.harvest();
         } else if (!global.Archivist.getTowersFilled(this.room)) {
             this.memory.task = "fillTowers";
+            this.fillTowers();
         } else if (!global.Archivist.getExtensionsFilled(this.room)) {
             this.memory.task = "fillExtensions";
+            this.fillExtensions();
         } else if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
             this.memory.task = "build";
+            this.fillExtensions();
         } else {
             this.memory.task = "upgradeController";
+            this.upgradeController();
         }
-
-        let task = "this." + this.memory.task + "();"
-        eval(task);
 
         //evolve the creep to meet expanding energy availability
         if (this.ticksToLive < 2) {
