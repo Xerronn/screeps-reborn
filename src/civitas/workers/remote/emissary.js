@@ -37,7 +37,10 @@ class Emissary extends Remotus {
                 });
             `
 
-            let reservedTicks = Game.rooms[this.room].controller.reservation.ticksToEnd;
+            let reservedTicks = 100;
+            if (Game.rooms[this.targetRoom]) {
+                reservedTicks = Game.rooms[this.targetRoom].controller.reservation.ticksToEnd;
+            }
             global.TaskMaster.schedule(Game.time + reservedTicks - (travelTime * 2), task, [[...this.body], this.memory.type, {...this.memory}]);
             //no more rebirth for you
             delete this.memory.generation;
