@@ -20,7 +20,7 @@ class Emissary extends Remotus {
         } else if (this.memory.task == "claim") {
             this.claim();
         } else if (this.memory.task == "doneClaiming") {
-            global.Imperator.initRoom(this.room);
+            global.Imperator.initRoom(this.targetRoom, this.memory.spawnRoom);
             this.liveObj.suicide();
         }
 

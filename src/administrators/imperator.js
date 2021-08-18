@@ -28,12 +28,13 @@ class Imperator {
      * Method that creates a supervisor and executive for a newly claimed room
      * @param {String} room String representing the room
      */
-    initRoom(room) {
+    initRoom(room, originRoom) {
         this.administrators[room] = {};
         this.administrators[room].supervisor = new Supervisor(room);
         this.administrators[room].executive = new Executive(room);
         global.Archivist.build();
         this.refreshDominion();
+        this.administrators[originRoom].executive.spawnDevelopers(room);
     }
 
     /**
