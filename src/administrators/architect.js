@@ -18,20 +18,22 @@ class Architect {
                 }
                 break;
             case "2":
+                //turning rcl 2
                 this.buildBunker(room);
-                //activate phaseOne at gamestage 2 if this isn't the first room
-                if (global.Imperator.dominion.length > 1) {
-                    global.Imperator.administrators[room].executive.phaseOne();
-                }
+                
                 break;
             case "3":
-                //turning rcl 2 and 3
+                //turning rcl 3
                 //build the first few extensions
                 this.buildBunker(room);
                 break;
             case "3.1":
                 //towers are built, so build containers at sources
                 this.buildSourceContainers(room);
+                //activate phaseOne at gamestage 3.1 if this isn't the first room
+                if (global.Imperator.dominion.length > 1) {
+                    global.Imperator.administrators[room].executive.phaseOne();
+                }
                 break;
             case "4":
                 //just turned rcl 4
