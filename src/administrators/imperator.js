@@ -5,7 +5,7 @@ const Executive = require("./executive");
 class Imperator {
     constructor () {
         this.administrators = {};
-        this.dominion = _.filter(Game.rooms, room => room.controller && room.controller.my).map(room => room.name);
+        this.refreshDominion();
     }
 
     /**
@@ -25,6 +25,18 @@ class Imperator {
     }
 
     /**
+     * Method that creates a supervisor and executive for a newly claimed room
+     * @param {String} room String representing the room
+     */
+    initRoom(room) {
+        this.administrators[room] = {};
+        this.administrators[room].supervisor = new Supervisor(room);
+        this.administrators[room].executive = new Executive(room);
+        global.Archivist.build();
+        this.refreshDominion();
+    }
+
+    /**
      * Function to refresh the live objects of everything in the game
      */
     refresh() {
@@ -41,6 +53,13 @@ class Imperator {
             this.administrators[room].supervisor.run();
             this.administrators[room].executive.run();
         }
+    }
+
+    /**
+     * Method to update the imperator's dominion to current
+     */
+    refreshDominion() {
+        this.dominion = _.filter(Game.rooms, room => room.controller && room.controller.my).map(room => room.name);
     }
 }
 
