@@ -187,6 +187,41 @@ class Worker extends Civitas {
             this.liveObj.moveTo(storage);
         }
     }
+
+    /**
+     * Method to steal energy from leftover enemy storage and terminals
+     * @returns If pillage does anything
+     */
+    pillage() {
+        let storage = Game.rooms[this.targetRoom].storage;
+        let terminal = Game.rooms[this.targetRoom].terminal;
+        let target = undefined;
+        if (storage) {
+            if (storage.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                target = storage;
+            } else {
+                storage.destroy();
+            }
+        } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+            if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                target = terminal;
+            } else {
+                terminal.destroy();
+            }
+        }
+
+        if (target === undefined) {
+            this.noPillage = true;
+            return false;
+        }
+
+        if (this.pos.inRangeTo(target, 1)) {
+            this.liveObj.withdraw(target, RESOURCE_ENERGY);
+        } else {
+            this.liveObj.moveTo(target);
+        }
+        return true;
+    }
 }
 
 module.exports = Worker;
