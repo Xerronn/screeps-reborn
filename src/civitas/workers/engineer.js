@@ -55,7 +55,7 @@ class Engineer extends Worker {
             this.fillExtensions();
         } else if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
             this.memory.task = "build";
-            this.fillExtensions();
+            this.build();
         } else {
             this.memory.task = "upgradeController";
             this.upgradeController();
