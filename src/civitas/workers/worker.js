@@ -97,6 +97,7 @@ class Worker extends Civitas {
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
+            global.Imperator.administrators[this.room].supervisor.wrap(true);
             let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
 
             liveClosestSite = this.pos.findClosestByRange(sites);
@@ -193,8 +194,8 @@ class Worker extends Civitas {
      * @returns If pillage does anything
      */
     pillage() {
-        let storage = Game.rooms[this.targetRoom].storage;
-        let terminal = Game.rooms[this.targetRoom].terminal;
+        let storage = Game.rooms[this.room].storage;
+        let terminal = Game.rooms[this.room].terminal;
         let target = undefined;
         if (storage) {
             if (storage.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {

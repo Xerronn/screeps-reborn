@@ -74,6 +74,7 @@ class Engineer extends Worker {
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
+            this.getSupervisor().wrap(true);
             let sites = Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES);
 
             liveClosestSite = this.source.pos.findClosestByRange(sites);
