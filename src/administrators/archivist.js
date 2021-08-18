@@ -24,16 +24,9 @@ class Archivist {
         for (var room of global.Imperator.dominion) {
             if (!Memory.rooms[room]) {
                 Memory.rooms[room] = {};
-            }
-
-            if (!Memory.rooms[room].flags) {
                 Memory.rooms[room].flags = {}
-                Memory.rooms[room].flags.extensionsFilled = false;
                 Memory.rooms[room].flags.gameStage = 0;
-                Memory.rooms[room].flags.roadsBuilt = false;
-            }
-
-            if (!Memory.rooms[room].sources || reset) {
+            
                 //first chunk of code from the old source material
                 //get all sources and init a list to track workers
                 Memory.rooms[room].sources = {};
@@ -42,7 +35,7 @@ class Archivist {
                     Memory.rooms[room].sources[source] = {};
                     Memory.rooms[room].sources[source].workers = {};
                 }
-            }          
+            }
         }
 
         //This must be at the end of this method
