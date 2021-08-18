@@ -36,10 +36,6 @@ class Nexus extends Castrum {
     }
 
     run() {
-        if (this.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-            global.Archivist.setExtensionsFilled(this.room, false);
-        }
-
         if (this.spawning && !this.wrapped) {
             global.Imperator.administrators[this.room].supervisor.wrapCreep(this.spawning.name);
             this.wrapped = true;

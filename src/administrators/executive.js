@@ -8,6 +8,11 @@ class Executive {
      * Exectuive logic to run each tick
      */
     run() {
+        //manage extensions filled flag
+        if (Game.rooms[this.room].energyAvailable < Game.rooms[this.room].energyCapacityAvailable) {
+            global.Archivist.setExtensionsFilled(this.room, false);
+        }
+
         //check gamestage every 10 ticks
         if (Game.time % 10 == 0) {
             let calculation = this.calculateGameStage(this.room);
