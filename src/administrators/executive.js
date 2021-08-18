@@ -234,13 +234,20 @@ class Executive {
     }
 
     /**
-     * Method that spawns an emissary to reserve a remote room
+     * Method that spawns an emissary to either claim a new room or reserve a remote room
+     * @param {String} task either 'reserve' or 'claim'
      */
-    spawnEmissary(targetRoom) {
+    spawnEmissary(targetRoom, task='reserve') {
+        let body;
+        if (task == 'reserve') {
+            body = [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];
+        } else {
+            body = [CLAIM, MOVE, MOVE, MOVE, MOVE, MOVE];
+        }
         this.getSupervisor().initiate({
-            'body': [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE],
+            'body': body,
             'type': 'emissary',
-            'memory': {'generation' : 0, 'task': 'reserve', 'targetRoom': targetRoom, 'noRoads': true}
+            'memory': {'generation' : 0, 'task': task, 'targetRoom': targetRoom, 'noRoads': true}
         });
     }
 
