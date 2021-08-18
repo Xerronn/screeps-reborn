@@ -72,7 +72,7 @@ class Developer extends Remotus {
             this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
         }
 
-        if (this.memory.generation && Game.rooms[this.targetRoom].controller.level > 3) {
+        if (this.memory.generation && parseFloat(global.Archivist.getGameStage(this.targetRoom)) >= 3.1) {
             //the creep will support the new room until it reaches RCL 3
             delete this.memory.generation;
         }
