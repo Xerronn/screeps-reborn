@@ -28,26 +28,35 @@ class Remotus extends Civitas {
         return true;
     }
 
-    run(shouldMarch = true) {
+    /**
+     * Parent remote creep Method that marches to an assigned room and flees if there is danger
+     * @param {Boolean} shouldMarch if the creep should participate in marching
+     * @param {Boolean} shouldFlee if the creep should participate in fleeing
+     * @returns if the run function did anything
+     */
+    run(shouldMarch = true, shouldFlee = true) {
         if (shouldMarch && !this.arrived && !this.fleeing) {
             //march to assigned room
             this.march();
             return true;
         }
 
-        if (global.Archivist.getGarrisonSpawned(this.memory.spawnRoom)) {
-            this.flee();
-            return true;
-        }
-
-        let targetRoom = Game.rooms[this.memory.targetRoom];
-        if (targetRoom) {
-            let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
-            //todo: check for attack parts?
-            if (hostileCreeps.length > 0) {
-                this.getExecutive().spawnGarrison(this.memory.targetRoom);
+        if (shouldFlee) {
+            if (global.Archivist.getGarrisonSpawned(this.memory.spawnRoom)) {
                 this.flee();
                 return true;
+            }
+
+            //check for hostile creeps and if there are, request a garrison and signal all creeps to flee to origin room
+            let targetRoom = Game.rooms[this.memory.targetRoom];
+            if (targetRoom) {
+                let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
+                //todo: check for attack parts?
+                if (hostileCreeps.length > 0) {
+                    this.getExecutive().spawnGarrison(this.memory.targetRoom);
+                    this.flee();
+                    return true;
+                }
             }
         }
 
