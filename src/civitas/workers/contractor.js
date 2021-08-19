@@ -30,7 +30,7 @@ class Contractor extends Worker {
      */
     build() {
         let storage = Game.rooms[this.room].storage;
-        if (!storage) return;
+        if (!storage) return false;
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
