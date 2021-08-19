@@ -181,7 +181,7 @@ class Worker extends Civitas {
 
     withdrawStorage() {
         let storage = Game.rooms[this.room].storage;
-        if (!storage) return false;
+        if (!storage || storage.store.getUsedCapacity(RESOURCE_ENERGY) < this.store.getFreeCapacity(RESOURCE_ENERGY)) return false;
 
         if (this.pos.inRangeTo(storage, 1)) {
             this.liveObj.withdraw(storage, RESOURCE_ENERGY);
@@ -204,7 +204,7 @@ class Worker extends Civitas {
             } else {
                 if (!storage.my) storage.destroy();
             }
-        } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+        } else if (terminal) {
             if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
                 target = terminal;
             } else {
