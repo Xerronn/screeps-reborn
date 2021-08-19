@@ -108,7 +108,7 @@ class Executive {
             //storage is built, time to switch to phase 2
             calculation = "4.1";
         }
-        if (rcl == 4 && liveRoom.storage && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
+        if (rcl == 4 && liveRoom.storage && liveRoom.storage.my && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
             //storage is built, has 100,000 energy. time to build bunker roads
             calculation = "4.2";
         }
