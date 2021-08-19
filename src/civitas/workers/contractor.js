@@ -30,6 +30,7 @@ class Contractor extends Worker {
      */
     build() {
         let storage = Game.rooms[this.room].storage;
+        if (!storage) return;
         let liveClosestSite = Game.getObjectById(this.memory.closestSite);
         
         if (!liveClosestSite) {
@@ -40,7 +41,7 @@ class Contractor extends Worker {
             this.memory.closestSite = liveClosestSite.id;
         }
 
-        if (this.pos.inRangeTo(liveClosestSite, 1)) {
+        if (this.pos.inRangeTo(liveClosestSite, 3)) {
             this.liveObj.build(liveClosestSite);
         } else {
             this.liveObj.moveTo(liveClosestSite);

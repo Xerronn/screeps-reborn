@@ -104,7 +104,7 @@ class Worker extends Civitas {
             this.memory.closestSite = liveClosestSite.id;
         }
 
-        if (this.pos.inRangeTo(liveClosestSite, 1)) {
+        if (this.pos.inRangeTo(liveClosestSite, 3)) {
             this.liveObj.build(liveClosestSite);
         } else {
             this.liveObj.moveTo(liveClosestSite);
@@ -216,9 +216,8 @@ class Worker extends Civitas {
                 target = targetRuin;
             } else {
                 let ruins = Game.rooms[this.room].find(FIND_RUINS);
-
                 for (let ruin of ruins) {
-                    if (ruin.structure == STRUCTURE_STORAGE && ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                    if (ruin.structure.structureType == STRUCTURE_STORAGE && ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
                         this.memory.ruin = ruin.id;
                         target = ruin;
                     }
