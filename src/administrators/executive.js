@@ -188,9 +188,9 @@ class Executive {
         //spawn creeps with rebirth enabled
         let memory = { "generation": 0 };
         let creepsToSpawn = [
-            { 'body': [CARRY, CARRY, MOVE, MOVE], 'type': 'runner', 'memory': memory },
             { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'scholar', 'memory': memory },
-            { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'scholar', 'memory': memory }        ]
+            { 'body': [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'scholar', 'memory': memory },
+            { 'body': [CARRY, CARRY, MOVE, MOVE], 'type': 'runner', 'memory': memory },        ]
 
         //! TODO: prioritization 
         for (let source of Object.keys(sources)) {
@@ -198,7 +198,7 @@ class Executive {
             creepsToSpawn.push({ 'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'type': 'miner', 'memory': memory });
         }
 
-        for (let creepToSpawn of creepsToSpawn) {
+        for (let creepToSpawn of creepsToSpawn.reverse()) {
             this.getSupervisor().initiate(creepToSpawn);
         }
     }
