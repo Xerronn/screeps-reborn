@@ -104,7 +104,7 @@ class Executive {
             //nothing special
             calculation = "4";
         }
-        if (rcl == 4 && liveRoom.storage) {
+        if (rcl == 4 && liveRoom.storage && liveRoom.storage.my) {
             //storage is built, time to switch to phase 2
             calculation = "4.1";
         }
