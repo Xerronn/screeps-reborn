@@ -201,13 +201,13 @@ class Worker extends Civitas {
             if (storage.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
                 target = storage;
             } else {
-                storage.destroy();
+                if (!storage.my) storage.destroy();
             }
         } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
             if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
                 target = terminal;
             } else {
-                terminal.destroy();
+                if (!terminal.my) terminal.destroy();
             }
         } else if (Game.rooms[this.room].find(FIND_RUINS).length > 0 || this.memory.ruin) {
             let targetRuin = Game.getObjectById(this.memory.ruin);
