@@ -209,10 +209,26 @@ class Worker extends Civitas {
             } else {
                 terminal.destroy();
             }
+        } else if (Game.rooms[this.room].find(FIND_RUINS).length > 0 || this.memory.ruin) {
+            let targetRuin = Game.getObjectById(this.memory.ruin);
+
+            if (targetRuin && targetRuin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                target = targetRuin;
+            } else {
+                let ruins = Game.rooms[this.room].find(FIND_RUINS);
+
+                for (let ruin of ruins) {
+                    if (ruin.structure == STRUCTURE_STORAGE && ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                        this.memory.ruin = ruin.id;
+                        target = ruin;
+                    }
+                }
+            }
         }
 
         if (target === undefined) {
             this.noPillage = true;
+            delete this.memory.ruin;
             return false;
         }
 
