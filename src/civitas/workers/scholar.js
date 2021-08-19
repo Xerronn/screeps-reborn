@@ -6,7 +6,9 @@ class Scholar extends Worker {
 
         //attributes that will not change tick to tick
         this.controllerId = Game.rooms[this.room].controller.id;
-        this.linkId = this.getSupervisor().controllerLink.id;
+        if (this.getSupervisor().controllerLink) {
+            this.linkId = this.getSupervisor().controllerLink.id;
+        }
 
         this.update(true);
     }
@@ -22,7 +24,7 @@ class Scholar extends Worker {
             }
             //attributes that will change tick to tick
             this.controller = Game.getObjectById(this.controllerId);
-            this.link = Game.getObjectById(this.linkId);
+            if (this.linkId) this.link = Game.getObjectById(this.linkId);
         }
         return true;
     }
