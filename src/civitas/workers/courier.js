@@ -76,11 +76,16 @@ class Courier extends Civitas {
 
         if (this.store.getUsedCapacity() == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity() > 0)) {
             this.memory.task = "withdraw";
-            this.moveByPath();
+            //withdraw from tombstone on current tile
+            this.withdrawTomb()
+            //pickup dropped energy from the current tile
+            this.withdrawDropped();
+            
+            if (this.pathing) this.moveByPath();
             this.withdrawContainer(this.memory.resource);
         } else {
             this.memory.task = "deposit";
-            this.moveByPath(true);
+            if (this.pathing) this.moveByPath(true);
             //only put energy into storage, the rest goes to terminal
             if (this.memory.resource == RESOURCE_ENERGY) {
                 this.depositStorage(this.memory.resource);
@@ -151,6 +156,43 @@ class Courier extends Civitas {
             this.liveObj.transfer(this.terminal, resourceType);
         } else if (!this.pathing) {
             this.liveObj.moveTo(this.terminal);
+        }
+    }
+
+    /**
+     * Method to pull energy from tombstones along the hauler's path
+     */
+     withdrawTomb() {
+        let tombs = Game.rooms[this.room].find(FIND_TOMBSTONES);
+        for (let tomb of tombs) {
+            if (this.pos.inRangeTo(tomb, 0) && tomb.store.getUsedCapacity(RESOURCE_ENERGY) > 0){
+                this.liveObj.withdraw(tomb, RESOURCE_ENERGY);
+
+                //bring the energy back to storage
+                let amount = tomb.store.getUsedCapacity(RESOURCE_ENERGY);
+                if (amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 3) {
+                    this.memory.task = "deposit";
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Method to withdraw dropped energy along the hauler's path
+     */
+    withdrawDropped() {
+        let resources = this.pos.lookFor(LOOK_RESOURCES);
+        if (resources) {
+            for (let res of resources) {
+                if (res.resourceType == RESOURCE_ENERGY) {
+                    this.liveObj.pickup(res);
+                    if (res.amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && res.amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 3) {
+                        this.memory.task = "deposit";
+                    }
+                }
+            }
         }
     }
 
