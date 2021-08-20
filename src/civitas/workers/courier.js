@@ -77,9 +77,9 @@ class Courier extends Civitas {
         if (this.store.getUsedCapacity() == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity() > 0)) {
             this.memory.task = "withdraw";
             //withdraw from tombstone on current tile
-            this.withdrawTomb()
+            this.withdrawTomb(this.memory.resource)
             //pickup dropped energy from the current tile
-            this.withdrawDropped();
+            this.withdrawDropped(this.memory.resource);
             
             if (this.pathing) this.moveByPath();
             this.withdrawContainer(this.memory.resource);
@@ -162,15 +162,15 @@ class Courier extends Civitas {
     /**
      * Method to pull energy from tombstones along the hauler's path
      */
-     withdrawTomb() {
+     withdrawTomb(resourceType=RESOURCE_ENERGY) {
         let tombs = Game.rooms[this.room].find(FIND_TOMBSTONES);
         for (let tomb of tombs) {
-            if (this.pos.inRangeTo(tomb, 0) && tomb.store.getUsedCapacity(RESOURCE_ENERGY) > 0){
-                this.liveObj.withdraw(tomb, RESOURCE_ENERGY);
+            if (this.pos.inRangeTo(tomb, 0) && tomb.store.getUsedCapacity(resourceType) > 0){
+                this.liveObj.withdraw(tomb, resourceType);
 
                 //bring the energy back to storage
-                let amount = tomb.store.getUsedCapacity(RESOURCE_ENERGY);
-                if (amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 3) {
+                let amount = tomb.store.getUsedCapacity(resourceType);
+                if (amount > this.store.getFreeCapacity(resourceType) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(resourceType) / 3) {
                     this.memory.task = "deposit";
                 }
                 return true;
@@ -182,13 +182,13 @@ class Courier extends Civitas {
     /**
      * Method to withdraw dropped energy along the hauler's path
      */
-    withdrawDropped() {
+    withdrawDropped(resourceType=RESOURCE_ENERGY) {
         let resources = this.pos.lookFor(LOOK_RESOURCES);
         if (resources) {
             for (let res of resources) {
-                if (res.resourceType == RESOURCE_ENERGY) {
+                if (res.resourceType == resourceType) {
                     this.liveObj.pickup(res);
-                    if (res.amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && res.amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 3) {
+                    if (res.amount > this.store.getFreeCapacity(resourceType) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && res.amount > this.store.getFreeCapacity(resourceType) / 3) {
                         this.memory.task = "deposit";
                     }
                 }
