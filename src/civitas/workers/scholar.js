@@ -71,33 +71,40 @@ class Scholar extends Worker {
             this.memory.body = [
                 WORK, WORK, WORK, WORK, 
                 CARRY, CARRY,
-                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+                MOVE, MOVE, MOVE
             ];
+        } else {
+            this.memory.body = [
+                WORK, WORK, WORK, WORK,
+                CARRY, CARRY, CARRY, CARRY,
+                MOVE, MOVE, MOVE, MOVE
+            ]
         }
-
+         
+        let newBody = this.memory.body;
         let roomStorage = Game.rooms[this.room].storage;
         if (roomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > roomStorage.store.getCapacity(RESOURCE_ENERGY) / 3) {
-            //total energy minus the two carry parts
-            let totalEnergy = Game.rooms[this.room].energyCapacityAvailable - 100;
-            let newBody = [CARRY, CARRY, MOVE];
-            let roadsBuilt = global.Archivist.getRoadsBuilt(this.room);
-            let maxCount = 48;
-            if (roadsBuilt) {
-                maxCount = 33;
-            } else {
-                newBody.push(MOVE);
-            }
-            
-
+            let currentBodyCost = global.Illustrator.calculateBodyCost(newBody);
+            let totalEnergy = Game.rooms[this.room].energyCapacityAvailable - currentBodyCost;
+            //scholars spawn after roads built is set to true
             let index = 0;
-            while(totalEnergy >= 150 && newBody.length < maxCount) {
-                newBody.unshift(WORK);
+            let numWork = 4;
+            while(true) {
+                if (totalEnergy >= 100 && numWork < 30) {
+                    newBody.unshift(WORK);
+                    totalEnergy -= 100;
+                    numWork++;
+                } else break;
 
-                if ((roadsBuilt && index % 2 != 0) || !roadsBuilt) {
-                    newBody.push(MOVE);
-                }
+                if (totalEnergy >= 50) {
+                    if (index % 2 != 0) {
+                        newBody.push(MOVE);
+                        totalEnergy -= 50;
+                    }
+                } else break;
+
+                index++;
             }
-
             this.memory.body = newBody;
         }
     }
