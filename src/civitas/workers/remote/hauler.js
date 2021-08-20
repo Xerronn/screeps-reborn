@@ -157,20 +157,18 @@ class Hauler extends Remotus {
      * Method to pull energy from tombstones along the hauler's path
      */
     withdrawTomb() {
-        let tombs = Game.rooms[this.room].find(FIND_TOMBSTONES);
-        for (let tomb of tombs) {
-            if (this.pos.inRangeTo(tomb, 0) && tomb.store.getUsedCapacity(RESOURCE_ENERGY) > 0){
-                this.liveObj.withdraw(tomb, RESOURCE_ENERGY);
-
-                //bring the energy back to storage
-                let amount = tomb.store.getUsedCapacity(RESOURCE_ENERGY);
-                if (amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 3) {
-                    this.memory.task = "deposit";
+        let tombs = this.pos.lookFor(LOOK_TOMBSTONES);
+        if (tombs) {
+            for (let tomb of tombs) {
+                if (tomb.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                    this.liveObj.withdraw(tomb, RESOURCE_ENERGY);
+                    let amount = tomb.store.getUsedCapacity(RESOURCE_ENERGY);
+                    if (amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(RESOURCE_ENERGY) / 3) {
+                        this.memory.task = "deposit";
+                    }
                 }
-                return true;
             }
         }
-        return false;
     }
 
     /**

@@ -163,20 +163,18 @@ class Courier extends Civitas {
      * Method to pull energy from tombstones along the hauler's path
      */
      withdrawTomb(resourceType=RESOURCE_ENERGY) {
-        let tombs = Game.rooms[this.room].find(FIND_TOMBSTONES);
-        for (let tomb of tombs) {
-            if (this.pos.inRangeTo(tomb, 0) && tomb.store.getUsedCapacity(resourceType) > 0){
-                this.liveObj.withdraw(tomb, resourceType);
-
-                //bring the energy back to storage
-                let amount = tomb.store.getUsedCapacity(resourceType);
-                if (amount > this.store.getFreeCapacity(resourceType) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(resourceType) / 3) {
-                    this.memory.task = "deposit";
+        let tombs = this.pos.lookFor(LOOK_TOMBSTONES);
+        if (tombs) {
+            for (let tomb of tombs) {
+                if (tomb.store.getUsedCapacity(resourceType) > 0) {
+                    this.liveObj.withdraw(tomb, resourceType);
+                    let amount = tomb.store.getUsedCapacity(resourceType);
+                    if (amount > this.store.getFreeCapacity(resourceType) / 1.2 || this.pos.getRangeTo(this.storage) < 15 && amount > this.store.getFreeCapacity(resourceType) / 3) {
+                        this.memory.task = "deposit";
+                    }
                 }
-                return true;
             }
         }
-        return false;
     }
 
     /**
