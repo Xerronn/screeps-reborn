@@ -56,12 +56,6 @@ class Arbiter extends Runner {
                     this.depositStorage();
                 }
             }
-        } else if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
-            this.memory.task = "withdraw";
-            this.withdrawStorage();
-        } else if (!global.Archivist.getTowersFilled(this.room)) {
-            this.memory.task = "fillTowers";
-            this.fillTowers();
         }
     }
 
