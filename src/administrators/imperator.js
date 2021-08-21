@@ -5,6 +5,7 @@ const Executive = require("./executive");
 class Imperator {
     constructor () {
         this.administrators = {};
+        this.dominion = [];
         this.refreshDominion();
     }
 
