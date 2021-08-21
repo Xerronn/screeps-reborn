@@ -78,7 +78,7 @@ class Imperator {
         if (liveObj.structureType !== undefined) {
             //is a structure
             let supervisor = global.Imperator.administrators[room.name].supervisor;
-            let structures = supervisor.castrum[global.Illustrator.mapGameToClass(liveObj.structureType)]
+            let structures = supervisor.castrum[global.Informant.mapGameToClass(liveObj.structureType)]
             for (let struc of structures) {
                 if (struc.id == id) {
                     return struc;

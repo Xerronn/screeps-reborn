@@ -44,7 +44,7 @@ class Courier extends Civitas {
                         "range" : 1
                     },
                     {
-                        "roomCallback": global.Illustrator.getCostMatrix,
+                        "roomCallback": global.Informant.getCostMatrix,
                         "plainCost": 2,
                         "swampCost": 10
                     }

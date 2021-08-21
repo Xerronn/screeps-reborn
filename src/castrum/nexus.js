@@ -107,7 +107,7 @@ class Nexus extends Castrum {
      * @param {String} body the body of the creep
      */
     statTracking(body) {
-        let bodyCost = global.Illustrator.calculateBodyCost(body);
+        let bodyCost = global.Informant.calculateBodyCost(body);
 
         let currentValue = global.Archivist.getStatistic(this.room, "RemoteEnergySpent");
         global.Archivist.setStatistic(this.room, "RemoteEnergySpent", currentValue + bodyCost);

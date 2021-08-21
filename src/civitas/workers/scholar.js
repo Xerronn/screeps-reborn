@@ -84,7 +84,7 @@ class Scholar extends Worker {
         let newBody = this.memory.body;
         let roomStorage = Game.rooms[this.room].storage;
         if (roomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > roomStorage.store.getCapacity(RESOURCE_ENERGY) / 3) {
-            let currentBodyCost = global.Illustrator.calculateBodyCost(newBody);
+            let currentBodyCost = global.Informant.calculateBodyCost(newBody);
             let totalEnergy = Game.rooms[this.room].energyCapacityAvailable - currentBodyCost;
             //scholars spawn after roads built is set to true
             let index = 0;

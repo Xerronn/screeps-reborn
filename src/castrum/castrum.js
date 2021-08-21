@@ -12,7 +12,7 @@ class Castrum extends GameObj {
             this.hasStore = true;
         }
 
-        this.type = global.Illustrator.mapGameToClass(this.liveObj.structureType);
+        this.type = global.Informant.mapGameToClass(this.liveObj.structureType);
 
         this.update(true);
     }

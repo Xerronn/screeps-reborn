@@ -38,7 +38,7 @@ class Hauler extends Remotus {
             }
 
             //cached path for movement defined after we have a container to path to
-            if (!this.path && this.container) {
+            if (!this.path && this.container && this.storage) {
                 this.path = PathFinder.search(
                     this.storage.pos, 
                     {
@@ -46,7 +46,7 @@ class Hauler extends Remotus {
                         "range" : 1
                     },
                     {
-                        "roomCallback": global.Illustrator.getCostMatrix,
+                        "roomCallback": global.Informant.getCostMatrix,
                         "plainCost": 2,
                         "swampCost": 10
                     }

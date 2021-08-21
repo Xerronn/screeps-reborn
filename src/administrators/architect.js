@@ -116,7 +116,7 @@ class Architect {
      * @returns 
      */
     calculateAnchor(room, dry=false) {
-        let bunkerSchema = global.Illustrator.getBunkerSchema();
+        let bunkerSchema = global.Informant.getBunkerSchema();
 
         if (!dry) {
             //clear out any buildings left by enemies
@@ -219,7 +219,7 @@ class Architect {
      * Method that builds all newly unlocked bunker structures
      */
      buildBunker(room) {
-        let bunkerSchema = global.Illustrator.getBunkerSchema();
+        let bunkerSchema = global.Informant.getBunkerSchema();
 
         //get anchor, if there isn't one, calculate a new one
         let anchor = global.Archivist.getAnchor(room);
@@ -254,7 +254,7 @@ class Architect {
      * @param {String} room string representing room
      */
     buildNewStructures(structureConstant, room) {
-        let bunkerSchema = global.Illustrator.getBunkerSchema();
+        let bunkerSchema = global.Informant.getBunkerSchema();
         let roomAnchor = global.Archivist.getAnchor(room);
         //find how many exist
         let numExist = Game.rooms[room].find(FIND_STRUCTURES, {
@@ -308,7 +308,7 @@ class Architect {
      */
     buildBunkerRoads(room) {
         //get bunker schematics
-        let bunkerSchema = global.Illustrator.getBunkerSchema();
+        let bunkerSchema = global.Informant.getBunkerSchema();
         //get anchor
         let anchor = global.Archivist.getAnchor(room);
         var roomAnchor = new RoomPosition(anchor["x"], anchor["y"], room);

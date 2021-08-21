@@ -5,6 +5,7 @@ const TaskMaster = require("./administrators/taskmaster");
 const Archivist = require("./administrators/archivist");
 const Illustrator = require("./administrators/illustrator");
 const Architect = require("./administrators/architect");
+const Informant = require("./administrators/informant");
 
 //init high level entities
 global.TaskMaster = new TaskMaster();
@@ -12,6 +13,7 @@ global.Archivist = new Archivist();
 global.Imperator = new Imperator();
 global.Illustrator = new Illustrator();
 global.Architect = new Architect();
+global.Informant = new Informant();
 
 global.Archivist.build();
 global.Imperator.initialize();
