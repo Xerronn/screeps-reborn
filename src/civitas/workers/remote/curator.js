@@ -27,10 +27,10 @@ class Curator extends Remotus {
     repairRoads() {
         let liveClosestRoad = Game.getObjectById(this.memory.closestRoad);
         
-        if (!liveClosestRoad || liveClosestRoad.hits >= liveClosestRoad.hitsMax / (25/24)) {
+        if (!liveClosestRoad || liveClosestRoad.hits == liveClosestRoad.hitsMax) {
             let allRoads = Game.rooms[this.room].find(
                 FIND_STRUCTURES, 
-                {filter: (struc) => struc.structureType == STRUCTURE_ROAD && struc.hits < struc.hitsMax / (25/24)}
+                {filter: (struc) => struc.structureType == STRUCTURE_ROAD && struc.hits < struc.hitsMax / (25/23)}
             );
             if (allRoads.length == 0){
                 this.conclude();
