@@ -1,4 +1,4 @@
-//Entity that handles global variable definitions
+//Entity that handles visuals and misc methods
 class Illustrator {
     constructor() {
         this.matrixCache = {};
@@ -64,46 +64,6 @@ class Illustrator {
         return true;
         } catch (err) {
             return "No room Anchor set for room";
-        }
-    }
-
-    /**
-     * Method that returns the wrapper object for a given Game Object
-     * @param {String} id Game Object ID
-     * @returns wrapper object
-     */
-    getWrapper(id) {
-        let liveObj = Game.getObjectById(id);
-        if (!liveObj) {
-            return undefined;
-        }
-
-        let room = liveObj.room;
-        let supervisor = undefined;
-        try {
-            supervisor = global.Imperator.administrators[room.name].supervisor;
-        } catch (err) {
-            supervisor = global.Imperator.administrators[liveObj.memory.spawnRoom].supervisor;
-        }
-
-        if (liveObj.fatigue === undefined) {
-            //is a structure
-            let origArr = supervisor.castrum[this.mapGameToClass(liveObj.structureType)];
-            for (let struc of origArr) {
-                if (struc.id == id) {
-                    return struc;
-                }
-            }
-            return undefined;
-        } else {
-            //is a creep
-            let origArr = supervisor.civitates[liveObj.memory.type];
-            for (let creep of origArr) {
-                if (creep.id == id) {
-                    return creep;
-                }
-            }
-            return undefined;
         }
     }
 

@@ -224,7 +224,7 @@ class Supervisor {
             this.civitates[creep.memory.type] = [];
         }
         //check if the creep has already been wrapped
-        if (!global.Illustrator.getWrapper(creep.id)) {
+        if (!global.Imperator.getWrapper(creep.id)) {
             let createObjStr = "this.civitates[\"" + creep.memory.type + "\"].push(new " + creep.memory.type.charAt(0).toUpperCase() + 
                 creep.memory.type.slice(1) + "(Game.creeps[\"" + creep.name + "\"].id));";
 

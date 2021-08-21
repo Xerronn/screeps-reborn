@@ -62,6 +62,41 @@ class Imperator {
     refreshDominion() {
         this.dominion = _.filter(Game.rooms, room => room.controller && room.controller.my).map(room => room.name);
     }
+
+    /**
+     * Method that returns the wrapper for a given game object
+     * @param {String} id 
+     */
+     getWrapper(id) {
+        let liveObj = Game.getObjectById(id);
+        if (!liveObj) {
+            return undefined;
+        }
+
+        let room = liveObj.room;
+
+        if (liveObj.structureType !== undefined) {
+            //is a structure
+            let supervisor = global.Imperator.administrators[room.name].supervisor;
+            let structures = supervisor.castrum[global.Illustrator.mapGameToClass(liveObj.structureType)]
+            for (let struc of structures) {
+                if (struc.id == id) {
+                    return struc;
+                }
+            }
+            return undefined;
+        } else {
+            //is a creep
+            let supervisor = global.Imperator.administrators[liveObj.memory.spawnRoom].supervisor;
+            let creeps = supervisor.civitates[liveObj.memory.type]
+            for (let creep of creeps) {
+                if (creep.id == id) {
+                    return creep;
+                }
+            }
+            return undefined;
+        }
+    }
 }
 
 module.exports = Imperator;

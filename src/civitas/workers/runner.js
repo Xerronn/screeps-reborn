@@ -32,14 +32,14 @@ class Runner extends Worker {
      */
     renew() {
         //check if a nexus is cached
-        let nexus = global.Illustrator.getWrapper(this.memory.closestSpawn);
+        let nexus = global.Imperator.getWrapper(this.memory.closestSpawn);
 
         //if not, assign the closest spawn to the storage to renew this creep
         if (!nexus) {
             let allSpawns = global.Archivist.getStructures(this.room, STRUCTURE_SPAWN);
             let closestSpawn = Game.rooms[this.room].storage.pos.findClosestByRange(allSpawns)
             this.memory.closestSpawn = closestSpawn.id;
-            nexus = global.Illustrator.getWrapper(this.memory.closestSpawn);
+            nexus = global.Imperator.getWrapper(this.memory.closestSpawn);
         }
 
         //reserve the spawn, then renew until its full or no energy left
