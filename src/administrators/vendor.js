@@ -21,16 +21,24 @@ class Vendor {
             this.shortages[res] = [];
         }
     }
+
+    /**
+     * Method that documents the entire dominion
+     */
+    appraise() {
+        for (let room of global.Imperator.dominion) {
+            this.document(room);
+        }
+    }
     
     /**
-     * Method that fills out the statistics of a room
+     * Method that documents the market status of a room
      * @param {String} room 
      */
     document(room) {
         this.balances[room] = {};
         let liveRoom = Game.rooms[room];
         if (!liveRoom || !liveRoom.terminal) return false;
-
         for (let res of this.resources) {
             this.balances[room][res] = -this.getTarget(res) + liveRoom.terminal.store[res];
             if (this.balances[room][res] > this.getTarget(res) * 1.3) {

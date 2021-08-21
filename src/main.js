@@ -6,6 +6,7 @@ const Archivist = require("./administrators/archivist");
 const Illustrator = require("./administrators/illustrator");
 const Architect = require("./administrators/architect");
 const Informant = require("./administrators/informant");
+const Vendor = require("./administrators/vendor");
 
 //init high level entities
 global.TaskMaster = new TaskMaster();
@@ -14,9 +15,11 @@ global.Imperator = new Imperator();
 global.Illustrator = new Illustrator();
 global.Architect = new Architect();
 global.Informant = new Informant();
+global.Vendor = new Vendor();
 
 global.Archivist.build();
 global.Imperator.initialize();
+global.Vendor.appraise();
 console.log("<b>--------Global Reset--------</b>");
 
 module.exports.loop = function() {
@@ -29,4 +32,7 @@ module.exports.loop = function() {
     
     //run logic for game objects
     global.Imperator.run();
+
+    //map and room visuals
+    global.Illustrator.illustrate();
 }
