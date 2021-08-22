@@ -150,6 +150,11 @@ class Supervisor {
             //loop through the spawns until an available one is found
             for (let nexus of this.castrum["nexus"]) {
                 if (!nexus.spawning && !nexus.spawningThisTick) {
+
+                    //arbiters must be spawned from the prime nexus
+                    if (template.type == "arbiter") {
+                        if (!nexus.prime) continue;
+                    }
                     foundNexus = true;
                     
                     //use the body stored in memory if it exists, as it can contain evolutions
