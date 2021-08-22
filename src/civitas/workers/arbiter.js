@@ -17,26 +17,29 @@ class Arbiter extends Runner {
             }
             //attributes that will change tick to tick
             this.link = Game.getObjectById(this.linkId);
+            this.storage = Game.rooms[this.room].storage;
+            this.terminal = Game.rooms[this.room].terminal;
         }
         return true;
     }
 
     run() {
-        //if the link is not perfectly at 400, it needs action
-        if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) != 400) {
-            this.linkAction = true;
-        } else this.linkAction = false;
-
         if (this.ticksToLive < 300 || this.memory.task == "renew" || this.memory.task == "renewFill") {
-            //start the loop by setting task to rewnewFill
+            //start the loop by setting task to renewFill
             //this task will block spawning, but keep filling 
             //until reaching the required energy for a full renew
             if (this.memory.task != "renew") {
                 this.memory.task = "renewFill";
             }
             this.renew();
-        } else if (this.linkAction) {
-            //LINK STUFF
+            return;
+        }
+
+        /**
+         * Link Management. Keep the storage link at exactly 400
+         * todo: should be a better way to do this
+         */
+        if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) != 400) {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
                 //pull from the creepStorage this.link if it is higher than the sweet spot
@@ -55,6 +58,20 @@ class Arbiter extends Runner {
                 } else {
                     this.depositStorage();
                 }
+            }
+            return;
+        }
+
+        /**
+         * Terminal Management. Puts energy into the terminal until it reaches 20k stored
+         */
+        if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 20000) {
+            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+                this.memory.task = "withdraw";
+                this.withdrawStorage(); 
+            } else {
+                this.memory.task = "deposit";
+                this.depositTerminal();
             }
         }
     }
@@ -93,11 +110,23 @@ class Arbiter extends Runner {
      * Move to storage and deposit all stored energy
      */
     depositStorage() {
-        let roomStorage = Game.rooms[this.room].storage;
-        if (this.pos.inRangeTo(roomStorage, 1)) {
-            this.liveObj.transfer(roomStorage, RESOURCE_ENERGY);
+        if (this.pos.inRangeTo(this.storage, 1)) {
+            this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
         } else {
-            this.liveObj.moveTo(roomStorage);
+            this.liveObj.moveTo(this.storage);
+        }
+    }
+
+    /**
+     * Move to terminal and deposit all stored energy
+     */
+     depositTerminal() {
+        if (this.pos.inRangeTo(this.terminal, 1)) {
+            this.liveObj.transfer(this.terminal, RESOURCE_ENERGY);
+            //increment balances in the vendor as energy is added
+            global.Vendor.balances[this.room][RESOURCE_ENERGY] += this.store.getUsedCapacity(RESOURCE_ENERGY);
+        } else {
+            this.liveObj.moveTo(this.terminal);
         }
     }
 
