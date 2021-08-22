@@ -139,6 +139,28 @@ class Vendor {
     }
 
     /**
+     * Method that clears old outdated orders
+     * @param {String} room 
+     */
+    clean(room) {
+        let roomOrders = _.filter(Game.market.orders, order => order.roomName == room && order.type == ORDER_SELL);
+        for (let order of roomOrders) {
+            //cancel any orders with no more left to sell
+            if (order.remainingAmount == 0) {
+                Game.market.cancelOrder(order.id);
+                continue;
+            }
+
+            //cancel orders older than 50000 ticks (~2 days)
+            if (Game.time - order.created > 50000) {
+                Game.market.cancelOrder(order.id);
+                //increment balance back up
+                this.balances[room][order.resourceType] += order.remainingAmount;
+            }
+        }
+    }
+
+    /**
      * Method to print off a table of every room and their current balances
      */
     printBalances() {
