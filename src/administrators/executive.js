@@ -213,7 +213,10 @@ class Executive {
                 MOVE, MOVE,
             ], 
             'type': 'arbiter', 
-            'memory': { "generation": 0 }
+            'memory': { 
+                "generation": 0, 
+                "noRoads": true
+            }
         };
         
         //this is actually kinda insane
