@@ -209,8 +209,7 @@ class Executive {
     spawnArbiter() {
         let arbiter = { 
             'body': [
-                CARRY, CARRY,
-                MOVE, MOVE,
+                CARRY, CARRY, CARRY, CARRY
             ], 
             'type': 'arbiter', 
             'memory': { 
