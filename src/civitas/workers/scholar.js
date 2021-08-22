@@ -66,31 +66,50 @@ class Scholar extends Worker {
      * Method to evolve the upgrader depending on storage levels and link
      */
     evolve() {
+        //default body
+        let newBody = [
+            WORK, WORK, WORK, WORK,
+            CARRY, CARRY, CARRY, CARRY,
+            MOVE, MOVE, MOVE, MOVE
+        ]
         if (this.link) {
-            //once we have a link, we don't need as many carry parts
-            this.memory.body = [
-                WORK, WORK, WORK, WORK, 
-                CARRY, CARRY,
-                MOVE, MOVE, MOVE
-            ];
-        } else {
-            this.memory.body = [
+            //remove some move parts, as the carry parts weight nothing and the creep never moves when full after getting link
+            newBody = [
                 WORK, WORK, WORK, WORK,
                 CARRY, CARRY, CARRY, CARRY,
-                MOVE, MOVE, MOVE, MOVE
+                MOVE, MOVE,
             ]
         }
-         
-        let newBody = this.memory.body;
+        if (this.controller.level == 8) {
+            //at RCL, upgrading energy is capped at 15 work parts per tick.
+            this.memory.body = [
+                WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                CARRY, CARRY, CARRY, CARRY,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ]
+            return;
+        }
+        //disable automatic move adding
+        this.memory.noRoads = true;
         let roomStorage = Game.rooms[this.room].storage;
         if (roomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > roomStorage.store.getCapacity(RESOURCE_ENERGY) / 3) {
             let currentBodyCost = global.Informant.calculateBodyCost(newBody);
             let totalEnergy = Game.rooms[this.room].energyCapacityAvailable - currentBodyCost;
-            //scholars spawn after roads built is set to true
-            let index = 0;
+            let targetWorks = 30;
             let numWork = 4;
+            let index = 0;
             while(true) {
-                if (totalEnergy >= 100 && numWork < 30) {
+                if (numWork % 2 == 0 && (totalEnergy < 250 || 50 - newBody.length < 3)) {
+                    if (this.link) {
+                        //fill in extra with carry parts if there is a link
+                        if (newBody.length < 50 && totalEnergy >= 50) {
+                            newBody.splice(numWork, 0, CARRY);
+                            totalEnergy -= 50;
+                        } else break;
+                    } else break;
+                    continue;
+                }
+                if (totalEnergy >= 100 && numWork < targetWorks) {
                     newBody.unshift(WORK);
                     totalEnergy -= 100;
                     numWork++;
