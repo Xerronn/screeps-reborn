@@ -123,11 +123,30 @@ class Arbiter extends Runner {
     }
 
     /**
-     * Overrides runner evolve so that arbiter does not evolve from inherited renew method
+     * Evolve the arbiter as it has more responsibilities
      */
     evolve() {
-        //do nothing
-        return false;
+        let liveRoom = Game.rooms[this.room];
+        let newBody = [];
+        if (liveRoom.controller.level == 6 && liveRoom.terminal) {
+            //once the room has a terminal
+            newBody= [
+                //400 carry capacity
+                CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY
+            ]
+        }
+        if (liveRoom.controller.level == 8) {
+            //800 carry capacity
+            newBody = [
+                CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+                CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY
+            ]
+        }
+
+        if (newBody.length > this.memory.body.length) {
+            this.memory.body = newBody;
+            this.liveObj.suicide();
+        }
     }
 }
 
