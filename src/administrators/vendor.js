@@ -36,26 +36,39 @@ class Vendor {
      * @param {String} room 
      */
     document(room) {
-        this.balances[room] = {};
         let liveRoom = Game.rooms[room];
         if (!liveRoom || !liveRoom.terminal) return false;
+        this.balances[room] = {};
+        //iterate through all resources of note
         for (let res of this.resources) {
-            this.balances[room][res] = -this.getTarget(res) + liveRoom.terminal.store[res];
-            if (this.balances[room][res] > this.getTarget(res) * 1.3) {
+            //check to how much of that resource the room has, minus the amount currently selling
+            //triple the requirement for the room's own mineral type
+            let sellOrders = _.filter(Game.market.orders, order => order.roomName == room && order.type == ORDER_SELL && order.resourceType == res);
+            let sellAmount = 0;
+            for (let order of sellOrders) {
+                sellAmount += order.amount;
+            }
+            let multiplier = 1;
+            if (liveRoom.find(FIND_MINERALS)[0].mineralType == res) multiplier = 3;
+            this.balances[room][res] = -this.getTarget(res) * multiplier + liveRoom.terminal.store[res] - sellAmount;
+
+            //if it is twice as high as it should be, add the room to the surplus object
+            if (this.balances[room][res] > this.getTarget(res)) {
                 //add to array if it hasn't already been added
-                if (surpluses[res].indexOf(room) < 0) {
+                if (this.surpluses[res].indexOf(room) < 0) {
                     this.surpluses[res].push(room);
                 }
                 //remove from the opposite array
-                let index = shortages[res].indexOf(room);
-                if (index >= 0) shortages[res].splice(index, 1);
+                let index = this.shortages[res].indexOf(room);
+                if (index >= 0) this.shortages[res].splice(index, 1);
 
-            } else if (this.balances[room][res] < this.getTarget(res)) {
-                if (shortages[res].indexOf(room) < 0) {
+            //if it is lower than the target, add it to the shortages list
+            } else if (this.balances[room][res] < 0) {
+                if (this.shortages[res].indexOf(room) < 0) {
                     this.shortages[res].push(room);
                 }
-                let index = surpluses[res].indexOf(room);
-                if (index >= 0) surpluses[res].splice(index, 1);
+                let index = this.surpluses[res].indexOf(room);
+                if (index >= 0) this.surpluses[res].splice(index, 1);
             }
         }
         return true;
@@ -74,39 +87,80 @@ class Vendor {
      */
     relinquish(room) {
         //first check if this this room has any surpluses
-        
+        let excess = this.getExcess(room);
+        if (excess.length == 0) return false;
+
+        //check all the shortages for the excess resources we have and send the resource to that room
+        for (let res of excess) {
+            let shorts = this.shortages[res];
+            if (shorts.length == 0) continue;
+            let targetRoom = shorts[0];
+            let amountAvailable = this.balances[room][res];
+            let amountNeeded = this.balances[targetRoom][res];
+            let amountToSend = Math.min(amountNeeded, amountAvailable);
+            Game.rooms[room].terminal.send(res, amountToSend, targetRoom, 
+                "Routine supplies shipment of " + res + " from " + room + " to " + targetRoom);
+            break;
+        }
     }
 
     /**
      * Method to list excess resources on the market
      */
     merchandise(room) {
+        //check if the room has any surpluses
+        let excess = this.getExcess(room);
+        if (excess.length == 0) return false;
 
+        for (let res of excess) {
+            if (this.shortages[res].length > 0) return false;
+            let surplus = this.balances[room][res];
+            if (surplus > 5000) {
+                let marketInfo = Game.market.getHistory(res);
+                let today = marketInfo[marketInfo.length - 1];
+                let price = (today["avgPrice"] * 0.85).toFixed(3);
+                let success = Game.market.createOrder({
+                    type: ORDER_SELL,
+                    resourceType: res,
+                    price: price,
+                    totalAmount: surplus,
+                    roomName: room   
+                });
+
+                if (success == OK) {
+                    //remove from the surpluses list and reset balances
+                    let index = this.surpluses[res].indexOf(room);
+                    if (index >= 0) this.surpluses[res].splice(index, 1);
+                    this.balances[room][res] = 0;
+                    return true
+                }
+            }
+        }
     }
 
     /**
      * Method to print off a table of every room and their current balances
      */
     printBalances() {
-        let result = "<style>table, th, td {border: 1px solid black; padding: 5px; text-align: center} </style>\
-        <table style='width:200%'>\
+        let result = "<style> .balanceTable {border: 1px solid black; padding: 5px; text-align: center; color: black; background-color: #7d7d7dm;} </style>\
+        <table style='width:200%' class='balanceTable'>\
         <caption>Resource Balances for Owned Rooms</caption>\
-        <tr><th>Room</th>";
+        <tr><th class='balanceTable'>Room</th>";
         for (let res of this.resources) {
-            result += `<th>${res}</th>`;
+            result += `<th class='balanceTable'>${res}</th>`;
         }
         result += "</tr>";
         for (let room in this.balances) {
-            result += `<tr>` +
-                `<td>${room}</td>`;
+            result += `<tr class='balanceTable'>` +
+                `<td class='balanceTable'>${room}</td>`;
             for (let res in this.balances[room]) {
                 let color = 'white';
-                if (this.balances[room][res] > this.getTarget(res) * 1.3) {
+                if (this.balances[room][res] > this.getTarget(res) * 2) {
                     color = 'green';
-                } else if (this.balances[room][res] < this.getTarget(res)) {
+                } else if (this.balances[room][res] < 0) {
                     color = 'red';
                 }
-                result += `<td style= "background-color:${color}">${this.balances[room][res]}</td>`;
+                result += `<td class='balanceTable' style="background-color:${color}">${this.balances[room][res]}</td>`;
             }
             result += `</tr>`;
         }
@@ -126,6 +180,21 @@ class Vendor {
             default:
                 return 10000;
         }
+    }
+
+    /**
+     * Method that returns the minerals that a room has excess of
+     * @param {String} room 
+     * @returns Array containing resources that the room has excess of
+     */
+    getExcess(room) {
+        let excess = [];
+        for (let res in this.surpluses) {
+            if (this.surpluses[res].includes(room)) {
+                excess.push(res);
+            }
+        }
+        return excess;
     }
 }
 
