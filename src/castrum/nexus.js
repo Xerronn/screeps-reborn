@@ -8,6 +8,16 @@ class Nexus extends Castrum {
         //attributes that will not change from tick to tick
         this.name = this.liveObj.name;
 
+        //whether this is the nexus that is next to the manager position
+        this.prime = false;
+
+        let anchorPos = global.Archivist.getAnchor(this.room);
+        let primeSpawnLoc = global.Informant.getBunkerSchema().spawn.pos[0];
+        if (this.pos.x - anchorPos.x == primeSpawnLoc.x && 
+            this.pos.y - anchorPos.y == primeSpawnLoc.y) {
+                this.prime = true;
+            }
+
         this.update(true);
     }
 
@@ -85,7 +95,13 @@ class Nexus extends Castrum {
         memory["spawnRoom"] = this.room;
         memory["body"] = spawnBody;
 
-        let success = this.liveObj.spawnCreep(spawnBody, name, {memory: memory});
+        let options = {"memory": memory};
+
+        //the arbiter will always get spawned by the prime nexus and pushed to the right
+        if (type == "arbiter") {
+            options["directions"] = [RIGHT];
+        }
+        let success = this.liveObj.spawnCreep(spawnBody, name, options);
 
         if (success == OK) {
             this.spawningThisTick = true;
