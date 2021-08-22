@@ -78,17 +78,20 @@ class Arbiter extends Runner {
     }
 
     /**
+     * Overloaded withdrawStorage with no moves
+     */
+    withdrawStorage() {
+        this.liveObj.withdraw(storage, RESOURCE_ENERGY);
+    }
+
+    /**
      * Method that takes energy from link
      */
     withdrawLink(numEnergy=undefined) {
-        if (this.pos.inRangeTo(this.link, 1)) {
-            if (numEnergy !== undefined) {
-                this.liveObj.withdraw(this.link, RESOURCE_ENERGY, numEnergy);
-            } else {
-                this.liveObj.withdraw(this.link, RESOURCE_ENERGY);
-            }
+        if (numEnergy !== undefined) {
+            this.liveObj.withdraw(this.link, RESOURCE_ENERGY, numEnergy);
         } else {
-            this.liveObj.moveTo(this.link);
+            this.liveObj.withdraw(this.link, RESOURCE_ENERGY);
         }
     }
 
@@ -96,14 +99,10 @@ class Arbiter extends Runner {
      * Method that gives energy to link
      */
     depositLink(numEnergy=undefined) {
-        if (this.pos.inRangeTo(this.link, 1)) {
-            if (numEnergy !== undefined) {
-                this.liveObj.transfer(this.link, RESOURCE_ENERGY, numEnergy);
-            } else {
-                this.liveObj.transfer(this.link, RESOURCE_ENERGY);
-            }
+        if (numEnergy !== undefined) {
+            this.liveObj.transfer(this.link, RESOURCE_ENERGY, numEnergy);
         } else {
-            this.liveObj.moveTo(this.link);
+            this.liveObj.transfer(this.link, RESOURCE_ENERGY);
         }
     }
 
@@ -111,24 +110,16 @@ class Arbiter extends Runner {
      * Move to storage and deposit all stored energy
      */
     depositStorage() {
-        if (this.pos.inRangeTo(this.storage, 1)) {
-            this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
-        } else {
-            this.liveObj.moveTo(this.storage);
-        }
+        this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
     }
 
     /**
      * Move to terminal and deposit all stored energy
      */
      depositTerminal() {
-        if (this.pos.inRangeTo(this.terminal, 1)) {
-            this.liveObj.transfer(this.terminal, RESOURCE_ENERGY);
-            //increment balances in the vendor as energy is added
-            global.Vendor.balances[this.room][RESOURCE_ENERGY] += this.store.getUsedCapacity(RESOURCE_ENERGY);
-        } else {
-            this.liveObj.moveTo(this.terminal);
-        }
+        this.liveObj.transfer(this.terminal, RESOURCE_ENERGY);
+        //increment balances in the vendor as energy is added
+        global.Vendor.balances[this.room][RESOURCE_ENERGY] += this.store.getUsedCapacity(RESOURCE_ENERGY);
     }
 
     /**
