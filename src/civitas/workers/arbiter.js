@@ -81,7 +81,7 @@ class Arbiter extends Runner {
      * Overloaded withdrawStorage with no moves
      */
     withdrawStorage() {
-        this.liveObj.withdraw(storage, RESOURCE_ENERGY);
+        this.liveObj.withdraw(this.storage, RESOURCE_ENERGY);
     }
 
     /**
@@ -128,7 +128,7 @@ class Arbiter extends Runner {
     evolve() {
         let liveRoom = Game.rooms[this.room];
         let newBody = [];
-        if (liveRoom.controller.level == 6 && liveRoom.terminal) {
+        if (liveRoom.controller.level >= 6 && liveRoom.terminal) {
             //once the room has a terminal
             newBody= [
                 //400 carry capacity
