@@ -31,7 +31,8 @@ class Arbiter extends Runner {
             if (this.memory.task != "renew") {
                 this.memory.task = "renewFill";
             }
-            this.renew();
+            //renew with usePrime
+            this.renew(true);
             return;
         }
 

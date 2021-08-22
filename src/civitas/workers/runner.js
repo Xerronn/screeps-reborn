@@ -30,16 +30,30 @@ class Runner extends Worker {
     /**
      * Method to get the creep to renew itself to help prevent softlocks
      */
-    renew() {
-        //check if a nexus is cached
-        let nexus = global.Imperator.getWrapper(this.memory.closestSpawn);
+    renew(usePrime=false) {
+        let renewSpawn = Game.getObjectById(this.renewSpawnId);
 
-        //if not, assign the closest spawn to the storage to renew this creep
-        if (!nexus) {
-            let allSpawns = global.Archivist.getStructures(this.room, STRUCTURE_SPAWN);
-            let closestSpawn = Game.rooms[this.room].storage.pos.findClosestByRange(allSpawns)
-            this.memory.closestSpawn = closestSpawn.id;
-            nexus = global.Imperator.getWrapper(this.memory.closestSpawn);
+        if (!renewSpawn) {
+            //get all nexuses
+            let nexuses = this.getSupervisor().castrum["nexus"];
+            let chosenNexus = nexuses[0];
+            if (nexuses.length > 1) {
+                for (let nexus of nexuses) {
+                    if (nexus.prime) {
+                        //select the prime nexus if the renewer wants to use the prime
+                        if (usePrime) {
+                            chosenNexus = nexus;
+                        } else continue;
+                    } else {
+                        //if not wanting to use prime, select the first one that isn't prime
+                        if (!usePrime) {
+                            chosenNexus = nexus;
+                        } else continue;
+                    }
+                }
+            }
+            this.renewSpawnId = chosenNexus.liveObj.id;
+            renewSpawn = chosenNexus.liveObj;
         }
 
         //reserve the spawn, then renew until its full or no energy left
@@ -61,17 +75,18 @@ class Runner extends Worker {
         //if we get to this point, energyAvailable is > 300, so we can set task to just renew fully
         this.memory.task = "renew";
 
-        if (!nexus.spawning) {
-            if (this.pos.inRangeTo(nexus.liveObj, 1)) {
-                nexus.liveObj.renewCreep(this.liveObj);
+        if (!renewSpawn.spawning) {
+            if (this.pos.inRangeTo(renewSpawn, 1)) {
+                renewSpawn.renewCreep(this.liveObj);
             } else {
-                this.liveObj.moveTo(nexus.liveObj);
+                this.liveObj.moveTo(renewSpawn);
             }
         }
 
         //once ticks to live is high enough we can break out of the loop
         if (this.ticksToLive > 1300 || Game.rooms[this.room].energyAvailable < 30) {
             this.memory.task = "none";
+            this.renewSpawnId = undefined;
         }
     }
 
