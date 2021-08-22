@@ -187,7 +187,7 @@ class Supervisor {
                 template.memory.generation--;
             }
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
-            global.TaskMaster.schedule(Game.time + 20, task, [this.room, {...template}]);
+            global.TaskMaster.schedule(Game.time + 5, task, [this.room, {...template}]);
         }
 
         //if this is a rebirth, delete the old wrapper
