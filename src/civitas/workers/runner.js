@@ -15,15 +15,52 @@ class Runner extends Worker {
                 this.memory.task = "renewFill";
             }
             this.renew();
-        } else if (this.store.getUsedCapacity(RESOURCE_ENERGY) < EXTENSION_ENERGY_CAPACITY[Game.rooms[this.room].controller.level] || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
-            this.memory.task = "withdraw";
-            this.withdrawStorage();
+            return;
+        } 
+        if (this.store.getUsedCapacity(RESOURCE_ENERGY) < EXTENSION_ENERGY_CAPACITY[Game.rooms[this.room].controller.level] || 
+            (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+                this.memory.task = "withdraw";
+                this.withdrawStorage();
         } else if (!global.Archivist.getTowersFilled(this.room)) {
             this.memory.task = "fillTowers";
             this.fillTowers();
         } else if (!global.Archivist.getExtensionsFilled(this.room)) {
             this.memory.task = "fillExtensions";
             this.fillExtensions();
+        } else if (!global.Archivist.getLabsFilled(this.room)) {
+            this.memory.task = "fillLabs";
+            this.fillLabs();
+        }
+    }
+
+    /**
+     * Method that fills labs with energy
+     */
+    fillLabs() {
+        let liveClosestLab = Game.getObjectById(this.memory.closestLab);
+        if (!liveClosestLab || liveClosestLab.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+            let workShops = this.getSupervisor().castrum.workshop;
+            if (!workShops) {
+                global.Archivist.setLabsFilled(this.room, true);
+                return;
+            }
+            let fillables = workShops.filter(
+                wrapper => wrapper.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            );
+            
+            if (fillables.length == 0) {
+                //let all the other creeps know that there isn't any point in looking
+                global.Archivist.setLabsFilled(this.room, true);
+                return;
+            }
+            liveClosestLab = this.pos.findClosestByRange(fillables);
+            this.memory.closestLab = liveClosestLab.id;
+        }
+
+        if (this.pos.inRangeTo(liveClosestLab, 1)) {
+            this.liveObj.transfer(liveClosestLab, RESOURCE_ENERGY);
+        } else {
+            this.liveObj.moveTo(liveClosestLab);
         }
     }
 
