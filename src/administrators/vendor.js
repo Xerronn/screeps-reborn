@@ -41,16 +41,21 @@ class Vendor {
         this.balances[room] = {};
         //iterate through all resources of note
         for (let res of this.resources) {
-            //check to how much of that resource the room has, minus the amount currently selling
-            //triple the requirement for the room's own mineral type
+            //check to how much of that resource the room has, minus the amount currently selling and plus the amount buying
             let sellOrders = _.filter(Game.market.orders, order => order.roomName == room && order.type == ORDER_SELL && order.resourceType == res);
             let sellAmount = 0;
             for (let order of sellOrders) {
                 sellAmount += order.amount;
             }
+            let buyOrders = _.filter(Game.market.orders, order => order.roomName == room && order.type == ORDER_BUY && order.resourceType == res);
+            let buyAmount = 0;
+            for (let order of buyOrders) {
+                buyAmount += order.amount;
+            }
+            //triple the requirement for the room's own mineral type
             let multiplier = 1;
             if (liveRoom.find(FIND_MINERALS)[0].mineralType == res) multiplier = 3;
-            this.balances[room][res] = -this.getTarget(res) * multiplier + liveRoom.terminal.store[res] - sellAmount;
+            this.balances[room][res] = -this.getTarget(res) * multiplier + liveRoom.terminal.store[res] - sellAmount + buyAmount;
 
             //if it is twice as high as it should be, add the room to the surplus object
             if (this.balances[room][res] > this.getTarget(res)) {
@@ -76,14 +81,85 @@ class Vendor {
 
     /**
      * Method to buy resources that are needed if they are not available from other rooms
-     * @param {} room 
+     * @param {String} room 
      */
     requisition(room) {
         //first check if this room has any shortages
+        let needs = this.getNeeds(room);
+        if (needs.length == 0) return false;
+
+        //energy data for transfer costs
+        let energyData = Game.market.getHistory(RESOURCE_ENERGY);
+        let energyPrice = energyData[energyData.length - 1].avgPrice;
+
+        //loop through all needs
+        for (let res of needs) {
+            if (this.surpluses[res].length > 0) continue;
+            //the balance of a need is negative, so lets make it positive
+            let need = -this.balances[room][res];
+            if (need > 1000) {
+                let marketInfo = Game.market.getHistory(res);
+                let todayInfo = marketInfo[marketInfo.length - 1];
+                let sellOrders = Game.market.getAllOrders({type: ORDER_SELL, resourceType: res})
+                let targetPrice = ((todayInfo["avgPrice"] + todayInfo["stddevPrice"]) * 1.2).toFixed(3);
+
+                let sortedOrders = [];
+                for (let order of sellOrders) {
+                    //include energy transfer cost in price
+                    let totalPrice = (need * order.price) + (energyPrice * Game.market.calcTransactionCost(need, room, order.roomName));
+                    let totalPricePerUnit = totalPrice / need;
+
+                    sortedOrders.push({
+                        "id": order.id,
+                        "price": totalPricePerUnit,
+                        "amount": order.amount,
+                        "room": order.roomName
+                    })
+                }
+                sortedOrders.sort((a, b) => a.price - b.price);
+                
+
+                let cheapestOrder = sortedOrders[0];
+                if (cheapestOrder.price < targetPrice) {
+                    //if the immediate buy is cheaper than the making a buy order, do it
+                    let amount = Math.min(cheapestOrder.amount, need);
+                    let success = Game.market.deal(cheapestOrder.id, amount, room);
+
+                    if (success == OK) {
+                        this.balances[room][res] += amount;
+                        if (this.balances[room][res] >= 0) {
+                            let index = this.shortages[res].indexOf(room);
+                            if (index >= 0) this.shortages[res].splice(index, 1);
+                        }
+                        this.balances[room][RESOURCE_ENERGY] -= Game.market.calcTransactionCost(amount, room, cheapestOrder.room);
+                        return true;
+                    }
+                } else {
+                    //sell orders aren't cheap enough, create a buy order
+                    let success = Game.market.createOrder({
+                        type: ORDER_BUY,
+                        resourceType: res,
+                        price: targetPrice,
+                        totalAmount: need,
+                        roomName: room   
+                    });
+
+                    if (success == OK) {
+                        this.balances[room][res] = 0;
+                        //remove from the surpluses list and reset balances
+                        let index = this.shortages[res].indexOf(room);
+                        if (index >= 0) this.shortages[res].splice(index, 1);
+                        return true;
+                    }
+                }
+                
+            }
+        }
     }
 
     /**
      * Method to send resources to other rooms
+     * @param {String} room 
      */
     relinquish(room) {
         //first check if this this room has any surpluses
@@ -106,6 +182,7 @@ class Vendor {
 
     /**
      * Method to list excess resources on the market
+     * @param {String} room 
      */
     merchandise(room) {
         //check if the room has any surpluses
@@ -132,21 +209,20 @@ class Vendor {
                     let index = this.surpluses[res].indexOf(room);
                     if (index >= 0) this.surpluses[res].splice(index, 1);
                     this.balances[room][res] = 0;
-                    return true
                 }
             }
         }
     }
 
     /**
-     * Method that clears old outdated orders
+     * Method that clears old outdated buy and sell
      * @param {String} room 
      */
     clean(room) {
-        let roomOrders = _.filter(Game.market.orders, order => order.roomName == room && order.type == ORDER_SELL);
+        let roomOrders = _.filter(Game.market.orders, order => order.roomName == room);
         for (let order of roomOrders) {
             //cancel any orders with no more left to sell
-            if (order.remainingAmount == 0) {
+            if (order.amount == 0) {
                 Game.market.cancelOrder(order.id);
                 continue;
             }
@@ -217,6 +293,21 @@ class Vendor {
             }
         }
         return excess;
+    }
+
+    /**
+     * Method that returns the minerals that a room has need of
+     * @param {String} room 
+     * @returns Array containing resources that the room has need of
+     */
+    getNeeds(room) {
+        let needs = [];
+        for (let res in this.shortages) {
+            if (this.shortages[res].includes(room)) {
+                needs.push(res);
+            }
+        }
+        return needs;
     }
 }
 
