@@ -70,7 +70,8 @@ class Informant {
         let mapper = {
             [STRUCTURE_SPAWN] : "nexus",
             [STRUCTURE_TOWER] : "bastion",
-            [STRUCTURE_LINK] : "conduit"
+            [STRUCTURE_LINK] : "conduit",
+            [STRUCTURE_LAB] : "workshop"
         }
         try {
             return mapper[structureType];

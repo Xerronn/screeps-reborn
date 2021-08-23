@@ -25,6 +25,7 @@ const Garrison = require("../civitas/legion/garrison");
 const Nexus = require("../castrum/nexus");
 const Bastion = require("../castrum/bastion");
 const Conduit = require("../castrum/conduit");
+const Workshop = require("../castrum/workshop");
 
 //entity that initializes, refreshes, runs all roomObj in a room
 class Supervisor {
@@ -65,6 +66,10 @@ class Supervisor {
                         this.storageLink = "none";
                     }
                     this.castrum["conduit"].push(new Conduit(struc.id));
+                    break;
+                case STRUCTURE_LAB:
+                    !("workshop" in this.castrum) && (this.castrum["workshop"] = []);
+                    this.castrum["workshop"].push(new Workshop(struc.id));
                     break;
             }
         }
