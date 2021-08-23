@@ -157,12 +157,12 @@ class Archivist {
     }
 
     /**
-     * Get towers filled flag for a given room
+     * Get labs filled flag for a given room
      * @param {String} room string representing the room 
-     * @returns value of the towersFilled flag
+     * @returns value of the labsFilled flag
      */
-    getTowersFilled(room) {
-        return Memory.rooms[room].flags.towersFilled;
+    getLabsFilled(room) {
+        return Memory.rooms[room].flags.labsFilled;
     }
 
     /**
@@ -240,6 +240,15 @@ class Archivist {
         } 
     }
 
+    /**
+     * Get towers filled flag for a given room
+     * @param {String} room string representing the room 
+     * @returns value of the towersFilled flag
+     */
+     getTowersFilled(room) {
+        return Memory.rooms[room].flags.towersFilled;
+    }
+
     /////////////////
     /////SETTERS/////
     /////////////////
@@ -298,6 +307,15 @@ class Archivist {
      */
      setGarrisonSpawned(room, value) {
         Memory.rooms[room].flags.garrisonSpawned = value;
+    }
+
+    /**
+     * Set labs filled flag for a given room
+     * @param {String} room string representing the room 
+     * @param {Boolean} value true or false value to set the flag
+     */
+     setLabsFilled(room, value) {
+        Memory.rooms[room].flags.labsFilled = value;
     }
 
     /**
