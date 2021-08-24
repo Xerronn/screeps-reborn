@@ -127,18 +127,23 @@ class Supervisor {
      * Function that runs all objects in the room
      */
      run() {
-        //first all creeps
-        for (var type of Object.keys(this.civitates)) {
-            for (var pro of this.civitates[type]) {
-                pro.run();
+        try {
+            //first all creeps
+            for (var type of Object.keys(this.civitates)) {
+                for (var pro of this.civitates[type]) {
+                    pro.run();
+                }
             }
-        }
 
-        //then all structures
-        for (var type of Object.keys(this.castrum)) {
-            for (var struc of this.castrum[type]) {
-                struc.run();
+            //then all structures
+            for (var type of Object.keys(this.castrum)) {
+                for (var struc of this.castrum[type]) {
+                    struc.run();
+                }
             }
+        } catch (roomErr) {
+            let errorMessage = `<b style='color:red;'>Room FAILURE with message ${roomErr.message} at ${roomErr.stack}</b>`
+            console.log(errorMessage);
         }
     }
 
@@ -150,6 +155,7 @@ class Supervisor {
      initiate(template, rebirth=false) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
+        let generationIncremented = false;
 
         if (this.reservedTick < Game.time) {
             //loop through the spawns until an available one is found
@@ -170,6 +176,7 @@ class Supervisor {
 
                     if (template.memory.generation !== undefined) {
                         template.memory.generation++;
+                        generationIncremented = true;
                     }
 
                     let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
@@ -188,7 +195,7 @@ class Supervisor {
 
         if (!foundNexus) {
             //decrement it back down
-            if (template.memory.generation !== undefined) {
+            if (template.memory.generation !== undefined && generationIncremented) {
                 template.memory.generation--;
             }
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
