@@ -155,7 +155,7 @@ class Supervisor {
      initiate(template, rebirth=false) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
-        let generationIncremented = false;
+        let generationIncremented = 0;
 
         if (this.reservedTick < Game.time) {
             //loop through the spawns until an available one is found
@@ -176,7 +176,7 @@ class Supervisor {
 
                     if (template.memory.generation !== undefined) {
                         template.memory.generation++;
-                        generationIncremented = true;
+                        generationIncremented++;
                     }
 
                     let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
@@ -195,8 +195,8 @@ class Supervisor {
 
         if (!foundNexus) {
             //decrement it back down
-            if (template.memory.generation !== undefined && generationIncremented) {
-                template.memory.generation--;
+            if (template.memory.generation !== undefined) {
+                template.memory.generation -= generationIncremented;
             }
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
             global.TaskMaster.schedule(Game.time + 5, task, [this.room, {...template}]);
