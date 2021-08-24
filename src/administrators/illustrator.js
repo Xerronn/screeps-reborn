@@ -1,7 +1,6 @@
-//Entity that handles visuals and misc methods
+//Entity that handles visuals
 class Illustrator {
     constructor() {
-        this.matrixCache = {};
     }
 
     /**
