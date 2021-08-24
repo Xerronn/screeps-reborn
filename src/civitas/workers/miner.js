@@ -62,7 +62,7 @@ class Miner extends Worker {
                 this.spawnCourier();
             }
         } else {
-            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > this.numWork * 2)) {
                 this.memory.task = "withdraw";
                 super.harvest();
             } else {
@@ -140,9 +140,9 @@ class Miner extends Worker {
      */
     evolve() {
         this.memory.body = [
-            WORK, WORK, WORK, WORK, WORK, WORK, 
-            CARRY, CARRY, CARRY, CARRY, 
-            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+            CARRY, CARRY, CARRY, CARRY, CARRY,
+            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
         ]
     }
 }
