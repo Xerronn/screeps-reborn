@@ -144,6 +144,9 @@ class Supervisor {
         } catch (roomErr) {
             let errorMessage = `<b style='color:red;'>Room FAILURE with message ${roomErr.message} at ${roomErr.stack}</b>`
             console.log(errorMessage);
+            if (Game.time % 30 == 0) {
+                Game.notify(errorMessage);
+            }
         }
     }
 
