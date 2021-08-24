@@ -7,7 +7,7 @@ class Runner extends Worker {
     }
 
     run() {
-        if (this.ticksToLive < 300 || this.memory.task == "renew" || this.memory.task == "renewFill") {
+        if (this.memory.generation !== undefined && (this.ticksToLive < 300 || this.memory.task == "renew" || this.memory.task == "renewFill")) {
             //start the loop by setting task to rewnewFill
             //this task will block spawning, but keep filling 
             //until reaching the required energy for a full renew
