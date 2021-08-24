@@ -74,14 +74,15 @@ class Arbiter extends Runner {
                 this.memory.task = "deposit";
                 this.depositTerminal();
             }
+        } else if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 21000) {
+            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+                this.memory.task = "withdraw";
+                this.withdrawTerminal(); 
+            } else {
+                this.memory.task = "deposit";
+                this.depositStorage();
+            }
         }
-    }
-
-    /**
-     * Overloaded withdrawStorage with no moves
-     */
-    withdrawStorage() {
-        this.liveObj.withdraw(this.storage, RESOURCE_ENERGY);
     }
 
     /**
@@ -93,6 +94,20 @@ class Arbiter extends Runner {
         } else {
             this.liveObj.withdraw(this.link, RESOURCE_ENERGY);
         }
+    }
+
+    /**
+     * Overloaded withdrawStorage with no moves
+     */
+     withdrawStorage() {
+        this.liveObj.withdraw(this.storage, RESOURCE_ENERGY);
+    }
+
+    /**
+     * Withdraw energy from terminal
+     */
+    withdrawTerminal() {
+        this.liveObj.withdraw(this.terminal, RESOURCE_ENERGY);
     }
 
     /**
