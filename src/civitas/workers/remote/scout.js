@@ -19,7 +19,7 @@ class Scout extends Remotus {
             this.memory.targets = targets;
         }
 
-        this.targetRoom = this.memory.targets[0];
+        this.targetRoom = this.memory.targets[0] || this.memory.spawnRoom;
 
         this.update(true)
     }
@@ -67,8 +67,15 @@ class Scout extends Remotus {
                     distances : []
                 };
                 for (let source of sources) {
+                    //todo: use pathfinder to see if a route is possible and get length
                     data.distances.push(this.pos.findPathTo(source).length);
                 }
+                global.Archivist.logRemote(this.memory.spawnRoom, this.targetRoom, data);
+            } else if (!Game.rooms[this.targetRoom].controller) {
+                //log that the room is a highway
+                let data = {
+                    status : "highway"
+                };
                 global.Archivist.logRemote(this.memory.spawnRoom, this.targetRoom, data);
             } else if (Game.rooms[this.targetRoom].controller.owner) {
                 //log that the room is occupied
