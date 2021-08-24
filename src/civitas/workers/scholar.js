@@ -124,8 +124,8 @@ class Scholar extends Worker {
 
                 index++;
             }
-            this.memory.body = newBody;
         }
+        this.memory.body = newBody;
     }
 }
 
