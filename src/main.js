@@ -1,5 +1,3 @@
-// Any modules that you use that modify the game's prototypes should be require'd
-// before you require the profiler.
 const Imperator = require("./administrators/imperator");
 const TaskMaster = require("./administrators/taskmaster");
 const Archivist = require("./administrators/archivist");
