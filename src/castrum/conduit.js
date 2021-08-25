@@ -5,6 +5,9 @@ class Conduit extends Castrum {
     constructor(linkId) {
         super(linkId);
 
+        //if the controller link needs energy
+        this.needsFilling = false;
+
         //check if the link is within 2 squares of either a controller or storage
         let nearestBuilding = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -48,8 +51,10 @@ class Conduit extends Castrum {
         try {
             switch (this.type) {
                 case STRUCTURE_STORAGE:
-                    if (this.store.getUsedCapacity(RESOURCE_ENERGY) >= 200 && controllerLink) {
-                        if (controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < 650) {
+                    //if it is full, send the energy, if it is not, request to be filled to max
+                    if (this.store.getUsedCapacity(RESOURCE_ENERGY) == this.store.getCapacity(RESOURCE_ENERGY)) {
+                        this.needsFilling = false;
+                        if (controllerLink && controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < 650) {
                             this.liveObj.transferEnergy(controllerLink.liveObj);
                         }
                     }
@@ -60,6 +65,11 @@ class Conduit extends Castrum {
                         if (storageLink.store.getFreeCapacity(RESOURCE_ENERGY) != 0) {
                             this.liveObj.transferEnergy(storageLink.liveObj);
                         }
+                    }
+                    break;
+                case STRUCTURE_CONTROLLER:
+                    if (this.store.getUsedCapacity(RESOURCE_ENERGY) <= 400 && storageLink) {
+                        storageLink.needsFilling = true;
                     }
                     break;
             }

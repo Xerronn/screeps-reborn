@@ -5,6 +5,7 @@ class Arbiter extends Runner {
     constructor(creepId) {
         super(creepId);
         this.linkId = this.getSupervisor().storageLink.id;
+        this.linkWrapper = this.getSupervisor().storageLink;
 
         this.update(true);
     }
@@ -37,30 +38,26 @@ class Arbiter extends Runner {
         }
 
         /**
-         * Link Management. Keep the storage link at exactly 400
-         * todo: should be a better way to do this
+         * Link Management. Keep the link at zero except when it requests to be filled
          */
-        if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) != 400) {
-            if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
-                this.memory.task = "withdraw";
-                //pull from the creepStorage this.link if it is higher than the sweet spot
-                if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) > 400) {
-                    let amount = this.link.store.getUsedCapacity(RESOURCE_ENERGY) - 400;
-                    this.withdrawLink(Math.min(amount, this.store.getUsedCapacity(RESOURCE_ENERGY)));
-                } else {
+        if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) != 0 || this.linkWrapper.needsFilling) {
+            if (this.linkWrapper.needsFilling) {
+                if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdrawStorage" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+                    this.memory.task = "withdrawStorage";
                     this.withdrawStorage();
-                }   
-            } else {
-                this.memory.task = "deposit";
-                //transfer to the this.link if it is less than the sweet spot
-                if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) < 400) {
-                    let amount = 400 - this.link.store.getUsedCapacity(RESOURCE_ENERGY);
-                    this.depositLink(Math.min(amount, this.store.getUsedCapacity(RESOURCE_ENERGY)));
-                } else {
-                    this.depositStorage();
+                    return;
                 }
+                this.memory.task = "depositLink";
+                this.depositLink();
+            } else {
+                if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdrawLink" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+                    this.memory.task = "withdrawLink";
+                    this.withdrawLink();
+                    return;
+                }
+                this.memory.task = "depositStorage";
+                this.depositStorage();
             }
-            return;
         }
 
         /**
