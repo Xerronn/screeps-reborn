@@ -79,6 +79,7 @@ class Miner extends Worker {
         //make sure to spawn new miner before the current one dies, to maintain 100% uptime
         if (this.memory.generation !== undefined && this.ticksToLive <= this.timeToSpawn) {
             //basically rebirth but without the dying first
+            this.evolve();
             this.getSupervisor().initiate({
                 'body': [...this.body],
                 'type': this.memory.type,
@@ -139,11 +140,13 @@ class Miner extends Worker {
      * Method to evolve the body after getting a link
      */
     evolve() {
-        this.memory.body = [
-            WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-            CARRY, CARRY, CARRY, CARRY, CARRY,
-            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
-        ]
+        if (this.link) {
+            this.memory.body = [
+                WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                CARRY, CARRY, CARRY, CARRY, CARRY,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ]
+        }
     }
 }
 
