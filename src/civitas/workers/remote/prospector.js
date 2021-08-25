@@ -56,10 +56,24 @@ class Prospector extends Remotus {
             }
         }
 
+        //assign container when it is possible
+        if (!this.memory.container) {
+            let allContainers = Game.rooms[this.room].find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
+            let container = this.source.pos.findInRange(allContainers, 1)[0];
+
+            if (container) {
+                this.container = container;
+                this.memory.container = container.id;
+            }
+        }
+
         //First and foremost, fill up carry parts
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";
             this.harvest(this.source, 1);
+        } else if (this.container && this.container.hits < this.container.hitsMax) {
+            this.memory.task = "repair";
+            this.repairContainer();
         } else if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
             //now build the roads and the containers
             this.memory.task = "build";
@@ -68,26 +82,13 @@ class Prospector extends Remotus {
             //done building, time for full drop mining mode
             this.memory.task = "dropHarvesting";
             if (!this.evolved) this.evolve();
-            if (!this.memory.container) {
-                let allContainers = Game.rooms[this.room].find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
-                let container = this.source.pos.findInRange(allContainers, 1)[0];
-
-                if (container) {
-                    this.container = container;
-                    this.memory.container = container.id;
-                }
-            }
-
+            
             //spawn haulers
             if (!this.memory.haulersSpawned) {
                 this.spawnHauler();
             }
             
-            //repair the container whenever it gets low
-            if (this.container && this.container.hits < this.container.hitsMax) {
-                this.memory.task = "repair";
-                this.repairContainer();
-            } else if (this.container && this.source.energy > 0) {
+            if (this.container && this.source.energy > 0) {
                 this.harvest(this.container, 0);
             }
         }
