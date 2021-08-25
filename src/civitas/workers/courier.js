@@ -37,8 +37,13 @@ class Courier extends Civitas {
 
             //cached path for movement defined after we have a container to path to
             if (!this.path && this.container && this.storage) {
+                let target = this.storage;
+                if (this.memory.resource !== RESOURCE_ENERGY && this.terminal)  {
+                    target = this.terminal;
+                }
+                
                 this.path = PathFinder.search(
-                    this.storage.pos, 
+                    target.pos, 
                     {
                         "pos" : this.container.pos,
                         "range" : 1
@@ -111,7 +116,7 @@ class Courier extends Civitas {
                 return false;
             }
         }
-        
+
         //detect if creep is stuck, and path normally if necessary
         if (this.stuckPos.x != this.pos.x || this.stuckPos.y != this.pos.y) {
             this.stuckPos = this.pos;
