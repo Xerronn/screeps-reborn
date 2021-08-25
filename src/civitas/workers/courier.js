@@ -101,6 +101,17 @@ class Courier extends Civitas {
      * @param {Boolean} reset reset the path to the start
      */
      moveByPath(reversed) {
+         //if creep is sitting at its destination, there is nothing to do
+        if (!reversed) {
+            if (this.pos.isEqualTo(this.path[this.path.length - 1])) {
+                return false;
+            }
+        } else {
+            if (this.pos.isEqualTo(this.path[0])) {
+                return false;
+            }
+        }
+        
         //detect if creep is stuck, and path normally if necessary
         if (this.stuckPos.x != this.pos.x || this.stuckPos.y != this.pos.y) {
             this.stuckPos = this.pos;
