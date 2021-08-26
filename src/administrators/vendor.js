@@ -98,10 +98,9 @@ class Vendor {
             //the balance of a need is negative, so lets make it positive
             let need = -this.balances[room][res];
             if (need > 1000) {
-                let marketInfo = Game.market.getHistory(res);
-                let todayInfo = marketInfo[marketInfo.length - 1];
+                let marketInfo = this.getWeekAverages();
                 let sellOrders = Game.market.getAllOrders({type: ORDER_SELL, resourceType: res})
-                let targetPrice = ((todayInfo["avgPrice"] + todayInfo["stddevPrice"]) * 1.2).toFixed(3);
+                let targetPrice = ((marketInfo["avgPrice"] + marketInfo["stddevPrice"]) * 1.2).toFixed(3);
 
                 let sortedOrders = [];
                 for (let order of sellOrders) {
@@ -193,9 +192,8 @@ class Vendor {
             if (this.shortages[res].length > 0) return false;
             let surplus = this.balances[room][res];
             if (surplus > 5000) {
-                let marketInfo = Game.market.getHistory(res);
-                let today = marketInfo[marketInfo.length - 1];
-                let price = (today["avgPrice"] * 0.85).toFixed(3);
+                let marketInfo = this.getWeekAverages();
+                let price = (marketInfo["avgPrice"] * 0.85).toFixed(3);
                 let success = Game.market.createOrder({
                     type: ORDER_SELL,
                     resourceType: res,
@@ -264,6 +262,45 @@ class Vendor {
         }
         result += "</table>";
         console.log(result);
+    }
+
+    getWeekAverages(resource) {
+        let fourteenDays = Game.market.getHistory(resource);
+
+        let averages = [];
+        let stddev = [];
+        //loop through the last 7 days
+        for (let i = fourteenDays.length - 1; i > 7; i--) {
+            averages.push(fourteenDays[i].avgPrice);
+            stddev.push(fourteenDays[i].stddevPrice);
+        }
+
+        //remove outliers
+        let resultArray = [];
+        for (let array of [averages, stddev]) {
+            //sort the array highest to lowest
+            array.sort( function(a, b) {
+                return a - b;
+            });
+            //calculate the 1st quarter
+            let q1 = array[Math.floor(array.length / 4)];
+            //calculate the 3rd quarter
+            let q3 = array[Math.floor(array.length * (3/4))];
+            let iqr = q3-q1;
+
+            let minValue = q1 - iqr * 1.5;
+            let maxValue = q3 + iqr * 1.5;
+
+            resultArray.push(array.filter(x =>
+                (x <= maxValue) && (x >= minValue)
+            ));
+        }
+
+        let sevenDays = {
+            "avgPrice": resultArray[0].reduce((a, b) => a + b, 0) / 7,
+            "stddevPrice": resultArray[1].reduce((a, b) => a + b, 0) / 7
+        }
+        return sevenDays;
     }
 
     /**
