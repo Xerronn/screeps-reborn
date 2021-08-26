@@ -171,11 +171,11 @@ class Vendor {
             if (shorts.length == 0) continue;
             let targetRoom = shorts[0];
             let amountAvailable = this.balances[room][res];
-            let amountNeeded = this.balances[targetRoom][res];
+            let amountNeeded = -this.balances[targetRoom][res];
             let amountToSend = Math.min(amountNeeded, amountAvailable);
             Game.rooms[room].terminal.send(res, amountToSend, targetRoom, 
                 "Routine supplies shipment of " + res + " from " + room + " to " + targetRoom);
-            break;
+            return true;
         }
     }
 
@@ -213,12 +213,13 @@ class Vendor {
     }
 
     /**
-     * Method that clears old outdated buy and sell
+     * Method that clears old outdated buy and sell order
      * @param {String} room 
      */
-    clean(room) {
-        let roomOrders = _.filter(Game.market.orders, order => order.roomName == room);
-        for (let order of roomOrders) {
+    clean() {
+        let allOrders = Game.market.orders;
+        for (let id in allOrders) {
+            let order = allOrders[id];
             //cancel any orders with no more left to sell
             if (order.amount == 0) {
                 Game.market.cancelOrder(order.id);
@@ -229,7 +230,7 @@ class Vendor {
             if (Game.time - order.created > 50000) {
                 Game.market.cancelOrder(order.id);
                 //increment balance back up
-                this.balances[room][order.resourceType] += order.remainingAmount;
+                this.balances[order.roomName][order.resourceType] += order.remainingAmount;
             }
         }
     }
