@@ -35,6 +35,19 @@ class Supervisor {
         this.castrum = {};
 
         this.reservedTick = 0;
+
+        //special link roles
+        this.controllerLink = undefined;
+        this.storageLink = undefined;
+
+        //special lab roles
+        this.workshops = {
+            'simple': [],
+            'medium': [],
+            'advanced': [],
+            'complex': [],
+            'product': []
+        };
     }
 
     /**
@@ -57,16 +70,13 @@ class Supervisor {
                     !("bastion" in this.castrum) && (this.castrum["bastion"] = []);
                     this.castrum["bastion"].push(new Bastion(struc.id));
                     break;
-                
+
                 case STRUCTURE_LINK:
                     !("conduit" in this.castrum) && (this.castrum["conduit"] = []);
                     //keep track of special link roles
-                    if (!this.controllerLink) {
-                        this.controllerLink = "none";
-                        this.storageLink = "none";
-                    }
                     this.castrum["conduit"].push(new Conduit(struc.id));
                     break;
+
                 case STRUCTURE_LAB:
                     !("workshop" in this.castrum) && (this.castrum["workshop"] = []);
                     this.castrum["workshop"].push(new Workshop(struc.id));
