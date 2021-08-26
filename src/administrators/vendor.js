@@ -98,7 +98,7 @@ class Vendor {
             //the balance of a need is negative, so lets make it positive
             let need = -this.balances[room][res];
             if (need > 1000) {
-                let marketInfo = this.getWeekAverages();
+                let marketInfo = this.getWeekAverages(res);
                 let sellOrders = Game.market.getAllOrders({type: ORDER_SELL, resourceType: res})
                 let targetPrice = ((marketInfo["avgPrice"] + marketInfo["stddevPrice"]) * 1.2).toFixed(3);
 
@@ -192,7 +192,7 @@ class Vendor {
             if (this.shortages[res].length > 0) return false;
             let surplus = this.balances[room][res];
             if (surplus > 5000) {
-                let marketInfo = this.getWeekAverages();
+                let marketInfo = this.getWeekAverages(res);
                 let price = (marketInfo["avgPrice"] * 0.85).toFixed(3);
                 let success = Game.market.createOrder({
                     type: ORDER_SELL,
