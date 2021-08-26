@@ -4,6 +4,12 @@ const Worker = require("./worker");
 class Runner extends Worker {
     constructor(creepId) {
         super(creepId)
+
+        let anchor = global.Archivist.getAnchor(this.room);
+        this.idleSpot = {
+            'x': anchor.x + 9, 
+            'y': anchor.y + 6
+        }
     }
 
     run() {
@@ -27,9 +33,12 @@ class Runner extends Worker {
         } else if (!global.Archivist.getExtensionsFilled(this.room)) {
             this.memory.task = "fillExtensions";
             this.fillExtensions();
-        } else if (!global.Archivist.getLabsFilled(this.room)) {
-            this.memory.task = "fillLabs";
-            this.fillLabs();
+        } else { //move to idle spot
+            this.memory.task = "idle";
+            if (this.pos.x != this.idleSpot.x || this.pos.y != this.idleSpot.y) {
+                let roomPosIdle = new RoomPosition(this.idleSpot.x, this.idleSpot.y, this.room);
+                this.liveObj.moveTo(roomPosIdle);
+            }
         }
     }
 
