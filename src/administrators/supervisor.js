@@ -34,7 +34,9 @@ class Supervisor {
         this.civitates = {};
         this.castrum = {};
 
-        this.reservedTick = 0;
+        this.reservedTickNexus = 0;
+
+        this.reservedTickWorkshop = 0;
 
         //special link roles
         this.controllerLink = undefined;
@@ -142,7 +144,14 @@ class Supervisor {
             //then all structures
             for (var type of Object.keys(this.castrum)) {
                 for (var struc of this.castrum[type]) {
-                    struc.run();
+                    //block workshops from running when they are reserved
+                    if (type == "workshop") {
+                        if (this.reservedTickWorkshop < Game.time) {
+                            struc.run();
+                        }
+                    } else {
+                        struc.run();
+                    }
                 }
             }
         } catch (roomErr) {
@@ -164,7 +173,7 @@ class Supervisor {
         let foundNexus = false;
         let generationIncremented = 0;
 
-        if (this.reservedTick < Game.time) {
+        if (this.reservedTickNexus < Game.time) {
             //loop through the spawns until an available one is found
             for (let nexus of this.castrum["nexus"]) {
                 if (!nexus.spawning && !nexus.spawningThisTick) {
@@ -259,8 +268,15 @@ class Supervisor {
     /**
      * Method to block spawning for 5 ticks
      */
-     reserve() {
-        this.reservedTick = Game.time + 5;
+     reserveNexus() {
+        this.reservedTickNexus = Game.time + 5;
+    }
+
+    /**
+     * Method to block workshops for 5 ticks
+     */
+     reserveWorkshop() {
+        this.reservedTickWorkshop = Game.time + 5;
     }
 
     /**
