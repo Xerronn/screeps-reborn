@@ -43,37 +43,6 @@ class Runner extends Worker {
     }
 
     /**
-     * Method that fills labs with energy
-     */
-    fillLabs() {
-        let liveClosestLab = Game.getObjectById(this.memory.closestLab);
-        if (!liveClosestLab || liveClosestLab.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-            let workShops = this.getSupervisor().castrum.workshop;
-            if (!workShops) {
-                global.Archivist.setLabsFilled(this.room, true);
-                return;
-            }
-            let fillables = workShops.filter(
-                wrapper => wrapper.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-            );
-            
-            if (fillables.length == 0) {
-                //let all the other creeps know that there isn't any point in looking
-                global.Archivist.setLabsFilled(this.room, true);
-                return;
-            }
-            liveClosestLab = this.pos.findClosestByRange(fillables);
-            this.memory.closestLab = liveClosestLab.id;
-        }
-
-        if (this.pos.inRangeTo(liveClosestLab, 1)) {
-            this.liveObj.transfer(liveClosestLab, RESOURCE_ENERGY);
-        } else {
-            this.liveObj.moveTo(liveClosestLab);
-        }
-    }
-
-    /**
      * Method to get the creep to renew itself to help prevent softlocks
      */
     renew(usePrime=false) {
@@ -103,7 +72,7 @@ class Runner extends Worker {
         }
 
         //reserve the spawn, then renew until its full or no energy left
-        this.getSupervisor().reserve();
+        this.getSupervisor().reserveNexus();
 
         if (Game.rooms[this.room].energyAvailable < global.Informant.calculateBodyCost(this.memory.body) && this.memory.task == "renewFill") {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
