@@ -40,14 +40,8 @@ class Supervisor {
         this.controllerLink = undefined;
         this.storageLink = undefined;
 
-        //special lab roles
-        this.workshops = {
-            'simple': [],
-            'medium': [],
-            'advanced': [],
-            'complex': [],
-            'product': []
-        };
+        //the reagent labs
+        this.reagentWorkshops = [];
     }
 
     /**
