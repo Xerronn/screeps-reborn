@@ -7,7 +7,7 @@ class Bastion extends Castrum {
 
         this.repairTargets = [];
     }
-
+    //todo: heal creeps in room that are damaged
     run() {
         //set tower filled flag
         if (this.store.getFreeCapacity(RESOURCE_ENERGY) > this.store.getCapacity(RESOURCE_ENERGY) / 4) {
