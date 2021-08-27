@@ -4,6 +4,94 @@ class Architect {
     }
 
     /**
+     * Method to calculate the gamestage, should be run occasionally to check for certain game events
+     * @param {String} room String representing the room
+     * @returns an integer representing the game stage
+     */
+     calculateGameStage(room) {
+        let liveRoom = Game.rooms[room];
+        let rcl = liveRoom.controller.level;
+        let currentStage = global.Archivist.getGameStage(room);
+        let calculation = "-1"; //hopefully never calculation = s this
+
+        if (rcl == 1) {
+            //activate phase 1
+            calculation = "1";
+        }
+        if (rcl == 2) {
+            //nothing special happens
+            calculation = "2";
+        }
+        if (rcl == 3) {
+            //nothing special
+            calculation = "3";
+        }
+        if (rcl == 3 && global.Archivist.getStructures(room, STRUCTURE_TOWER).length > 0) {
+            //tower is built, time to build containers
+            calculation = "3.1";
+        }
+        if (rcl == 4) {
+            //nothing special
+            calculation = "4";
+        }
+        if (rcl == 4 && liveRoom.storage && liveRoom.storage.my) {
+            //storage is built, time to switch to phase 2
+            calculation = "4.1";
+        }
+        if (rcl == 4 && liveRoom.storage && liveRoom.storage.my && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
+            //storage is built, has 100,000 energy. time to build bunker roads
+            calculation = "4.2";
+        }
+        if (rcl == 4 && currentStage == "4.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //bunker roads are built, build roads to sources
+            calculation = "4.3";
+        }
+        if (rcl == 5) {
+            //links are available, time to build controller link and storage link
+            calculation = "5";
+        }    
+        if (rcl == 6) {
+            //rcl 6 has lots of expensive stuff to build
+            calculation = "6";
+        }
+        if (rcl == 6 && currentStage == "6" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //lots of expensive stuff is done building, time to build one source link
+            calculation = "6.1";
+        }
+        if (rcl == 6 && currentStage == "6.1" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //build excavator and roads to it
+            calculation = "6.2";
+        }
+        if (rcl == 6 && currentStage == "6.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //time to start scouting and spawn the excavator
+            calculation = "6.3";
+        }
+        if (rcl == 6 && currentStage == "6.3" && global.Archivist.getDoneScouting(this.room) == true) {
+            //time to build road to the remote
+            calculation = "6.4";
+        }
+        if (rcl == 6 && currentStage == "6.4" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            //time to build the insides of the remote and miners
+            calculation = "6.5";
+        }
+        if (rcl == 7) {
+            //build second source link
+            calculation = "7";
+        }
+        if (rcl == 7 && currentStage == "7" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0
+            && liveRoom.storage && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
+                //start chemical productions
+                calculation = "7.1";
+        }
+        if (rcl == 8) {
+            //todo: lots
+            calculation = "8";
+        }
+
+        return calculation;
+    }
+
+    /**
      * Function to do room planning whenever gamestage changes
      * @param {String} room string representation of a room 
      */
@@ -100,7 +188,7 @@ class Architect {
                 break;
             case "7.1":
                 //everything is done building and storage has > 100,000 energy
-                //TODO: start remote mining
+                global.Imperator.administrators[room].executive.spawnChemist();
                 break;
             case "8":
                 //TODO: lots and lots
