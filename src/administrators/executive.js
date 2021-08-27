@@ -10,6 +10,8 @@ class Executive {
             RESOURCE_CATALYZED_KEANIUM_ALKALIDE,        //ranged attack boost
             RESOURCE_CATALYZED_UTRIUM_ACID              //melee attack boost
         ];
+
+        this.chemicalOrder = undefined;
     }
 
     /**
@@ -73,12 +75,12 @@ class Executive {
         }
 
         //Room is ready to start producing minerals
-        if (gameStage >= 7.1 && Game.time % 25 == 0) {
+        if (gameStage >= 7.1 && (!this.chemicalOrder || Game.time % 25 == 0)) {
             let target = 10000; //the amount of the minerals we want in storage at all times
 
             for (let chemical of this.chemicalDesires) {
                 if (Game.rooms[this.room].storage.store.getUsedCapacity(chemical) < target) {
-                    global.Archivist.setChemicalOrder(this.room, chemical);
+                    this.chemicalOrder = chemical;
                     break;
                 }
             }
