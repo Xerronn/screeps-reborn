@@ -46,6 +46,30 @@ class Informant {
             };
     }
 
+    getChemicalChain(chemical) {
+        let chemicalChains = {
+            [RESOURCE_CATALYZED_GHODIUM_ACID] : {
+                'simple': [
+                    [RESOURCE_ZYNTHIUM, RESOURCE_KEANIUM],
+                    [RESOURCE_UTRIUM, RESOURCE_LEMERGIUM],
+                    [RESOURCE_HYDROGEN, RESOURCE_OXYGEN]
+                ],
+                'medium': [
+                    [RESOURCE_ZYNTHIUM_KEANITE, RESOURCE_UTRIUM_LEMERGITE]
+                ],
+                'advanced': [
+                    [RESOURCE_GHODIUM_HYDRIDE, RESOURCE_HYDROXIDE]
+                ],
+                'complex': [
+                    [RESOURCE_GHODIUM_ACID, RESOURCE_CATALYST] 
+                ]
+            }
+        }
+
+
+        return chemicalChains[chemical];
+    }
+
     /**
      * Method that visualizes bunker position with a white square
      * @param {String} room string representing the room
