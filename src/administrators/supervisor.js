@@ -7,6 +7,7 @@ const Runner = require("../civitas/workers/runner");
 const Contractor = require("../civitas/workers/contractor");
 const Arbiter = require("../civitas/workers/arbiter");
 const Excavator = require("../civitas/workers/excavator");
+const Chemist = require("../civitas/workers/chemist");
 
 //remote workers
 const Scout = require("../civitas/workers/remote/scout");
@@ -44,6 +45,7 @@ class Supervisor {
 
         //the reagent labs
         this.reagentWorkshops = [];
+        this.productWorkshops = [];
     }
 
     /**
