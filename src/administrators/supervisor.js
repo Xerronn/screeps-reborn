@@ -145,11 +145,7 @@ class Supervisor {
             for (var type of Object.keys(this.castrum)) {
                 for (var struc of this.castrum[type]) {
                     //block workshops from running when they are reserved
-                    if (type == "workshop") {
-                        if (this.reservedTickWorkshop < Game.time) {
-                            struc.run();
-                        }
-                    } else {
+                    if (type !== "workshop" || this.reservedTickWorkshop < Game.time) {
                         struc.run();
                     }
                 }
