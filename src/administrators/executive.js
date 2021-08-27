@@ -2,10 +2,18 @@
 class Executive {
     constructor(room) {
         this.room = room;
+
+        this.chemicalDesires = [
+            RESOURCE_CATALYZED_GHODIUM_ACID,            //upgrade boost
+            RESOURCE_CATALYZED_GHODIUM_ALKALIDE,        //toughness damage reduction boost
+            RESOURCE_CATALYZED_LEMERGIUM_ALKALIDE,      //heal boost
+            RESOURCE_CATALYZED_KEANIUM_ALKALIDE,        //ranged attack boost
+            RESOURCE_CATALYZED_UTRIUM_ACID              //melee attack boost
+        ];
     }
 
     /**
-     * Exectuive logic to run each tick
+     * Executive logic to run each tick
      */
     run() {
         //manage extensions filled flag
@@ -15,7 +23,7 @@ class Executive {
 
         //check gamestage every 10 ticks
         if (Game.time % 10 == 0) {
-            let calculation = this.calculateGameStage(this.room);
+            let calculation = global.Architect.calculateGameStage(this.room);
             let current = global.Archivist.getGameStage(this.room);
             //if gamestage is valid and different from what we have stored
             if (calculation != "-1" && current < calculation) {
@@ -25,7 +33,7 @@ class Executive {
             }
         }
 
-        //once gamestage 5 is active, phasetwo is in effect
+        //once gamestage 5 is active, phasetwo is in effect and dedicated builders should be spawned
         let gameStage = parseFloat(global.Archivist.getGameStage(this.room));
         if (gameStage >= 4.1) {
             if (Game.rooms[this.room].find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
@@ -63,6 +71,18 @@ class Executive {
                 }
             }
         }
+
+        //Room is ready to start producing minerals
+        if (gameStage >= 7.1 && Game.time % 25 == 0) {
+            let target = 10000; //the amount of the minerals we want in storage at all times
+
+            for (let chemical of this.chemicalDesires) {
+                if (Game.rooms[this.room].storage.store.getUsedCapacity(chemical) < target) {
+                    global.Archivist.setChemicalOrder(this.room, chemical);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -73,93 +93,6 @@ class Executive {
         return global.Imperator.administrators[this.room].supervisor;
     }
 
-    /**
-     * Method to calculate the gamestage, should be run occassionally to check for certain game events
-     * @param {String} room String representing the room
-     * @returns an integer representing the game stage
-     */
-    calculateGameStage(room) {
-        let liveRoom = Game.rooms[room];
-        let rcl = liveRoom.controller.level;
-        let currentStage = global.Archivist.getGameStage(room);
-        let calculation = "-1"; //hopefully never calculation = s this
-
-        if (rcl == 1) {
-            //activate phase 1
-            calculation = "1";
-        }
-        if (rcl == 2) {
-            //nothing special happens
-            calculation = "2";
-        }
-        if (rcl == 3) {
-            //nothing special
-            calculation = "3";
-        }
-        if (rcl == 3 && global.Archivist.getStructures(room, STRUCTURE_TOWER).length > 0) {
-            //tower is built, time to build containers
-            calculation = "3.1";
-        }
-        if (rcl == 4) {
-            //nothing special
-            calculation = "4";
-        }
-        if (rcl == 4 && liveRoom.storage && liveRoom.storage.my) {
-            //storage is built, time to switch to phase 2
-            calculation = "4.1";
-        }
-        if (rcl == 4 && liveRoom.storage && liveRoom.storage.my && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
-            //storage is built, has 100,000 energy. time to build bunker roads
-            calculation = "4.2";
-        }
-        if (rcl == 4 && currentStage == "4.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            //bunker roads are built, build roads to sources
-            calculation = "4.3";
-        }
-        if (rcl == 5) {
-            //links are available, time to build controller link and storage link
-            calculation = "5";
-        }    
-        if (rcl == 6) {
-            //rcl 6 has lots of expensive stuff to build
-            calculation = "6";
-        }
-        if (rcl == 6 && currentStage == "6" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            //lots of expensive stuff is done building, time to build one source link
-            calculation = "6.1";
-        }
-        if (rcl == 6 && currentStage == "6.1" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            //build excavator and roads to it
-            calculation = "6.2";
-        }
-        if (rcl == 6 && currentStage == "6.2" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            //time to start scouting and spawn the excavator
-            calculation = "6.3";
-        }
-        if (rcl == 6 && currentStage == "6.3" && global.Archivist.getDoneScouting(this.room) == true) {
-            //time to build road to the remote
-            calculation = "6.4";
-        }
-        if (rcl == 6 && currentStage == "6.4" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
-            //time to build the insides of the remote and miners
-            calculation = "6.5";
-        }
-        if (rcl == 7) {
-            //build second source link
-            calculation = "7";
-        }
-        if (rcl == 7 && currentStage == "7" && liveRoom.find(FIND_MY_CONSTRUCTION_SITES).length == 0
-            && liveRoom.storage && liveRoom.storage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000) {
-            //Start remote mining
-            calculation = "7.1";
-        }
-        if (rcl == 8) {
-            //todo: lots
-            calculation = "8";
-        }
-
-        return calculation;
-    }
 
     /**
      * Initialize spawning for phase one rooms
@@ -338,6 +271,20 @@ class Executive {
                 MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
             ],
             'type': 'excavator',
+            'memory': {'generation':0}
+        });
+    }
+
+    /**
+     * Method that spawns the chemist to start making boosts
+     */
+    spawnChemist() {
+        this.getSupervisor().initiate({
+            'body': [
+                CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ],
+            'type': 'chemist',
             'memory': {'generation':0}
         });
     }
