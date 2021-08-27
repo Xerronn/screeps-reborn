@@ -27,9 +27,9 @@ class Informant {
             "powerSpawn":{"pos":[{"x":4,"y":2}]},
             "factory":{"pos":[{"x":6,"y":2}]},
             "terminal":{"pos":[{"x":6,"y":3}]},
-            "lab":{"pos":[{"x":8,"y":7},{"x":7,"y":8},{"x":9,"y":7},{"x":7,"y":9},
-                {"x":9,"y":8},{"x":8,"y":9},{"x":10,"y":8},{"x":8,"y":10},
-                {"x":10,"y":9},{"x":9,"y":10}]},
+            "lab":{"pos":[{"x":9,"y":8},{"x":8,"y":9},{"x":9,"y":7},{"x":8,"y":7},
+                {"x":7,"y":9},{"x":7,"y":8},{"x":10,"y":8},{"x":10,"y":9},{"x":8,"y":10},
+                {"x":9,"y":10}]},
             "nuker":{"pos":[{"x":3,"y":4}]},
             "extension":{"pos":[{"x":1,"y":0},{"x":2,"y":0},{"x":3,"y":0},{"x":4,"y":0},
                 {"x":3,"y":1},{"x":2,"y":1},{"x":7,"y":0},{"x":8,"y":0},{"x":9,"y":0},
@@ -49,18 +49,12 @@ class Informant {
     getChemicalChain(chemical) {
         let chemicalChains = {
             [RESOURCE_CATALYZED_GHODIUM_ACID] : [
-                RESOURCE_ZYNTHIUM,
-                RESOURCE_KEANIUM,
-                RESOURCE_UTRIUM,
-                RESOURCE_LEMERGIUM,
-                RESOURCE_HYDROGEN,
-                RESOURCE_OXYGEN,
-                RESOURCE_ZYNTHIUM_KEANITE,
-                RESOURCE_UTRIUM_LEMERGITE,
-                RESOURCE_HYDROXIDE,
-                RESOURCE_GHODIUM_HYDRIDE,
-                RESOURCE_GHODIUM_ACID,
-                RESOURCE_CATALYST
+                [RESOURCE_ZYNTHIUM, RESOURCE_KEANIUM],
+                [RESOURCE_UTRIUM, RESOURCE_LEMERGIUM],
+                [RESOURCE_HYDROGEN, RESOURCE_OXYGEN],
+                [RESOURCE_ZYNTHIUM_KEANITE, RESOURCE_UTRIUM_LEMERGITE],
+                [RESOURCE_HYDROXIDE, RESOURCE_GHODIUM_HYDRIDE],
+                [RESOURCE_GHODIUM_ACID, RESOURCE_CATALYST]
             ]
         }
         return chemicalChains[chemical];
