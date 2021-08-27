@@ -11,7 +11,7 @@ class Executive {
             RESOURCE_CATALYZED_UTRIUM_ACID              //melee attack boost
         ];
 
-        this.chemicalOrder = undefined;
+        this.targetChemical = undefined;
     }
 
     /**
@@ -73,18 +73,6 @@ class Executive {
                 }
             }
         }
-
-        //Room is ready to start producing minerals
-        if (gameStage >= 7.1 && (!this.chemicalOrder || Game.time % 25 == 0)) {
-            let target = 10000; //the amount of the minerals we want in storage at all times
-
-            for (let chemical of this.chemicalDesires) {
-                if (Game.rooms[this.room].storage.store.getUsedCapacity(chemical) < target) {
-                    this.chemicalOrder = chemical;
-                    break;
-                }
-            }
-        }
     }
 
     /**
@@ -93,6 +81,19 @@ class Executive {
      */
     getSupervisor() {
         return global.Imperator.administrators[this.room].supervisor;
+    }
+
+    /**
+     * Method that gets the chemical that needs to be synthesized
+     */
+    getTargetChemical() {
+        let target = 10000; //the amount of the minerals we want in storage at all times
+        for (let chemical of this.chemicalDesires) {
+            if (Game.rooms[this.room].storage.store.getUsedCapacity(chemical) < target) {
+                this.chemicalOrder = chemical;
+                return chemical;
+            }
+        }
     }
 
 
