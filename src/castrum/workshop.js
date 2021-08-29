@@ -37,9 +37,6 @@ class Workshop extends Castrum {
                 break;
             //everything else
             case "product":
-                if (!this.store && this.mineralCount > 2000) {
-                    global.Archivist.setLabsFilled(this.room, true);
-                }
                 if (this.getReagentsReady() && this.cooldown == 0) {
                     try {
                         this.liveObj.runReaction(this.reagents[0].liveObj, this.reagents[1].liveObj);
