@@ -103,7 +103,7 @@ class Supervisor {
                         "type": creepMem.type,
                         "memory": creepMem
                     };
-                    this.initiate(template, true);
+                    this.initiate(template);
                 } else {
                     delete Memory.creeps[creepMem.name];
                 }
@@ -166,7 +166,7 @@ class Supervisor {
      * @param {Object} template An object that contains body, type, and memory
      * @param {boolean} rebirth whether or not this is a rebirth
      */
-     initiate(template, rebirth=false) {
+     initiate(template) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
         let generationIncremented = 0;
@@ -214,11 +214,6 @@ class Supervisor {
             }
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
             global.TaskMaster.schedule(Game.time + 5, task, [this.room, {...template}]);
-        }
-
-        //if this is a rebirth, delete the old wrapper
-        if (rebirth) {
-            this.dismiss(template);
         }
     }
 
