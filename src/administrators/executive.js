@@ -87,7 +87,7 @@ class Executive {
      * Method that gets the chemical that needs to be synthesized
      */
     getTargetChemical() {
-        let target = 10000; //the amount of the minerals we want in storage at all times
+        let target = 3000; //the amount of the chemical we want in storage at all times
         for (let chemical of this.chemicalDesires) {
             if (Game.rooms[this.room].storage.store.getUsedCapacity(chemical) < target) {
                 this.chemicalOrder = chemical;
