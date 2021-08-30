@@ -203,7 +203,7 @@ class Executive {
             this.getSupervisor().initiate({
                 'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
                 'type': 'prospector',
-                'memory': {'generation' : 0, 'targetRoom': targetRoom, 'noRoads': true}
+                'memory': {'generation' : 0, 'targetRoom': "targetRoom", 'noRoads': true}
             });
         }
     }
