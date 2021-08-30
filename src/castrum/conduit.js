@@ -61,14 +61,14 @@ class Conduit extends Castrum {
                     break;
                 case STRUCTURE_CONTAINER:
                 case "fill":
-                    if (this.store.getFreeCapacity(RESOURCE_ENERGY) <= 400 && storageLink) {
+                    if (this.store.getFreeCapacity(RESOURCE_ENERGY) <= 400 && storageLink !== undefined) {
                         if (storageLink.store.getFreeCapacity(RESOURCE_ENERGY) != 0) {
                             this.liveObj.transferEnergy(storageLink.liveObj);
                         }
                     }
                     break;
                 case STRUCTURE_CONTROLLER:
-                    if (this.store.getUsedCapacity(RESOURCE_ENERGY) <= 400 && storageLink) {
+                    if (this.store.getUsedCapacity(RESOURCE_ENERGY) <= 400 && storageLink !== undefined) {
                         storageLink.needsFilling = true;
                     }
                     break;
