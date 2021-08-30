@@ -48,15 +48,28 @@ class Informant {
 
     getChemicalChain(chemical) {
         let chemicalChains = {
-            [RESOURCE_CATALYZED_GHODIUM_ACID] : [
-                [RESOURCE_ZYNTHIUM, RESOURCE_KEANIUM],
-                [RESOURCE_UTRIUM, RESOURCE_LEMERGIUM],
-                [RESOURCE_HYDROGEN, RESOURCE_OXYGEN],
-                [RESOURCE_ZYNTHIUM_KEANITE, RESOURCE_UTRIUM_LEMERGITE],
-                [RESOURCE_GHODIUM, RESOURCE_HYDROGEN],
-                [RESOURCE_HYDROXIDE, RESOURCE_GHODIUM_HYDRIDE],
-                [RESOURCE_GHODIUM_ACID, RESOURCE_CATALYST]
-            ]
+            [RESOURCE_CATALYZED_GHODIUM_ACID] : {
+                [RESOURCE_GHODIUM_ACID] :{
+                    [RESOURCE_GHODIUM_HYDRIDE] : {
+                        [RESOURCE_GHODIUM] : {
+                            [RESOURCE_ZYNTHIUM_KEANITE] : {
+                                [RESOURCE_ZYNTHIUM] : {},
+                                [RESOURCE_KEANIUM] : {}
+                            },
+                            [RESOURCE_UTRIUM_LEMERGITE] : {
+                                [RESOURCE_UTRIUM] : {},
+                                [RESOURCE_LEMERGIUM] : {}
+                            }
+                        },
+                        [RESOURCE_HYDROGEN] : {}
+                    },
+                    [RESOURCE_HYDROXIDE] : {
+                        [RESOURCE_HYDROGEN] : {},
+                        [RESOURCE_OXYGEN] : {}
+                    }
+                },
+                [RESOURCE_CATALYST] : {}
+            }
         }
         return chemicalChains[chemical];
     }
