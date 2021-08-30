@@ -315,8 +315,8 @@ class Vendor {
         }
 
         let sevenDays = {
-            "avgPrice": resultArray[0].reduce((a, b) => a + b, 0) / 7,
-            "stddevPrice": resultArray[1].reduce((a, b) => a + b, 0) / 7
+            "avgPrice": resultArray[0].reduce((a, b) => a + b, 0) / resultArray[0].length,
+            "stddevPrice": resultArray[1].reduce((a, b) => a + b, 0) / resultArray[1].length
         }
         return sevenDays;
     }
