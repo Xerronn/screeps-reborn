@@ -110,7 +110,7 @@ class Chemist extends Civitas {
         //empty stores of anything other than reagent
         if (this.depositStore(reagent)) return;
         //now withdraw the reagent from its store
-        if (this.store.getFreeCapacity(reagent) > 0) {
+        if (this.store.getFreeCapacity(reagent) > 0 && workshop.store.getFreeCapacity(reagent) > 0) {
             if (this.withdrawStore(reagent, targetAmount)) return;
         }
 
@@ -156,7 +156,11 @@ class Chemist extends Civitas {
         if (target.store.getUsedCapacity(res) >= this.store.getFreeCapacity(res) && this.ticksToLive > 30) {
             if (this.pos.inRangeTo(target, 1)) {
                 let amount = Math.min(this.store.getFreeCapacity(res), targetAmount);
-                this.liveObj.withdraw(target, res, amount);
+                let result = this.liveObj.withdraw(target, res, amount);
+
+                if (target.structureType == STRUCTURE_TERMINAL && result == OK) {
+                    global.Vendor.balances[this.room][res] -= amount;
+                }
             } else {
                 this.liveObj.moveTo(target);
             }
