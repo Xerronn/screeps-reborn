@@ -89,8 +89,8 @@ class Vendor {
         if (needs.length == 0) return false;
 
         //energy data for transfer costs
-        let energyData = Game.market.getHistory(RESOURCE_ENERGY);
-        let energyPrice = energyData[energyData.length - 1].avgPrice;
+        let energyData = this.getTwoWeekAverages(RESOURCE_ENERGY);
+        let energyPrice = energyData.avgPrice;
 
         //loop through all needs
         for (let res of needs) {
