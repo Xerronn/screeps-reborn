@@ -41,8 +41,8 @@ class Supervisor {
         this.reservedTickWorkshop = 0;
 
         //special link roles
-        this.controllerLink = undefined;
-        this.storageLink = undefined;
+        this.controllerLink;
+        this.storageLink;
 
         //the reagent labs
         this.reagentWorkshops = [];
