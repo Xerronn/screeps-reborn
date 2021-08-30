@@ -110,9 +110,8 @@ class Supervisor {
                         "memory": creepMem
                     };
                     this.initiate(template);
-                } else {
-                    delete Memory.creeps[creepMem.name];
                 }
+                delete Memory.creeps[creepMem.name];
             }
         }
     }
@@ -219,7 +218,7 @@ class Supervisor {
                 template.memory.generation -= generationIncremented;
             }
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
-            global.TaskMaster.schedule(Game.time + 5, task, [this.room, {...template}]);
+            global.TaskMaster.schedule(this.room, Game.time + 5, task, [this.room, {...template}]);
         }
     }
 
