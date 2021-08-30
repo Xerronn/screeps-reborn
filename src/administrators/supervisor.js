@@ -27,6 +27,7 @@ const Nexus = require("../castrum/nexus");
 const Bastion = require("../castrum/bastion");
 const Conduit = require("../castrum/conduit");
 const Workshop = require("../castrum/workshop");
+const Market = require("../castrum/market");
 
 //entity that initializes, refreshes, runs all roomObj in a room
 class Supervisor {
@@ -78,6 +79,11 @@ class Supervisor {
                 case STRUCTURE_LAB:
                     !("workshop" in this.castrum) && (this.castrum["workshop"] = []);
                     this.castrum["workshop"].push(new Workshop(struc.id));
+                    break;
+
+                case STRUCTURE_TERMINAL:
+                    !("market" in this.castrum) && (this.castrum["market"] = []);
+                    this.castrum["market"].push(new Market(struc.id));
                     break;
             }
         }

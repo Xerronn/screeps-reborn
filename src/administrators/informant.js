@@ -86,7 +86,8 @@ class Informant {
             [STRUCTURE_SPAWN] : "nexus",
             [STRUCTURE_TOWER] : "bastion",
             [STRUCTURE_LINK] : "conduit",
-            [STRUCTURE_LAB] : "workshop"
+            [STRUCTURE_LAB] : "workshop",
+            [STRUCTURE_TERMINAL] : "market"
         }
         try {
             return mapper[structureType];

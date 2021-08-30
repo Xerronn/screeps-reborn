@@ -173,9 +173,26 @@ class Vendor {
             let amountAvailable = this.balances[room][res];
             let amountNeeded = -this.balances[targetRoom][res];
             let amountToSend = Math.min(amountNeeded, amountAvailable);
-            Game.rooms[room].terminal.send(res, amountToSend, targetRoom, 
+            let result = Game.rooms[room].terminal.send(res, amountToSend, targetRoom, 
                 "Routine supplies shipment of " + res + " from " + room + " to " + targetRoom);
-            return true;
+            
+            if (result == OK) {
+                //remove targetRoom from the shortages list and reset balances
+                this.balances[targetRoom][res] += amountToSend;
+                if (this.balances[targetRoom][res] >= 0) {
+                    let index = this.shortages[res].indexOf(targetRoom);
+                    if (index >= 0) this.shortages[res].splice(index, 1);
+                }
+
+                //remove sender room from surpluses list and adjust balances
+                this.balances[room][res] -= amountToSend;
+                if (this.balances[room][res] <= 0) {
+                    let index = this.surpluses[res].indexOf(room);
+                    if (index >= 0) this.surpluses[res].splice(index, 1);
+                }
+
+                return true;
+            }
         }
     }
 

@@ -18,6 +18,7 @@ global.Vendor = new Vendor();
 global.Archivist.build();
 global.Imperator.initialize();
 global.Vendor.appraise();
+global.Vendor.clean();
 console.log("<b>--------Global Reset--------</b>");
 
 module.exports.loop = function() {
