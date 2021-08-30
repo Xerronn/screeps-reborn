@@ -5,6 +5,7 @@ class Market extends Castrum {
     constructor(id) {
         super(id);
         this.cooldown = 0;
+        this.nextCheck = Game.time;
     }
 
     update(force=false) {
@@ -20,7 +21,7 @@ class Market extends Castrum {
             global.Vendor.document(this.room);
         } 
         
-        if (this.cooldown == 0) {
+        if (this.cooldown == 0 && this.nextCheck <= Game.time) {
             let needs = global.Vendor.getNeeds(this.room);
             if (needs.length > 0) {
                 for (let need of needs) {
@@ -29,8 +30,12 @@ class Market extends Castrum {
                         return;
                     }
                 }
-                global.Vendor.requisition(this.room);
+                if (global.Vendor.requisition(this.room)) {
+                    return;
+                }
             }
+            //if no needs are found, check again in 50 ticks
+            this.nextCheck = Game.time + 50;
         }
     }
 }
