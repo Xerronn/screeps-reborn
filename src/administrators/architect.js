@@ -192,7 +192,7 @@ class Architect {
                 break;
             case "8":
                 //TODO: lots and lots
-                this.buildBunker();
+                this.buildBunker(room);
                 break;    
         }
     }
