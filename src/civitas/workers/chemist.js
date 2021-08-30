@@ -7,14 +7,12 @@ class Chemist extends Civitas {
 
         this.reagentWorkshops = this.getSupervisor().reagentWorkshops;
 
+        this.memory.targetChemical = RESOURCE_CATALYZED_GHODIUM_ACID;
+
         let anchor = global.Archivist.getAnchor(this.room);
         this.idleSpot = {
             'x': anchor.x + 6, 
             'y': anchor.y + 9
-        }
-
-        if (!this.memory.reactionStage) {
-            this.memory.reactionStage = 0;
         }
 
         this.update(true);
@@ -33,32 +31,22 @@ class Chemist extends Civitas {
 
     run() {
         //aim to create 6000 of the target chemical, double the minimum amount
-        let chemicalTargetAmount;
+        let chemicalTargetAmount = 0;
         if (this.memory.targetChemical) {
             chemicalTargetAmount = 6000 - this.getChemicalAmount(this.memory.targetChemical);
         }
-        if (!this.memory.targetChemical || chemicalTargetAmount <= 0) {
+        if (this.memory.targetChemical === undefined || chemicalTargetAmount <= 0) {
             //if we have more than 6000 of the chemical, get a new target chemical
-            //! temp kill the creep, I don't want it doing more than just the first mineral
-            delete this.memory.generation;
-            this.liveObj.suicide();
-            return;
             this.memory.targetChemical = this.getExecutive().getTargetChemical();
-            this.memory.reactionStage = 0;
         }
         let reactionChain = global.Informant.getChemicalChain(this.memory.targetChemical);
-        let targetReagents = reactionChain[this.memory.reactionStage];
-        let targetProduct = REACTIONS[targetReagents[0]][targetReagents[1]];
+        let results = this.getTargetProduct(reactionChain, chemicalTargetAmount);
+        let targetProduct = results.product;
+        let targetReagents = results.reactants;
         let productTargetAmount = chemicalTargetAmount - this.getChemicalAmount(targetProduct);
-        //if we have enough of the product, switch to the next 
-        if (productTargetAmount <= 0) {
-            this.memory.reactionStage++;
-            let chainLength = reactionChain.length - 1;
-            //reset back to zero if we still need more of the resource after one pass
-            if (this.memory.reactionStage > chainLength) {
-                this.memory.reactionStage = 0;
-            }
-            return; //move to the next tick to redo calculations
+        if (targetProduct == this.memory.targetChemical) {
+            //if this is the last step, they should be the same
+            productTargetAmount = chemicalTargetAmount;
         }
 
         //reagent labs are empty of minerals and creep is doing nothing
@@ -88,6 +76,7 @@ class Chemist extends Civitas {
                             this.store.getCapacity(targetReagents[i]), 
                             totalAmount - this.reagentWorkshops[i].store.getUsedCapacity(targetReagents[i])
                         );
+
                         this.supplyReagent(this.reagentWorkshops[i], targetReagents[i], tripAmount); 
                         return true;
                 }
@@ -242,6 +231,21 @@ class Chemist extends Civitas {
         return true;
     }
 
+    getTargetProduct(chain, target) {
+        for (let res in chain) {
+            let resAmount = this.getChemicalAmount(res);
+            if (resAmount < target) {
+                if (Object.keys(chain[res]).length == 0) {
+                    return this.getTargetProduct(chain[res], target);
+                }
+            }
+        }
+        let minerals = Object.keys(chain);
+        return {
+            "product": REACTIONS[minerals[0]][minerals[1]],
+            "reactants" : [minerals[0], minerals[1]]
+        }
+    }
 }
 
 module.exports = Chemist;
