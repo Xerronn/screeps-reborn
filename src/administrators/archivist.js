@@ -82,7 +82,7 @@ class Archivist {
         //do it again in 100 ticks
         //! make sure this gets executed only once. Use gflags
         let task = "global.Archivist.refresh()";
-        global.TaskMaster.schedule(Game.time + 100, task);
+        global.TaskMaster.schedule('global', Game.time + 100, task);
     }
 
     /**

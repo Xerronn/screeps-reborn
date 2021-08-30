@@ -72,7 +72,7 @@ class Excavator extends Civitas {
                 });
             `
 
-            global.TaskMaster.schedule(Game.time + this.mineral.ticksToRegeneration, task, [[...this.body], this.memory.type, {...this.memory}]);
+            global.TaskMaster.schedule(this.memory.spawnRoom, Game.time + this.mineral.ticksToRegeneration, task, [[...this.body], this.memory.type, {...this.memory}]);
             //no more rebirth for you
             delete this.memory.generation;
         }

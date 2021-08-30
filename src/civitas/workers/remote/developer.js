@@ -88,7 +88,7 @@ class Developer extends Remotus {
                 });
             `
 
-            global.TaskMaster.schedule(Game.time + this.timeToSpawn, task, [[...this.body], this.memory.type, {...this.memory}]);
+            global.TaskMaster.schedule(this.memory.spawnRoom, Game.time + this.timeToSpawn, task, [[...this.body], this.memory.type, {...this.memory}]);
             //no more rebirth for you
             delete this.memory.generation;
         }

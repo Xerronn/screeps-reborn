@@ -22,16 +22,25 @@ class TaskMaster {
      * @param {String} task 
      * @param {Array} objArr 
      */
-    schedule(tick, task, objArr=undefined) {
-        //todo: make an id system so we can cancel tasks too
-        if (!Memory.scheduler[tick.toString()]) {
-            Memory.scheduler[tick.toString()] = [];
+    schedule(room, tick, task, objArr=undefined) {
+        if (!Memory.scheduler[room]) {
+            Memory.scheduler[room] = {};
+        }
+        if (!Memory.scheduler[room][tick.toString()]) {
+            Memory.scheduler[room][tick.toString()] = {};
         }
         let taskObj = {
             "script": task,
             "objArr": objArr
         };
-        Memory.scheduler[tick.toString()].push(taskObj);
+        let keys = Object.keys(Memory.scheduler[room][tick.toString()]);
+        let taskId = keys[keys.length - 1] || 0;
+        Memory.scheduler[room][tick.toString()][taskId] = taskObj;
+
+        let re = /([^(]+)@|at ([^(]+) \(/g;
+        let aRegexResult = re.exec(new Error().stack);
+        let sCallerName = aRegexResult[1] || aRegexResult[2];
+        console.log(sCallerName);
     }
     
     /**
@@ -40,12 +49,28 @@ class TaskMaster {
     run() {
         //execute scheduler code
         for (var tick of Object.keys(Memory.scheduler)) {
+            if (["E42N24", "E41N22", "global"].includes(tick)) continue;
             if (parseInt(tick) <= Game.time) {
                 for (var task of Memory.scheduler[tick]) {
+                    try {
                     let objArr = task.objArr;
                     eval(task.script);
+                    } catch (err) {}
                 }
                 delete Memory.scheduler[tick];
+            }
+        }
+
+        for (let room in Memory.scheduler) {
+            for (let tick in Memory.scheduler[room]) {
+                if (parseInt(tick) <= Game.time) {
+                    for (let id in Memory.scheduler[room][tick]) {
+                        let task = Memory.scheduler[room][tick][id];
+                        let objArr = task.objArr;
+                        eval(task.script);
+                    }
+                    delete Memory.scheduler[room][tick];
+                }
             }
         }
     }

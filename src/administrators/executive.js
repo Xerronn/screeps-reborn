@@ -106,7 +106,7 @@ class Executive {
         for (var i = 0; i < 6; i++) {
             let memory = { "generation": 0 };
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate({'body' : [WORK, CARRY, MOVE, MOVE], 'type': 'engineer', 'memory': objArr[1]});";
-            global.TaskMaster.schedule(Game.time + (i * 10), task, [this.room, memory]);
+            global.TaskMaster.schedule(this.room, Game.time + (i * 10), task, [this.room, memory]);
         }
     }
 
@@ -162,7 +162,7 @@ class Executive {
             global.TaskMaster.schedule(Game.time + 50, objArr[2], objArr);
         }`
 
-        global.TaskMaster.schedule(Game.time, task, [this.room, arbiter, task]);
+        global.TaskMaster.schedule(this.room, Game.time, task, [this.room, arbiter, task]);
     }
 
     /**
