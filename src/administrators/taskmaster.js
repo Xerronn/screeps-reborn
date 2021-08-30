@@ -36,11 +36,6 @@ class TaskMaster {
         let keys = Object.keys(Memory.scheduler[room][tick.toString()]);
         let taskId = keys[keys.length - 1] || 0;
         Memory.scheduler[room][tick.toString()][taskId] = taskObj;
-
-        let re = /([^(]+)@|at ([^(]+) \(/g;
-        let aRegexResult = re.exec(new Error().stack);
-        let sCallerName = aRegexResult[1] || aRegexResult[2];
-        console.log(sCallerName);
     }
     
     /**
