@@ -235,7 +235,7 @@ class Chemist extends Civitas {
         for (let res in chain) {
             let resAmount = this.getChemicalAmount(res);
             if (resAmount < target) {
-                if (Object.keys(chain[res]).length == 0) {
+                if (Object.keys(chain[res]).length != 0) {
                     return this.getTargetProduct(chain[res], target);
                 }
             }
