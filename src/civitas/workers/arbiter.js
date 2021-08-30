@@ -20,6 +20,9 @@ class Arbiter extends Runner {
             this.link = Game.getObjectById(this.linkId);
             this.storage = Game.rooms[this.room].storage;
             this.terminal = Game.rooms[this.room].terminal;
+
+            //supervisor makes a new wrapper whenever a construction site is finished
+            this.linkWrapper = this.getSupervisor().storageLink;
         }
         return true;
     }
