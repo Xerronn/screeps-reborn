@@ -7,8 +7,6 @@ class Chemist extends Civitas {
 
         this.reagentWorkshops = this.getSupervisor().reagentWorkshops;
 
-        this.memory.targetChemical = RESOURCE_CATALYZED_GHODIUM_ACID;
-
         let anchor = global.Archivist.getAnchor(this.room);
         this.idleSpot = {
             'x': anchor.x + 6, 
@@ -25,28 +23,44 @@ class Chemist extends Civitas {
                 return false;
             }
             //attributes that change tick to tick
+            //aim to create 6000 of the target chemical, double the minimum amount
+            this.chemicalTargetAmount = 0;
+            if (this.memory.targetChemical) {
+                this.chemicalTargetAmount = 6000 - this.getChemicalAmount(this.memory.targetChemical);
+            }
+            if (this.memory.targetChemical === undefined || this.chemicalTargetAmount <= 0) {
+                //if we have more than 6000 of the chemical, get a new target chemical
+                let old = this.memory.targetChemical;
+                this.memory.targetChemical = this.getExecutive().getTargetChemical();
+
+                //just make more if the new chemical is the same as the old one
+                if (this.memory.targetChemical == old) {
+                    this.chemicalTargetAmount = 3000;
+                }
+            }
         }
         return true;
     }
 
     run() {
-        //aim to create 6000 of the target chemical, double the minimum amount
-        let chemicalTargetAmount = 0;
-        if (this.memory.targetChemical) {
-            chemicalTargetAmount = 6000 - this.getChemicalAmount(this.memory.targetChemical);
+        if (!this.memory.targetChemical) {
+            return;
         }
-        if (this.memory.targetChemical === undefined || chemicalTargetAmount <= 0) {
-            //if we have more than 6000 of the chemical, get a new target chemical
-            this.memory.targetChemical = this.getExecutive().getTargetChemical();
+        let productTargetAmount;
+        if (this.memory.targetProduct) {
+            productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
         }
-        let reactionChain = global.Informant.getChemicalChain(this.memory.targetChemical);
-        let results = this.getTargetProduct(reactionChain, chemicalTargetAmount);
-        let targetProduct = results.product;
-        let targetReagents = results.reactants;
-        let productTargetAmount = chemicalTargetAmount - this.getChemicalAmount(targetProduct);
-        if (targetProduct == this.memory.targetChemical) {
+        if (!this.memory.targetProduct || productTargetAmount <= 0) {
+            let reactionChain = global.Informant.getChemicalChain(this.memory.targetChemical);
+            let results = this.getTargetProduct(reactionChain, this.chemicalTargetAmount);
+            this.memory.targetProduct = results.product;
+            this.memory.targetReagents = results.reactants;
+            productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
+        }
+        
+        if (this.memory.targetProduct == this.memory.targetChemical) {
             //if this is the last step, they should be the same
-            productTargetAmount = chemicalTargetAmount;
+            productTargetAmount = this.chemicalTargetAmount;
         }
 
         //reagent labs are empty of minerals and creep is doing nothing
@@ -55,34 +69,25 @@ class Chemist extends Civitas {
         }
 
         if (this.memory.task === "withdraw") {
-            let productWorkshops = this.getSupervisor().productWorkshops;
-            for (let workshop of productWorkshops) {
-                if (workshop.mineralCount > 0) {
-                    this.withdrawProducts(workshop); 
-                    return true;
-                }
-            }
+            if (this.withdrawProducts()) return true;
+
+            //labs are empty, move to next mineral in the chain
             this.memory.task = "supplyReagents"
             
         } else if (this.memory.task === "supplyReagents") {
             //stop any reactions from running while they are being filled
             this.getSupervisor().reserveWorkshop();
-            
-            for (let i = 0; i < 2; i++) {
-                let totalAmount = Math.min(3000, productTargetAmount);
-                if (this.reagentWorkshops[i].mineralCount !== undefined && 
-                    this.reagentWorkshops[i].store.getUsedCapacity(targetReagents[i]) < totalAmount) {
-                        let tripAmount = Math.min(
-                            this.store.getCapacity(targetReagents[i]), 
-                            totalAmount - this.reagentWorkshops[i].store.getUsedCapacity(targetReagents[i])
-                        );
+            let tripAmount = Math.min(3000, productTargetAmount);
+            if (this.supplyReagents(this.memory.targetReagents, tripAmount)) return true;
 
-                        this.supplyReagent(this.reagentWorkshops[i], targetReagents[i], tripAmount); 
-                        return true;
-                }
-            }
             //done supplying labs
             this.memory.task = "idle";
+        }
+
+        //fill labs with energy
+        if (!global.Archivist.getLabsFilled(this.room)) {
+            console.log("im here")
+            if (this.energizeLabs()) return;
         }
         
         //idle
@@ -95,49 +100,84 @@ class Chemist extends Civitas {
     /**
      * Method that fills up the reagent labs with the target mineral
      */
-    supplyReagent(workshop, reagent, targetAmount) {
-        //empty stores of anything other than reagent
-        if (this.depositStore(reagent)) return;
-        //now withdraw the reagent from its store
-        if (this.store.getFreeCapacity(reagent) > 0 && workshop.store.getFreeCapacity(reagent) > 0) {
-            if (this.withdrawStore(reagent, targetAmount)) return;
-        }
+    supplyReagents(targetReagents, targetAmount) {
+        //loop through the two reagentWorkshops
+        for (let i = 0; i < 2; i++) {
+            if (this.reagentWorkshops[i].mineralCount !== undefined && 
+                this.reagentWorkshops[i].store.getUsedCapacity(targetReagents[i]) < targetAmount) {
 
-        if (this.pos.inRangeTo(workshop.liveObj, 1)) {
-            let amount = Math.min(this.store.getUsedCapacity(reagent), targetAmount);
-            this.liveObj.transfer(workshop.liveObj, reagent, amount);
-        } else {
-            this.liveObj.moveTo(workshop.liveObj);
+                if (this.depositStore(targetReagents[i])) return true;
+                let tripAmount = Math.min(
+                    this.store.getFreeCapacity(targetReagents[i]), 
+                    targetAmount - this.reagentWorkshops[i].store.getUsedCapacity(targetReagents[i])
+                );
+                //fill up creep to match what is needed for the lab
+                if (this.store.getUsedCapacity(targetReagents[i]) < tripAmount) {
+                    if (this.withdrawStore(targetReagents[i], tripAmount)) return true;
+                }
+                //move to lab and deposit the amount
+                if (this.pos.inRangeTo(this.reagentWorkshops[i].liveObj, 1)) {
+                    this.liveObj.transfer(this.reagentWorkshops[i].liveObj, targetReagents[i], tripAmount);
+                } else {
+                    this.liveObj.moveTo(this.reagentWorkshops[i].liveObj);
+                }
+                return true;
+            }
         }
+        return false;
     }
 
     /**
-     * Method that takes the product from the labs
-     * @param {Workshop} workshop 
+     * Method that takes the product from all the reactant labs
      * @returns 
      */
-    withdrawProducts(workshop) {
-        let product = workshop.mineralType;
-        if (this.store.getFreeCapacity(product) == 0) {
-            if (this.depositStore()) return;
+    withdrawProducts() {
+        let productWorkshops = this.getSupervisor().productWorkshops;
+        for (let workshop of productWorkshops) {
+            if (workshop.mineralCount > 0) {
+                let product = workshop.mineralType;
+                if (this.store.getFreeCapacity(product) > 0) {
+                    if (this.withdrawWorkshop(workshop.liveObj, product)) return true;
+                }
+            }
         }
+        //deposit anything the creep has once it reaches this point
+        if (this.depositStore()) return true;
+    }
 
-        if (this.store.getFreeCapacity(product) > 0 && this.ticksToLive > 30) {
-            if (this.withdrawWorkshop(workshop.liveObj, product)) return;
-        } else if (this.ticksToLive < 30) {
-            //prevent losing minerals 
-            this.liveObj.suicide();
+    /**
+     * Method that fills up labs when they need energy
+     * @returns if an action is taken
+     */
+    energizeLabs() {
+        if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+            this.withdrawStore(RESOURCE_ENERGY);
+            return true;
         }
+        let productWorkshops = this.getSupervisor().productWorkshops;
+        for (let workshop of productWorkshops) {
+            if (workshop.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                if (this.pos.inRangeTo(workshop.liveObj, 1)) {
+                    this.liveObj.transfer(workshop.liveObj, RESOURCE_ENERGY);
+                } else {
+                    this.liveObj.moveTo(workshop.liveObj);
+                }
+                return true;
+            }
+        }
+        global.Archivist.setLabsFilled(this.room, true);
+        return false;
     }
 
     /**
      * Method to withdraw a resource from the proper location
-     * @param {*} res Resource constant
+     * @param {RESOURCE_TYPE} res Resource constant
+     * @param {Integer} targetAmount the amount to withdraw, default to the creep's carry capacity
      * @returns If an action was taken
      */
     withdrawStore(res, targetAmount=10000) {
         let target;
-        if (global.Vendor.resources.includes(res)) {
+        if (res !== RESOURCE_ENERGY && global.Vendor.resources.includes(res)) {
             target = Game.rooms[this.room].terminal;
         } else {
             target = Game.rooms[this.room].storage;
@@ -231,6 +271,9 @@ class Chemist extends Civitas {
         return true;
     }
 
+    /**
+     * Method that calculates which mineral to make and how much of it to reach the target
+     */
     getTargetProduct(chain, target) {
         for (let res in chain) {
             let resAmount = this.getChemicalAmount(res);
