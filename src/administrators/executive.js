@@ -3,13 +3,22 @@ class Executive {
     constructor(room) {
         this.room = room;
 
-        this.chemicalDesires = [
-            RESOURCE_CATALYZED_GHODIUM_ACID,            //upgrade boost
-            RESOURCE_CATALYZED_GHODIUM_ALKALIDE,        //toughness damage reduction boost
-            RESOURCE_CATALYZED_LEMERGIUM_ALKALIDE,      //heal boost
-            RESOURCE_CATALYZED_KEANIUM_ALKALIDE,        //ranged attack boost
-            RESOURCE_CATALYZED_UTRIUM_ACID              //melee attack boost
-        ];
+        this.chemicalDesires = [];
+        if (Game.rooms[this.room].controller.level == 8) {
+            this.chemicalDesires = [
+                RESOURCE_CATALYZED_GHODIUM_ACID,            //upgrade boost
+                //RESOURCE_CATALYZED_GHODIUM_ALKALIDE,        //toughness damage reduction boost
+                //RESOURCE_CATALYZED_LEMERGIUM_ALKALIDE,      //heal boost
+                //RESOURCE_CATALYZED_KEANIUM_ALKALIDE,        //ranged attack boost
+                //RESOURCE_CATALYZED_UTRIUM_ACID              //melee attack boost
+            ];
+        } else {
+            //todo add more?
+            this.chemicalDesires = [
+                RESOURCE_GHODIUM_HYDRIDE            //tier 1 upgrade boost
+            ];
+        }
+
 
         this.targetChemical = undefined;
     }
@@ -94,6 +103,7 @@ class Executive {
                 return chemical;
             }
         }
+        return this.chemicalDesires[0]; //if we have target amounts of everything else, just make more of our first desire
     }
 
 
