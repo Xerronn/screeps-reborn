@@ -48,7 +48,7 @@ class Informant {
 
     getChemicalChain(chemical) {
         let chemicalChains = {
-            [RESOURCE_CATALYZED_GHODIUM_ACID] : {
+            [RESOURCE_CATALYZED_GHODIUM_ACID] : {               //tier 3 upgrade boost
                 [RESOURCE_GHODIUM_ACID] :{
                     [RESOURCE_GHODIUM_HYDRIDE] : {
                         [RESOURCE_GHODIUM] : {
@@ -69,6 +69,19 @@ class Informant {
                     }
                 },
                 [RESOURCE_CATALYST] : {}
+            },
+            [RESOURCE_GHODIUM_HYDRIDE] : {                     //tier 1 upgrade boost
+                [RESOURCE_GHODIUM] : {
+                    [RESOURCE_ZYNTHIUM_KEANITE] : {
+                        [RESOURCE_ZYNTHIUM] : {},
+                        [RESOURCE_KEANIUM] : {}
+                    },
+                    [RESOURCE_UTRIUM_LEMERGITE] : {
+                        [RESOURCE_UTRIUM] : {},
+                        [RESOURCE_LEMERGIUM] : {}
+                    }
+                },
+                [RESOURCE_HYDROGEN] : {}
             }
         }
         return chemicalChains[chemical];
