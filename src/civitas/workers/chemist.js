@@ -23,21 +23,8 @@ class Chemist extends Civitas {
                 return false;
             }
             //attributes that change tick to tick
-            //aim to create 6000 of the target chemical, double the minimum amount
-            this.chemicalTargetAmount = 0;
-            if (this.memory.targetChemical) {
-                this.chemicalTargetAmount = 6000 - this.getChemicalAmount(this.memory.targetChemical);
-            }
-            if (this.memory.targetChemical === undefined || this.chemicalTargetAmount <= 0) {
-                //if we have more than 6000 of the chemical, get a new target chemical
-                let old = this.memory.targetChemical;
-                this.memory.targetChemical = this.getExecutive().getTargetChemical();
-
-                //just make more if the new chemical is the same as the old one
-                if (this.memory.targetChemical == old) {
-                    this.chemicalTargetAmount = 3000;
-                }
-            }
+            this.memory.targetChemical = this.getExecutive().getTargetChemical();
+            this.chemicalTargetAmount = 3000;
         }
         return true;
     }
@@ -50,6 +37,12 @@ class Chemist extends Civitas {
         if (this.memory.targetProduct) {
             productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
         }
+
+        if (this.memory.targetProduct == this.memory.targetChemical) {
+            //if this is the last step, they should be the same
+            productTargetAmount = this.chemicalTargetAmount;
+        }
+
         if (!this.memory.targetProduct || productTargetAmount <= 0) {
             let reactionChain = global.Informant.getChemicalChain(this.memory.targetChemical);
             let results = this.getTargetProduct(reactionChain, this.chemicalTargetAmount);
@@ -58,11 +51,6 @@ class Chemist extends Civitas {
             productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
         }
         
-        if (this.memory.targetProduct == this.memory.targetChemical) {
-            //if this is the last step, they should be the same
-            productTargetAmount = this.chemicalTargetAmount;
-        }
-
         //reagent labs are empty of minerals and creep is doing nothing
         if (this.getReagentsEmpty() && (!this.memory.task || this.memory.task === "idle")) {
             this.memory.task = "withdraw";
@@ -146,6 +134,7 @@ class Chemist extends Civitas {
         }
         //deposit anything the creep has once it reaches this point
         if (this.depositStore()) return true;
+        return false;
     }
 
     /**
