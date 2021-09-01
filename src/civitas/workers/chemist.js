@@ -86,7 +86,6 @@ class Chemist extends Civitas {
 
         //fill labs with energy
         if (!global.Archivist.getLabsFilled(this.room)) {
-            console.log("im here")
             if (this.energizeLabs()) return;
         }
         
@@ -137,7 +136,11 @@ class Chemist extends Civitas {
             if (workshop.mineralCount > 0) {
                 let product = workshop.mineralType;
                 if (this.store.getFreeCapacity(product) > 0) {
-                    if (this.withdrawWorkshop(workshop.liveObj, product)) return true;
+                    if (this.ticksToLive > 30) {
+                        if (this.withdrawWorkshop(workshop.liveObj, product)) return true;
+                    } else {
+                        this.liveObj.suicide();
+                    }
                 }
             }
         }
