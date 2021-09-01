@@ -37,7 +37,7 @@ class Workshop extends Castrum {
                 break;
             //everything else
             case "product":
-                if (this.store.getUsedCapacity(RESOURCE_ENERGY) < Math.floor(this.store.getCapacity(RESOURCE_ENERGY) / (1/3))) {
+                if (this.store.getUsedCapacity(RESOURCE_ENERGY) < 1500) {
                     global.Archivist.setLabsFilled(this.room, false);
                 }
                 if (this.getReagentsReady() && this.cooldown == 0) {
