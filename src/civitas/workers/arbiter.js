@@ -52,6 +52,7 @@ class Arbiter extends Runner {
                 }
                 this.memory.task = "depositLink";
                 this.depositLink();
+                return;
             } else {
                 if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdrawLink" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                     this.memory.task = "withdrawLink";
@@ -60,6 +61,7 @@ class Arbiter extends Runner {
                 }
                 this.memory.task = "depositStorage";
                 this.depositStorage();
+                return;
             }
         }
 
@@ -69,15 +71,20 @@ class Arbiter extends Runner {
         if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 20000) {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
-                this.withdrawStorage(); 
+                let amount = 20000 - this.terminal.store.getUsedCapacity(RESOURCE_ENERGY);
+                let tripAmount = Math.min(amount, this.store.getFreeCapacity(RESOURCE_ENERGY));
+                this.withdrawStorage(tripAmount); 
             } else {
                 this.memory.task = "deposit";
+                
                 this.depositTerminal();
             }
-        } else if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 21000) {
+        } else if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 20000) {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
-                this.withdrawTerminal(); 
+                let amount = this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) - 20000;
+                let tripAmount = Math.min(amount, this.store.getFreeCapacity(RESOURCE_ENERGY));
+                this.withdrawTerminal(tripAmount); 
             } else {
                 this.memory.task = "deposit";
                 this.depositStorage();
@@ -99,15 +106,23 @@ class Arbiter extends Runner {
     /**
      * Overloaded withdrawStorage with no moves
      */
-     withdrawStorage() {
-        this.liveObj.withdraw(this.storage, RESOURCE_ENERGY);
+     withdrawStorage(numEnergy=undefined) {
+        if (numEnergy !== undefined) {
+            this.liveObj.withdraw(this.storage, RESOURCE_ENERGY, numEnergy);
+        } else {
+            this.liveObj.withdraw(this.storage, RESOURCE_ENERGY);
+        }
     }
 
     /**
      * Withdraw energy from terminal
      */
-    withdrawTerminal() {
-        this.liveObj.withdraw(this.terminal, RESOURCE_ENERGY);
+    withdrawTerminal(numEnergy=undefined) {
+        if (numEnergy !== undefined) {
+            this.liveObj.withdraw(this.terminal, RESOURCE_ENERGY, numEnergy);
+        } else {
+            this.liveObj.withdraw(this.terminal, RESOURCE_ENERGY);
+        }
     }
 
     /**
