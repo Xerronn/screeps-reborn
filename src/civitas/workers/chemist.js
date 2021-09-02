@@ -32,7 +32,8 @@ class Chemist extends Civitas {
     run() {
         //handle boosting of creeps
         if (this.memory.boosting === true) {
-            if (!this.prepareBoost(this.memory.boostType, this.memory.boostAmount)) {
+            if (this.memory.task === "supplyReagents") this.getSupervisor().reserveWorkshop();
+            if (!this.prepareBoosts(this.memory.boostType, this.memory.boostAmount)) {
                 this.memory.boosting = false;
             } else return true;
         }
@@ -96,8 +97,9 @@ class Chemist extends Civitas {
     /**
      * Method that locks a workshop down and fills it up with the proper boost chemicals
      */
-    prepareBoost(boostType, amount) {
+    prepareBoosts(boostType, amount) {
         if (!this.memory.boosting) {
+            if (this.getChemicalAmount(boostType) < amount) return false;
             this.memory.boosting = true;
             this.memory.boostType = boostType;
             this.memory.boostAmount = amount;
@@ -116,15 +118,19 @@ class Chemist extends Civitas {
             selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
         }
 
+        if (this.depositStore(boostType)) return true;
+
         //now we have the lowest cd workshop, toggle that it is the boosting lab
         selectedWorkshop.boosting = true;
-        this.getSupervisor().boostingWorkshops[boostType] = selectedWorkshop;
-        let product = workshop.mineralType;
+        let old = global.Archivist.getBoostingWorkshops(this.room);
+        old[boostType] = selectedWorkshop.id;
+        global.Archivist.setBoostingWorkshops(this.room, old);
 
         //empty the workshop of its minerals if it does not contain the boost
-        if (product !== boostType) {
+        let product = selectedWorkshop.mineralType;
+        if (product !== boostType && selectedWorkshop.store.getUsedCapacity(product) > 0) {
             if (this.ticksToLive > 30) {
-                if (this.withdrawWorkshop(selectedWorkshop.liveObj, boostType));
+                if (this.withdrawWorkshop(selectedWorkshop.liveObj, product));
             } else {
                 this.liveObj.suicide();
             }
@@ -135,10 +141,10 @@ class Chemist extends Civitas {
             //withdraw the boost we need
             let tripAmount = Math.min(
                 this.store.getFreeCapacity(boostType), 
-                amount - selectedWorkshop.store.getUsedCapacity(amount)
+                amount - selectedWorkshop.store.getUsedCapacity(boostType)
             );
-            if (this.store.getUsedCapacity(selectedWorkshop) < tripAmount) {
-                if (this.withdrawStore(selectedWorkshop, tripAmount)) return true;
+            if (this.store.getUsedCapacity(boostType) < tripAmount) {
+                if (this.withdrawStore(boostType, tripAmount)) return true;
             }
 
             //deposit it in the lab
@@ -189,7 +195,7 @@ class Chemist extends Civitas {
     withdrawProducts() {
         let productWorkshops = this.getSupervisor().productWorkshops;
         for (let workshop of productWorkshops) {
-            if (workshop.mineralCount > 0) {
+            if (workshop.mineralCount > 0 && !workshop.boosting) {
                 let product = workshop.mineralType;
                 if (this.store.getFreeCapacity(product) > 0) {
                     if (this.ticksToLive > 30) {
