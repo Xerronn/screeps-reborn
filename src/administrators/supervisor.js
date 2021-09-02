@@ -21,6 +21,7 @@ const Developer = require("../civitas/workers/remote/developer");
 const Scutarius = require("../civitas/legion/scutarius");
 const Physician = require("../civitas/legion/physician");
 const Garrison = require("../civitas/legion/garrison");
+const Executioner = require("../civitas/legion/executioner");
 
 //castrum
 const Nexus = require("../castrum/nexus");
