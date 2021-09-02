@@ -13,6 +13,7 @@ class Workshop extends Castrum {
 
         this.reagents = this.getSupervisor().reagentWorkshops;
         this.mineralCount = undefined;
+        this.boosting = false;
 
         this.update(true);
     }
@@ -35,8 +36,8 @@ class Workshop extends Castrum {
                 //do nothing?
                 
                 break;
-            //everything else
             case "product":
+                if (this.boosting) return;
                 if (this.store.getUsedCapacity(RESOURCE_ENERGY) < 1500) {
                     global.Archivist.setLabsFilled(this.room, false);
                 }
