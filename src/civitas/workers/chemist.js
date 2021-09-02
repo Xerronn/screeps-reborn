@@ -30,30 +30,39 @@ class Chemist extends Civitas {
     }
 
     run() {
+        //handle boosting of creeps
+        if (this.memory.boosting === true) {
+            if (!this.prepareBoost(this.memory.boostType, this.memory.boostAmount)) {
+                this.memory.boosting = false;
+            } else return true;
+        }
+
+        //handle chemical production
         if (!this.memory.targetChemical) {
             return;
         }
-        let productTargetAmount;
-        if (this.memory.targetProduct) {
-            productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
-        }
-
-        if (this.memory.targetProduct == this.memory.targetChemical) {
-            //if this is the last step, they should be the same
-            productTargetAmount = this.chemicalTargetAmount;
-        }
-
-        if (!this.memory.targetProduct || productTargetAmount <= 0) {
+        
+        if (!this.memory.targetProduct || !this.memory.targetReagents) {
             let reactionChain = global.Informant.getChemicalChain(this.memory.targetChemical);
             let results = this.getTargetProduct(reactionChain, this.chemicalTargetAmount);
             this.memory.targetProduct = results.product;
             this.memory.targetReagents = results.reactants;
-            productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
         }
         
         //reagent labs are empty of minerals and creep is doing nothing
         if (this.getReagentsEmpty() && (!this.memory.task || this.memory.task === "idle")) {
             this.memory.task = "withdraw";
+            let reactionChain = global.Informant.getChemicalChain(this.memory.targetChemical);
+            let results = this.getTargetProduct(reactionChain, this.chemicalTargetAmount);
+            this.memory.targetProduct = results.product;
+            this.memory.targetReagents = results.reactants;
+        }
+
+        let productTargetAmount = this.chemicalTargetAmount - this.getChemicalAmount(this.memory.targetProduct);
+
+        if (this.memory.targetProduct == this.memory.targetChemical) {
+            //if this is the last step, they should be the same
+            productTargetAmount = this.chemicalTargetAmount;
         }
 
         if (this.memory.task === "withdraw") {
@@ -82,6 +91,65 @@ class Chemist extends Civitas {
             let roomPosIdle = new RoomPosition(this.idleSpot.x, this.idleSpot.y, this.room);
             this.liveObj.moveTo(roomPosIdle);
         }
+    }
+
+    /**
+     * Method that locks a workshop down and fills it up with the proper boost chemicals
+     */
+    prepareBoost(boostType, amount) {
+        if (!this.memory.boosting) {
+            this.memory.boosting = true;
+            this.memory.boostType = boostType;
+            this.memory.boostAmount = amount;
+        }
+
+        let selectedWorkshop;
+        if (this.memory.boostingLab === undefined) {
+            let productWorkshops = this.getSupervisor().productWorkshops;
+            for (let workshop of productWorkshops) {
+                if (selectedWorkshop === undefined || selectedWorkshop.cooldown > workshop.cooldown) {
+                    selectedWorkshop = workshop;
+                }
+            }
+            this.memory.boostingLab = selectedWorkshop.id;
+        } else {
+            selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
+        }
+
+        //now we have the lowest cd workshop, toggle that it is the boosting lab
+        selectedWorkshop.boosting = true;
+        this.getSupervisor().boostingWorkshops[boostType] = selectedWorkshop;
+        let product = workshop.mineralType;
+
+        //empty the workshop of its minerals if it does not contain the boost
+        if (product !== boostType) {
+            if (this.ticksToLive > 30) {
+                if (this.withdrawWorkshop(selectedWorkshop.liveObj, boostType));
+            } else {
+                this.liveObj.suicide();
+            }
+            return true;
+        }
+        
+        if (selectedWorkshop.store.getUsedCapacity(boostType) < amount) {
+            //withdraw the boost we need
+            let tripAmount = Math.min(
+                this.store.getFreeCapacity(boostType), 
+                amount - selectedWorkshop.store.getUsedCapacity(amount)
+            );
+            if (this.store.getUsedCapacity(selectedWorkshop) < tripAmount) {
+                if (this.withdrawStore(selectedWorkshop, tripAmount)) return true;
+            }
+
+            //deposit it in the lab
+            if (this.pos.inRangeTo(selectedWorkshop.liveObj, 1)) {
+                this.liveObj.transfer(selectedWorkshop.liveObj, boostType, tripAmount);
+            } else {
+                this.liveObj.moveTo(selectedWorkshop.liveObj);
+            }
+            return true;
+        }
+        return false
     }
 
     /**
@@ -125,10 +193,11 @@ class Chemist extends Civitas {
                 let product = workshop.mineralType;
                 if (this.store.getFreeCapacity(product) > 0) {
                     if (this.ticksToLive > 30) {
-                        if (this.withdrawWorkshop(workshop.liveObj, product)) return true;
+                        if (this.withdrawWorkshop(workshop.liveObj, product));
                     } else {
                         this.liveObj.suicide();
                     }
+                    return true;
                 }
             }
         }
