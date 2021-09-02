@@ -106,6 +106,22 @@ class Executive {
         return this.chemicalDesires[0]; //if we have target amounts of everything else, just make more of our first desire
     }
 
+    /**
+     * Method that signals the chemist to prepare for boosting or reschedules
+     */
+    prepareBoosts(boostType, boostAmount) {
+        let chemist = this.getSupervisor().civitates.chemist[0];
+
+        if (chemist === undefined) {
+            //reschedule for in ten ticks if the chemist is not alive
+            let task = "global.Imperator.administrators[objArr[0]].executive.prepareBoosts(objArr[1], objArr[2]));";
+            global.TaskMaster.schedule(this.room, Game.time + 10, task, [this.room, boostType, boostAmount]);
+            return false;
+        }
+
+        chemist.prepareBoosts(boostType, boostAmount);
+        return false;
+    }
 
     /**
      * Initialize spawning for phase one rooms
