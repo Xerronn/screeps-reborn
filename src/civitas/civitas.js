@@ -75,6 +75,9 @@ class Civitas extends GameObj {
      */
     boost(boostType) {
         let workshop = this.getSupervisor().boostingWorkshops[boostType];
+        if (!workshop) {
+            return false;
+        }
 
         if (this.pos.findRangeTo(workshop.liveObj, 1)) {
             let result = workshop.liveObj.boostCreep(this.liveObj);
