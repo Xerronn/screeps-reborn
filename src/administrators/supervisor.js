@@ -262,25 +262,26 @@ class Supervisor {
             return undefined;
         }
 
-        let boostCount = 0;
-        let partType;
-        for (let part in BOOSTS) {
-            if (Object.keys(BOOSTS[part]).includes(boostTypes)) {
-                partType = part;
-                break;
+        let boostCounts = [];
+        for (let boost of boostTypes) {
+            let partType;
+            for (let part in BOOSTS) {
+                if (Object.keys(BOOSTS[part]).includes(boost)) {
+                    partType = part;
+                    break;
+                }
             }
+
+            let numParts = 0;
+            for (let part of body) {
+                if (part == partType) {
+                    numParts++;
+                }
+            }
+            boostCounts.push(numParts * 30);
         }
 
-        let numParts = 0;
-        for (let part of body) {
-            if (part == partType) {
-                numParts++;
-            }
-        }
-
-        boostCount = numParts * 30;
-
-        this.getExecutive().prepareBoosts(boostTypes, boostCount);
+        this.getExecutive().prepareBoosts(boostTypes, boostCounts);
         return boostTypes;
     }
 
