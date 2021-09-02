@@ -243,28 +243,28 @@ class Supervisor {
     prepareBoosts(creepType, body) {
         let rcl = Game.rooms[this.room].controller.level;
 
-        let boostType;
+        let boostTypes;
         if (rcl === 7) {
             switch (creepType) {
                 case 'scholar':
-                    boostType = RESOURCE_GHODIUM_HYDRIDE;
+                    boostTypes = [RESOURCE_GHODIUM_HYDRIDE];
                     break;
             }
         } else if (rcl === 8) {
             switch (creepType) {
                 case 'scholar':
-                    boostType = RESOURCE_CATALYZED_GHODIUM_ACID;
+                    boostTypes = [RESOURCE_CATALYZED_GHODIUM_ACID];
                     break;
             }
         }
-        if (boostType === undefined) {
+        if (boostTypes === undefined) {
             return undefined;
         }
 
         let boostCount = 0;
         let partType;
         for (let part in BOOSTS) {
-            if (Object.keys(BOOSTS[part]).includes(boostType)) {
+            if (Object.keys(BOOSTS[part]).includes(boostTypes)) {
                 partType = part;
                 break;
             }
@@ -279,8 +279,8 @@ class Supervisor {
 
         boostCount = numParts * 30;
 
-        this.getExecutive().prepareBoosts(boostType, boostCount);
-        return boostType;
+        this.getExecutive().prepareBoosts(boostTypes, boostCount);
+        return boostTypes;
     }
 
     /**
