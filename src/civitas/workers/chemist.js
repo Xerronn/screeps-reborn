@@ -96,13 +96,15 @@ class Chemist extends Civitas {
     /**
      * Method that locks a workshop down and fills it up with the proper boost chemicals
      */
-    prepareBoosts(boostTypes, amount) {
+    prepareBoosts(boostTypes, boostCounts) {
         if (this.memory.boosting === undefined || this.memory.boosting === false) {
             this.memory.boosting = true;
             this.memory.boostTypes = boostTypes;
-            this.memory.boostAmount = amount;
+            this.memory.boostCounts = boostCounts;
         }
-        for (let boost of this.memory.boostTypes) {
+        for (let i in this.memory.boostTypes) {
+            let boost = this.memory.boostTypes[i];
+            let amount = this.memory.boostCounts[i];
             let selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
             if (!selectedWorkshop) {
                 let productWorkshops = this.getSupervisor().productWorkshops;
