@@ -48,9 +48,13 @@ class Legionnaire extends Remotus {
     /**
      * Method to ranged attack a target
      */
-    beam() {
+    ranged() {
         if (this.pos.inRangeTo(this.target, 3)) {
-            this.liveObj.rangedAttack(this.target);
+            if (this.pos.inRangeTo(this.target, 1)) {
+                this.liveObj.rangedMassAttack();
+            } else {
+                this.liveObj.rangedAttack(this.target);
+            }
         } else {
             this.liveObj.moveTo(this.target);
         }

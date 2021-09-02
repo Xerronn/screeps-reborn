@@ -31,7 +31,7 @@ class Garrison extends Legionnaire {
         if (this.target) {
             this.memory.task = "attack";
             this.melee();
-            this.beam();
+            this.ranged();
         } else {
             global.Archivist.setGarrisonSpawned(this.memory.spawnRoom, false);
         }
