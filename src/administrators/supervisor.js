@@ -47,7 +47,6 @@ class Supervisor {
         //special lab roles
         this.reagentWorkshops = [];
         this.productWorkshops = [];
-        this.boostingWorkshops = {};
     }
 
     /**
@@ -200,9 +199,9 @@ class Supervisor {
                     }
 
                     //handle if the creep will be boosted when it spawns
-                    let boostType = prepareBoosts(template.type);
+                    let boostType = this.prepareBoosts(template.type, newBody);
                     if (boostType !== undefined) {
-                        template.memory.boost = boostType
+                        template.memory.boost = boostType;
                     }
 
                     let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
@@ -234,7 +233,7 @@ class Supervisor {
      * @param {String} creepType role of the creep
      * @returns the boost type for the role
      */
-    prepareBoosts(creepType) {
+    prepareBoosts(creepType, body) {
         let rcl = Game.rooms[this.room].controller.level;
 
         let boostType;
@@ -247,7 +246,7 @@ class Supervisor {
         } else if (rcl === 8) {
             switch (creepType) {
                 case 'scholar':
-                    boostType = RESOURCE_GHODIUM_HYDRIDE;
+                    boostType = RESOURCE_CATALYZED_GHODIUM_ACID;
                     break;
             }
         }
@@ -265,7 +264,7 @@ class Supervisor {
         }
 
         let numParts = 0;
-        for (let part of this.body) {
+        for (let part of body) {
             if (part == partType) {
                 numParts++;
             }
