@@ -13,7 +13,13 @@ class Workshop extends Castrum {
 
         this.reagents = this.getSupervisor().reagentWorkshops;
         this.mineralCount = undefined;
+
         this.boosting = false;
+        let boostingWorkshops = Object.values(global.Archivist.getBoostingWorkshops(this.room));
+        if (boostingWorkshops.includes(this.id)) {
+            this.boosting = true;
+        }
+        
 
         this.update(true);
     }
