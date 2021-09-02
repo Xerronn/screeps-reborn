@@ -112,6 +112,14 @@ class Archivist {
     }
 
     /**
+     * Gets the labs that are boosting and what chemicals they have
+     * @returns 
+     */
+    getBoostingWorkshops(room) {
+        return Memory.rooms[room].flags.boostingWorkshops || {};
+    }
+
+    /**
      * Get the curator spawned flag for a given room
      * @param {String} room string representation of a room
      * @returns the curator spawned flag
@@ -260,6 +268,14 @@ class Archivist {
      */
     setAnchor(room, value) {
         Memory.rooms[room].flags.anchor = value;
+    }
+
+    /**
+     * Sets the labs that are boosting and what chemicals they have
+     * @returns 
+     */
+    setBoostingWorkshops(room, value) {
+        Memory.rooms[room].flags.boostingWorkshops = value;
     }
 
     /**
