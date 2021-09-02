@@ -110,16 +110,16 @@ class Executive {
      * Method that signals the chemist to prepare for boosting or reschedules
      */
     prepareBoosts(boostType, boostAmount) {
-        let chemist = this.getSupervisor().civitates.chemist[0];
+        let chemists = this.getSupervisor().civitates.chemist;
 
-        if (chemist === undefined) {
+        if (chemists === undefined) {
             //reschedule for in ten ticks if the chemist is not alive
-            let task = "global.Imperator.administrators[objArr[0]].executive.prepareBoosts(objArr[1], objArr[2]));";
+            let task = "global.Imperator.administrators[objArr[0]].executive.prepareBoosts(objArr[1], objArr[2]);";
             global.TaskMaster.schedule(this.room, Game.time + 10, task, [this.room, boostType, boostAmount]);
             return false;
         }
 
-        chemist.prepareBoosts(boostType, boostAmount);
+        chemists[0].prepareBoosts(boostType, boostAmount);
         return false;
     }
 
