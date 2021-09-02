@@ -74,18 +74,19 @@ class Civitas extends GameObj {
      * @param {String} boostType 
      */
     boost(boostType) {
-        let workshop = this.getSupervisor().boostingWorkshops[boostType];
+        let workshopId = global.Archivist.getBoostingWorkshops(this.memory.spawnRoom)[boostType] || undefined;
+        let workshop = global.Imperator.getWrapper(workshopId);
         if (!workshop) {
             return false;
         }
 
-        if (this.pos.findRangeTo(workshop.liveObj, 1)) {
-            let result = workshop.liveObj.boostCreep(this.liveObj);
-            if (result == OK) {
-                workshop.boosting = false;
-                this.getSupervisor().boostingWorkshops[boostType] = undefined;
-                return false;
-            }
+        if (this.pos.inRangeTo(workshop.liveObj, 1)) {
+            workshop.liveObj.boostCreep(this.liveObj);
+            workshop.boosting = false;
+            let old = global.Archivist.getBoostingWorkshops(this.room);
+            old[boostType] = undefined;
+            global.Archivist.setBoostingWorkshops(this.room, old);
+            return false;
         } else {
             this.liveObj.moveTo(workshop.liveObj);
         }
