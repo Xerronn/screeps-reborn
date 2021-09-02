@@ -144,7 +144,14 @@ class Supervisor {
             //first all creeps
             for (var type of Object.keys(this.civitates)) {
                 for (var pro of this.civitates[type]) {
+                    let startcpu = Game.cpu.getUsed()
                     pro.run();
+                    let usedCpu = Game.cpu.getUsed() - startcpu;
+                    
+                    if (usedCpu > 0.3 && global.logger == true) {
+                        console.log(pro.name);
+                        console.log(usedCpu);
+                    }
                 }
             }
 
