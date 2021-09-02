@@ -70,6 +70,26 @@ class Civitas extends GameObj {
     }
 
     /**
+     * Method to boost the creep with a already prepared lab
+     * @param {String} boostType 
+     */
+    boost(boostType) {
+        let workshop = this.getSupervisor().boostingWorkshops[boostType];
+
+        if (this.pos.findRangeTo(workshop.liveObj, 1)) {
+            let result = workshop.liveObj.boostCreep(this.liveObj);
+            if (result == OK) {
+                workshop.boosting = false;
+                this.getSupervisor().boostingWorkshops[boostType] = undefined;
+                return false;
+            }
+        } else {
+            this.liveObj.moveTo(workshop.liveObj);
+        }
+        return true;
+    }
+
+    /**
      * Method to get the creep's supervisor
      * @returns Supervisor
      */
