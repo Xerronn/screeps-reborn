@@ -41,6 +41,15 @@ class Arbiter extends Runner {
         }
 
         /**
+         * Empty stores of minerals before dealing with minerals
+         */
+        for (let res in this.store) {
+            if (res !== RESOURCE_ENERGY && this.store[res] > 0) {
+                this.liveObj.transfer(this.storage, res);
+            }
+        }
+
+        /**
          * Link Management. Keep the link at zero except when it requests to be filled
          */
         if (this.link.store.getUsedCapacity(RESOURCE_ENERGY) != 0 || this.linkWrapper.needsFilling) {
@@ -73,21 +82,50 @@ class Arbiter extends Runner {
                 this.memory.task = "withdraw";
                 let amount = 20000 - this.terminal.store.getUsedCapacity(RESOURCE_ENERGY);
                 let tripAmount = Math.min(amount, this.store.getFreeCapacity(RESOURCE_ENERGY));
-                this.withdrawStorage(tripAmount); 
+                this.withdrawStorage(tripAmount);
+                return;
             } else {
                 this.memory.task = "deposit";
-                
                 this.depositTerminal();
+                return;
             }
         } else if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 20000) {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
                 let amount = this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) - 20000;
                 let tripAmount = Math.min(amount, this.store.getFreeCapacity(RESOURCE_ENERGY));
-                this.withdrawTerminal(tripAmount); 
+                this.withdrawTerminal(tripAmount);
+                return;
             } else {
                 this.memory.task = "deposit";
                 this.depositStorage();
+                return;
+            }
+        }
+
+        /**
+         * Empty stores of energy before dealing with minerals
+         */
+        if (this.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+            this.depositStorage();
+        }
+
+        /**
+         * Keep terminal full of minerals only
+         */
+        if (Object.keys(this.terminal.store).length > global.Vendor.resources.length) {
+            for (let res in this.terminal.store) {
+                if (!global.Vendor.resources.includes(res)) {
+                    if (this.store.getUsedCapacity(res) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(res) > 0)) {
+                        this.memory.task = "withdraw";
+                        this.liveObj.withdraw(this.terminal, res);
+                        return;
+                    } else {
+                        this.memory.task = "deposit";
+                        this.liveObj.transfer(this.storage, res);
+                        return;
+                    }
+                }
             }
         }
     }
@@ -120,8 +158,10 @@ class Arbiter extends Runner {
     withdrawTerminal(numEnergy=undefined) {
         if (numEnergy !== undefined) {
             this.liveObj.withdraw(this.terminal, RESOURCE_ENERGY, numEnergy);
+            global.Vendor.balances[this.room][RESOURCE_ENERGY] -= numEnergy;
         } else {
             this.liveObj.withdraw(this.terminal, RESOURCE_ENERGY);
+            global.Vendor.balances[this.room][RESOURCE_ENERGY] -= numEnergy;
         }
     }
 
@@ -139,17 +179,28 @@ class Arbiter extends Runner {
     /**
      * Move to storage and deposit all stored energy
      */
-    depositStorage() {
-        this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
+    depositStorage(numEnergy=undefined) {
+        if (numEnergy !== undefined) {
+            this.liveObj.transfer(this.storage, RESOURCE_ENERGY, numEnergy);
+        } else {
+            this.liveObj.transfer(this.storage, RESOURCE_ENERGY);
+        }
     }
 
     /**
      * Move to terminal and deposit all stored energy
      */
-     depositTerminal() {
-        this.liveObj.transfer(this.terminal, RESOURCE_ENERGY);
-        //increment balances in the vendor as energy is added
-        global.Vendor.balances[this.room][RESOURCE_ENERGY] += this.store.getUsedCapacity(RESOURCE_ENERGY);
+     depositTerminal(numEnergy=undefined) {
+        if (numEnergy !== undefined) {
+            this.liveObj.transfer(this.terminal, RESOURCE_ENERGY, numEnergy);
+            //increment balances in the vendor as energy is added
+            global.Vendor.balances[this.room][RESOURCE_ENERGY] += numEnergy;
+        } else {
+            this.liveObj.transfer(this.terminal, RESOURCE_ENERGY);
+            //increment balances in the vendor as energy is added
+            global.Vendor.balances[this.room][RESOURCE_ENERGY] += this.store.getUsedCapacity(RESOURCE_ENERGY);
+        }
+        
     }
 
     /**
