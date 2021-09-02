@@ -44,9 +44,10 @@ class Supervisor {
         this.controllerLink;
         this.storageLink;
 
-        //the reagent labs
+        //special lab roles
         this.reagentWorkshops = [];
         this.productWorkshops = [];
+        this.boostingWorkshops = {};
     }
 
     /**
@@ -171,7 +172,7 @@ class Supervisor {
      * @param {Object} template An object that contains body, type, and memory
      * @param {boolean} rebirth whether or not this is a rebirth
      */
-     initiate(template) {
+    initiate(template) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
         let generationIncremented = 0;
@@ -198,9 +199,14 @@ class Supervisor {
                         generationIncremented++;
                     }
 
-                    let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
+                    //handle if the creep will be boosted when it spawns
+                    let boostType = prepareBoosts(template.type);
+                    if (boostType !== undefined) {
+                        template.memory.boost = boostType
+                    }
 
-                    //if the request fails, schedule it for 20 ticks in the future
+                    let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
+    
                     if (success == OK) {
                         //don't try spawning on another spawn
                         break;
@@ -217,9 +223,58 @@ class Supervisor {
             if (template.memory.generation !== undefined) {
                 template.memory.generation -= generationIncremented;
             }
+            //if the request fails, schedule it for 5 ticks in the future
             let task = "global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1]);";
             global.TaskMaster.schedule(this.room, Game.time + 5, task, [this.room, {...template}]);
         }
+    }
+
+    /**
+     * Method that gets the chemist to prepare for boosting a creep and returns the type of boost
+     * @param {String} creepType role of the creep
+     * @returns the boost type for the role
+     */
+    prepareBoosts(creepType) {
+        let rcl = Game.rooms[this.room].controller.level;
+
+        let boostType;
+        if (rcl === 7) {
+            switch (creepType) {
+                case 'scholar':
+                    boostType = RESOURCE_GHODIUM_HYDRIDE;
+                    break;
+            }
+        } else if (rcl === 8) {
+            switch (creepType) {
+                case 'scholar':
+                    boostType = RESOURCE_GHODIUM_HYDRIDE;
+                    break;
+            }
+        }
+        if (boostType === undefined) {
+            return undefined;
+        }
+
+        let boostCount = 0;
+        let partType;
+        for (let part in BOOSTS) {
+            if (Object.keys(BOOSTS[part]).includes(boostType)) {
+                partType = part;
+                break;
+            }
+        }
+
+        let numParts = 0;
+        for (let part of this.body) {
+            if (part == partType) {
+                numParts++;
+            }
+        }
+
+        boostCount = numParts * 30;
+
+        this.getExecutive().prepareBoosts(boostType, boostCount);
+        return boostType;
     }
 
     /**
@@ -266,14 +321,14 @@ class Supervisor {
     /**
      * Method to block spawning for 5 ticks
      */
-     reserveNexus() {
+    reserveNexus() {
         this.reservedTickNexus = Game.time + 5;
     }
 
     /**
      * Method to block workshops for 5 ticks
      */
-     reserveWorkshop() {
+    reserveWorkshop() {
         this.reservedTickWorkshop = Game.time + 5;
     }
 
