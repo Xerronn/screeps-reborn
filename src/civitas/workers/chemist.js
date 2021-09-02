@@ -33,9 +33,8 @@ class Chemist extends Civitas {
         //handle boosting of creeps
         if (this.memory.boosting === true) {
             if (this.memory.task === "supplyReagents") this.getSupervisor().reserveWorkshop();
-            if (!this.prepareBoosts(this.memory.boostType, this.memory.boostAmount)) {
-                this.memory.boosting = false;
-            } else return true;
+            if (this.prepareBoosts(this.memory.boostType, this.memory.boostAmount))  return true;
+            this.memory.boosting = false;
         }
 
         //handle chemical production
@@ -217,13 +216,15 @@ class Chemist extends Civitas {
      * @returns if an action is taken
      */
     energizeLabs() {
-        if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-            this.withdrawStore(RESOURCE_ENERGY);
-            return true;
-        }
         let productWorkshops = this.getSupervisor().productWorkshops;
         for (let workshop of productWorkshops) {
             if (workshop.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                //fill up creep with required energy
+                let tripAmount = Math.min(this.store.getFreeCapacity(RESOURCE_ENERGY), workshop.store.getFreeCapacity(RESOURCE_ENERGY));
+                if (this.store.getUsedCapacity(RESOURCE_ENERGY) < tripAmount) {
+                    this.withdrawStore(RESOURCE_ENERGY, tripAmount);
+                    return true;
+                }
                 if (this.pos.inRangeTo(workshop.liveObj, 1)) {
                     this.liveObj.transfer(workshop.liveObj, RESOURCE_ENERGY);
                 } else {
