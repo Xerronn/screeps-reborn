@@ -42,27 +42,15 @@ class TaskMaster {
      * Function that executes the schedule
      */
     run() {
-        //execute scheduler code
-        for (var tick of Object.keys(Memory.scheduler)) {
-            if (["E42N24", "E41N22", "global"].includes(tick)) continue;
-            if (parseInt(tick) <= Game.time) {
-                for (var task of Memory.scheduler[tick]) {
-                    try {
-                    let objArr = task.objArr;
-                    eval(task.script);
-                    } catch (err) {}
-                }
-                delete Memory.scheduler[tick];
-            }
-        }
-
         for (let room in Memory.scheduler) {
             for (let tick in Memory.scheduler[room]) {
                 if (parseInt(tick) <= Game.time) {
                     for (let id in Memory.scheduler[room][tick]) {
-                        let task = Memory.scheduler[room][tick][id];
-                        let objArr = task.objArr;
-                        eval(task.script);
+                        try {
+                            let task = Memory.scheduler[room][tick][id];
+                            let objArr = task.objArr;
+                            eval(task.script);
+                        } catch (err) {}
                     }
                     delete Memory.scheduler[room][tick];
                 }
