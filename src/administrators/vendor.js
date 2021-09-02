@@ -343,7 +343,7 @@ class Vendor {
     getExcess(room) {
         let excess = [];
         for (let res in this.surpluses) {
-            if (this.surpluses[res].includes(room)) {
+            if (res !== RESOURCE_ENERGY && this.surpluses[res].includes(room)) {
                 excess.push(res);
             }
         }
@@ -358,7 +358,7 @@ class Vendor {
     getNeeds(room) {
         let needs = [];
         for (let res in this.shortages) {
-            if (this.shortages[res].includes(room)) {
+            if (res !== RESOURCE_ENERGY && this.shortages[res].includes(room)) {
                 needs.push(res);
             }
         }
