@@ -232,7 +232,6 @@ class Hauler extends Remotus {
 
         if (this.stuckTick > 3) {
             //do something
-            console.log("DOOR STUCK");
             this.pathing = false;
         }
         if (!reversed) {
