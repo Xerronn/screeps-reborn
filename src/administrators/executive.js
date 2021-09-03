@@ -118,7 +118,9 @@ class Executive {
             global.TaskMaster.schedule(this.room, Game.time + 10, task, [this.room, boostTypes, boostCounts]);
             return false;
         }
-        chemists[0].prepareBoosts(boostTypes, boostCounts);
+        chemists[0].memory.boosting = true;
+        chemists[0].memory.boostCounts = boostCounts;
+        chemists[0].memory.boostTypes = boostTypes;
         return false;
     }
 
