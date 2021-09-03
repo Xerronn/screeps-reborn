@@ -54,6 +54,7 @@ class Legionnaire extends Remotus {
                 this.liveObj.rangedMassAttack();
             } else {
                 this.liveObj.rangedAttack(this.target);
+                this.liveObj.moveTo(this.target);
             }
         } else {
             this.liveObj.moveTo(this.target);
