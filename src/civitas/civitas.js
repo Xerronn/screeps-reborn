@@ -73,24 +73,27 @@ class Civitas extends GameObj {
      * Method to boost the creep with a already prepared lab
      * @param {String} boostType 
      */
-    boost(boostType) {
-        let workshopId = global.Archivist.getBoostingWorkshops(this.memory.spawnRoom)[boostType] || undefined;
-        let workshop = global.Imperator.getWrapper(workshopId);
-        if (!workshop) {
-            return false;
-        }
+    boost(boostTypes) {
+        for (let boost of boostTypes) {
+            let workshopId = global.Archivist.getBoostingWorkshops(this.memory.spawnRoom)[boost] || undefined;
+            let workshop = global.Imperator.getWrapper(workshopId);
+            if (!workshop) {
+                continue;
+            }
 
-        if (this.pos.inRangeTo(workshop.liveObj, 1)) {
-            workshop.liveObj.boostCreep(this.liveObj);
-            workshop.boosting = false;
-            let old = global.Archivist.getBoostingWorkshops(this.room);
-            old[boostType] = undefined;
-            global.Archivist.setBoostingWorkshops(this.room, old);
-            return false;
-        } else {
-            this.liveObj.moveTo(workshop.liveObj);
+            if (this.pos.inRangeTo(workshop.liveObj, 1)) {
+                workshop.liveObj.boostCreep(this.liveObj);
+                workshop.boosting = false;
+                let old = global.Archivist.getBoostingWorkshops(this.room);
+                old[boost] = undefined;
+                global.Archivist.setBoostingWorkshops(this.room, old);
+                continue;
+            } else {
+                this.liveObj.moveTo(workshop.liveObj);
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
