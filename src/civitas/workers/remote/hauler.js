@@ -60,6 +60,7 @@ class Hauler extends Remotus {
     }
 
     run() {
+        if (!this.container) return;
         //todo: path caching and traversal
         //march to room and flee if enemies
         if (this.memory.task != "deposit") {
