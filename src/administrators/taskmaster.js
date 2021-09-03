@@ -35,7 +35,7 @@ class TaskMaster {
         };
         let keys = Object.keys(Memory.scheduler[room][tick.toString()]);
         let taskId = keys[keys.length - 1] || 0;
-        Memory.scheduler[room][tick.toString()][taskId] = taskObj;
+        Memory.scheduler[room][tick.toString()][taskId + 1] = taskObj;
     }
     
     /**
