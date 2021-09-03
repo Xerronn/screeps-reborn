@@ -19,7 +19,7 @@ class Scavenger extends Remotus {
                     if (this.pos.inRangeTo(res, 1)) {
                         this.liveObj.pickup(res);
                     } else {
-                        this.liveObj.moveTo(res);
+                        this.liveObj.travelTo(res);
                     }
                     return;
                 }
@@ -35,7 +35,7 @@ class Scavenger extends Remotus {
             if (this.pos.inRangeTo(terminal, 1)) {
                 this.liveObj.transfer(terminal, RESOURCE_MIST);
             } else {
-                this.liveObj.moveTo(terminal);
+                this.liveObj.travelTo(terminal);
             }
             return;
             
