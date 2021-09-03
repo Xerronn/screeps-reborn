@@ -33,8 +33,7 @@ class TaskMaster {
             "script": task,
             "objArr": objArr
         };
-        let keys = Object.keys(Memory.scheduler[room][tick.toString()]);
-        let taskId = keys[keys.length - 1] || 0;
+        let taskId = this.makeId(room);
         Memory.scheduler[room][tick.toString()][taskId + 1] = taskObj;
     }
     
@@ -69,6 +68,30 @@ class TaskMaster {
                     console.log(tick[task].script)
                     // tick.splice(task, 1);
                 }
+            }
+        }
+    }
+
+    /**
+     * Method that generates a unique ID for a room
+     * @returns ID
+     */
+    makeId(room, length = 5) {
+        let allKeys = [];
+        for (let tick in Memory.scheduler[room]) {
+            for (let key in Memory.scheduler[room][tick]) {
+                allKeys.push(key);
+            }
+        }
+        
+        let symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        while(true) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += symbols.charAt(Math.floor(Math.random() * symbols.length));
+            }
+            if (!allKeys.includes(result)) {
+                return result;
             }
         }
     }
