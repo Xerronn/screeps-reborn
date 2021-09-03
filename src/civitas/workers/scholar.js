@@ -33,11 +33,9 @@ class Scholar extends Worker {
      * logic to run each tick
      */
     run() {
-        if (this.memory.boost !== undefined && this.ticksToLive > 1400 && this.liveObj.body[0].boost === undefined && !this.noBoost) {
-            if (this.boost(this.memory.boost)) {
-                return;
-            }
-            this.noBoost = true;
+        if (this.memory.boost !== undefined && this.ticksToLive > 1400) {
+            if (this.boost(this.memory.boost)) return;
+            delete this.memory.boost;
         }
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) < this.numWork || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "withdraw";
