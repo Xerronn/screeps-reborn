@@ -33,8 +33,8 @@ class TaskMaster {
             "script": task,
             "objArr": objArr
         };
-        let taskId = this.makeId(room);
-        Memory.scheduler[room][tick.toString()][taskId + 1] = taskObj;
+        let taskId = this.makeId();
+        Memory.scheduler[room][tick.toString()][taskId] = taskObj;
     }
     
     /**
@@ -73,27 +73,15 @@ class TaskMaster {
     }
 
     /**
-     * Method that generates a unique ID for a room
+     * Method that generates a unique ID
      * @returns ID
      */
-    makeId(room, length = 5) {
-        let allKeys = [];
-        for (let tick in Memory.scheduler[room]) {
-            for (let key in Memory.scheduler[room][tick]) {
-                allKeys.push(key);
-            }
+    makeId(length = 7) {
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += String.fromCharCode(Math.floor(Math.random() * (65536)));
         }
-        
-        let symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        while(true) {
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += symbols.charAt(Math.floor(Math.random() * symbols.length));
-            }
-            if (!allKeys.includes(result)) {
-                return result;
-            }
-        }
+        return result;
     }
 }
 
