@@ -6,6 +6,8 @@ const Architect = require("./administrators/architect");
 const Informant = require("./administrators/informant");
 const Vendor = require("./administrators/vendor");
 
+const Traveler = require("./thirdParty/traveler");
+
 //init high level entities
 global.TaskMaster = new TaskMaster();
 global.Archivist = new Archivist();
