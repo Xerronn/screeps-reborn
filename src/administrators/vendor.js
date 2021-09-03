@@ -329,7 +329,7 @@ class Vendor {
     getTarget(resourceType) {
         switch (resourceType) {
             case RESOURCE_ENERGY:
-                return 20000;
+                return 50000;
             default:
                 return 10000;
         }

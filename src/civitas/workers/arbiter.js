@@ -77,10 +77,11 @@ class Arbiter extends Runner {
         /**
          * Terminal Management. Puts energy into the terminal until it reaches 20k stored
          */
-        if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 20000) {
+        let energyTarget = global.Vendor.getTarget(RESOURCE_ENERGY);
+        if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) < energyTarget) {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
-                let amount = 20000 - this.terminal.store.getUsedCapacity(RESOURCE_ENERGY);
+                let amount = energyTarget - this.terminal.store.getUsedCapacity(RESOURCE_ENERGY);
                 let tripAmount = Math.min(amount, this.store.getFreeCapacity(RESOURCE_ENERGY));
                 this.withdrawStorage(tripAmount);
                 return;
@@ -89,10 +90,10 @@ class Arbiter extends Runner {
                 this.depositTerminal();
                 return;
             }
-        } else if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 20000) {
+        } else if (this.terminal && this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) > energyTarget) {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
                 this.memory.task = "withdraw";
-                let amount = this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) - 20000;
+                let amount = this.terminal.store.getUsedCapacity(RESOURCE_ENERGY) - energyTarget;
                 let tripAmount = Math.min(amount, this.store.getFreeCapacity(RESOURCE_ENERGY));
                 this.withdrawTerminal(tripAmount);
                 return;
