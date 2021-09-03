@@ -46,11 +46,9 @@ class TaskMaster {
             for (let tick in Memory.scheduler[room]) {
                 if (parseInt(tick) <= Game.time) {
                     for (let id in Memory.scheduler[room][tick]) {
-                        try {
-                            let task = Memory.scheduler[room][tick][id];
-                            let objArr = task.objArr;
-                            eval(task.script);
-                        } catch (err) {}
+                        let task = Memory.scheduler[room][tick][id];
+                        let objArr = task.objArr;
+                        eval(task.script);
                     }
                     delete Memory.scheduler[room][tick];
                 }
