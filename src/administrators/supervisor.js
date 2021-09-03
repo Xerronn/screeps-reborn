@@ -245,18 +245,16 @@ class Supervisor {
         let rcl = Game.rooms[this.room].controller.level;
 
         let boostTypes;
-        if (rcl === 7) {
-            switch (creepType) {
-                case 'scholar':
+        switch (creepType) {
+            case 'scholar':
+                if (rcl === 7) {
                     boostTypes = [RESOURCE_GHODIUM_HYDRIDE];
-                    break;
-            }
-        } else if (rcl === 8) {
-            switch (creepType) {
-                case 'scholar':
+                } else if (rcl === 8) {
                     boostTypes = [RESOURCE_CATALYZED_GHODIUM_ACID];
-                    break;
-            }
+                }
+                break;
+            case 'executioner':
+                boostTypes = [RESOURCE_CATALYZED_GHODIUM_ALKALIDE, RESOURCE_CATALYZED_LEMERGIUM_ALKALIDE];
         }
         if (boostTypes === undefined) {
             return undefined;
