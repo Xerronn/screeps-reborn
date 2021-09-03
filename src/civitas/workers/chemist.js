@@ -32,9 +32,8 @@ class Chemist extends Civitas {
     run() {
         //handle boosting of creeps
         if (this.memory.boosting === true) {
-            if (this.memory.task === "supplyReagents") this.getSupervisor().reserveWorkshop();
-            if (this.prepareBoosts(this.memory.boostType, this.memory.boostAmount))  return true;
-            this.memory.boosting = false;
+            if (this.memory.task === "supplyReagents" || this.memory.task === "awaitingSupply") this.getSupervisor().reserveWorkshop();
+            if (this.prepareBoosts(this.memory.boostType, this.memory.boostAmount)) return true;
         }
 
         //handle chemical production
@@ -71,7 +70,8 @@ class Chemist extends Civitas {
             //labs are empty, move to next mineral in the chain
             this.memory.task = "supplyReagents"
             
-        } else if (this.memory.task === "supplyReagents") {
+        }
+        if (this.memory.task === "supplyReagents") {
             //stop any reactions from running while they are being filled
             this.getSupervisor().reserveWorkshop();
             let tripAmount = Math.min(3000, productTargetAmount);
@@ -80,11 +80,21 @@ class Chemist extends Civitas {
             //done supplying labs
             this.memory.task = "idle";
         }
+        if (this.memory.task == "awaitingSupply") {
+            this.getSupervisor().reserveWorkshop();
+            if (this.getChemicalAmount(this.memory.targetReagents[0]) > this.store.getFreeCapacity(this.memory.targetReagents[0]) && 
+                this.getChemicalAmount(this.memory.targetReagents[1]) > this.store.getFreeCapacity(this.memory.targetReagents[1])) {
+                    this.memory.task = "supplyReagents";
+            }
+        }
 
         //fill labs with energy
         if (!global.Archivist.getLabsFilled(this.room)) {
             if (this.energizeLabs()) return;
         }
+
+        //empty stores
+        if (this.depositStore()) return;
         
         //idle
         if (this.pos.x != this.idleSpot.x || this.pos.y != this.idleSpot.y) {
@@ -102,67 +112,75 @@ class Chemist extends Civitas {
             this.memory.boostTypes = boostTypes;
             this.memory.boostCounts = boostCounts;
         }
-        for (let i in this.memory.boostTypes) {
-            let boost = this.memory.boostTypes[i];
-            let amount = this.memory.boostCounts[i];
-            let selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
-            if (!selectedWorkshop) {
-                let productWorkshops = this.getSupervisor().productWorkshops;
-                for (let workshop of productWorkshops) {
-                    if (workshop.boosting) continue;
-                    if (!workshop.boosting && (selectedWorkshop === undefined || selectedWorkshop.cooldown > workshop.cooldown)) {
-                        selectedWorkshop = workshop;
-                    }
-                }
-                this.memory.boostingLab = selectedWorkshop.id;
-                selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
-            }
-            //if we don't have enough boost to do the body, then just skip it
-            if (this.getChemicalAmount(boost) + this.store.getUsedCapacity(boost) + selectedWorkshop.store.getUsedCapacity(boost) < amount) {
-                delete this.memory.boostingLab;
-                continue;
-            }
-            if (this.depositStore(boost)) return true;
+        let boost = this.memory.boostTypes[0];
+        let amount = this.memory.boostCounts[0];
 
-            //now we have the lowest cd workshop, toggle that it is the boosting lab
-            selectedWorkshop.boosting = true;
-            let old = global.Archivist.getBoostingWorkshops(this.room);
-            old[boost] = selectedWorkshop.id;
-            global.Archivist.setBoostingWorkshops(this.room, old);
+        if (boost === undefined) return false;
 
-            //empty the workshop of its minerals if it does not contain the boost
-            let product = selectedWorkshop.mineralType;
-            if (product !== boost && selectedWorkshop.store.getUsedCapacity(product) > 0) {
-                if (this.ticksToLive > 30) {
-                    if (this.withdrawWorkshop(selectedWorkshop.liveObj, product));
-                } else {
-                    this.liveObj.suicide();
+        let selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
+        if (!selectedWorkshop) {
+            let productWorkshops = this.getSupervisor().productWorkshops;
+            for (let workshop of productWorkshops) {
+                if (workshop.boosting) continue;
+                if (!workshop.boosting && (selectedWorkshop === undefined || selectedWorkshop.cooldown > workshop.cooldown)) {
+                    selectedWorkshop = workshop;
                 }
-                return true;
             }
-            
-            if (selectedWorkshop.mineralCount < amount) {
-                //withdraw the boost we need
-                let tripAmount = Math.min(
-                    this.store.getFreeCapacity(boost), 
-                    amount - selectedWorkshop.store.getUsedCapacity(boost)
-                );
-                if (this.store.getUsedCapacity(boost) < tripAmount) {
-                    if (this.withdrawStore(boost, tripAmount)) return true;
-                }
-
-                //deposit it in the lab
-                if (this.pos.inRangeTo(selectedWorkshop.liveObj, 1)) {
-                    this.liveObj.transfer(selectedWorkshop.liveObj, boost, tripAmount);
-                } else {
-                    this.liveObj.moveTo(selectedWorkshop.liveObj);
-                }
-                return true;
-            }
-
-            delete this.memory.boostingLab;
+            this.memory.boostingLab = selectedWorkshop.id;
+            selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
         }
-        return false
+        //if we don't have enough boost to do the body, then just skip it
+        if (this.getChemicalAmount(boost) + this.store.getUsedCapacity(boost) + selectedWorkshop.store.getUsedCapacity(boost) < amount) {
+            delete this.memory.boostingLab;
+            this.memory.boostTypes.shift();
+            this.memory.boostCounts.shift();
+            return true;
+        }
+        if (this.depositStore(boost)) return true;
+
+        //now we have the lowest cd workshop, toggle that it is the boosting lab
+        selectedWorkshop.boosting = true;
+        let old = global.Archivist.getBoostingWorkshops(this.room);
+        old[boost] = selectedWorkshop.id;
+        global.Archivist.setBoostingWorkshops(this.room, old);
+
+        //empty the workshop of its minerals if it does not contain the boost
+        let product = selectedWorkshop.mineralType;
+        if (product !== boost && selectedWorkshop.store.getUsedCapacity(product) > 0) {
+            if (this.ticksToLive > 30) {
+                if (this.withdrawWorkshop(selectedWorkshop.liveObj, product)) return true;
+            } else {
+                this.liveObj.suicide();
+            }
+            return true;
+        }
+        if (selectedWorkshop.mineralCount < amount) {
+            //withdraw the boost we need
+            let tripAmount = Math.min(
+                this.store.getFreeCapacity(boost), 
+                amount - selectedWorkshop.store.getUsedCapacity(boost)
+            );
+            if (this.store.getUsedCapacity(boost) < tripAmount) {
+                if (this.withdrawStore(boost, tripAmount)) return true;
+            }
+
+            //deposit it in the lab
+            if (this.pos.inRangeTo(selectedWorkshop.liveObj, 1)) {
+                this.liveObj.transfer(selectedWorkshop.liveObj, boost, tripAmount);
+            } else {
+                this.liveObj.moveTo(selectedWorkshop.liveObj);
+            }
+            return true;
+        }
+
+        delete this.memory.boostingLab;
+        this.memory.boostTypes.shift();
+        this.memory.boostCounts.shift();
+        if (this.memory.boostTypes.length == 0) {
+            this.memory.boosting = false;
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -181,6 +199,9 @@ class Chemist extends Civitas {
                 );
                 //fill up creep to match what is needed for the lab
                 if (this.store.getUsedCapacity(targetReagents[i]) < tripAmount) {
+                    if (this.getChemicalAmount(targetReagents[i]) < tripAmount) {
+                        this.memory.task = "awaitingSupply";
+                    }
                     if (this.withdrawStore(targetReagents[i], tripAmount)) return true;
                 }
                 //move to lab and deposit the amount
