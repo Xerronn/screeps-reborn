@@ -331,7 +331,7 @@ class Executive {
                     RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
                     HEAL, HEAL, HEAL
                 ],
-                'type': 'scavenger',
+                'type': 'garrison',
                 'memory': {'targetRoom': targetRoom}
             });
             global.Archivist.setGarrisonSpawned(this.room, true);
