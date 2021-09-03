@@ -109,17 +109,16 @@ class Executive {
     /**
      * Method that signals the chemist to prepare for boosting or reschedules
      */
-    prepareBoosts(boostTypes, boostAmount) {
+    prepareBoosts(boostTypes, boostCounts) {
         let chemists = this.getSupervisor().civitates.chemist;
 
-        if (chemists === undefined) {
+        if (chemists === undefined || chemists.length == 0 || chemists[0].boosting) {
             //reschedule for in ten ticks if the chemist is not alive
             let task = "global.Imperator.administrators[objArr[0]].executive.prepareBoosts(objArr[1], objArr[2]);";
-            global.TaskMaster.schedule(this.room, Game.time + 10, task, [this.room, boostTypes, boostAmount]);
+            global.TaskMaster.schedule(this.room, Game.time + 10, task, [this.room, boostTypes, boostCounts]);
             return false;
         }
-
-        chemists[0].prepareBoosts(boostTypes, boostAmount);
+        chemists[0].prepareBoosts(boostTypes, boostCounts);
         return false;
     }
 
@@ -229,7 +228,7 @@ class Executive {
             this.getSupervisor().initiate({
                 'body': [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
                 'type': 'prospector',
-                'memory': {'generation' : 0, 'targetRoom': "targetRoom", 'noRoads': true}
+                'memory': {'generation' : 199, 'targetRoom': targetRoom, 'noRoads': true, }
             });
         }
     }
@@ -249,25 +248,6 @@ class Executive {
         }
     }
 
-    /**
-     * Method that spawns defenders for remote rooms
-     * @param {String} targetRoom string representing the room
-     */
-    spawnGarrison(targetRoom) {
-        if (!global.Archivist.getGarrisonSpawned(this.room)) {
-            this.getSupervisor().initiate({
-                'body': [
-                    TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
-                    ATTACK, ATTACK, ATTACK, ATTACK, 
-                    RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                    HEAL, HEAL, HEAL
-                ],
-                'type': 'garrison',
-                'memory': {'targetRoom': targetRoom}
-            });
-            global.Archivist.setGarrisonSpawned(this.room, true);
-        }
-    }
 
     /**
      * Method to spawn a remote engineer
@@ -316,6 +296,46 @@ class Executive {
             'type': 'chemist',
             'memory': {'generation':0}
         });
+    }
+
+    //Military Creep spawning
+
+    /**
+     * Method that spawns an executioner to destroy a low level room <7 rcl
+     */
+    spawnExecutioner(targetRoom) {
+        this.getSupervisor().initiate({
+            'body': [
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
+                RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, 
+                RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, 
+                HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ],
+            'type': 'executioner',
+            'memory': {'targetRoom': targetRoom, 'noRoads': true}
+        });
+    }
+
+    /**
+     * Method that spawns defenders for remote rooms
+     * @param {String} targetRoom string representing the room
+     */
+     spawnGarrison(targetRoom) {
+        if (!global.Archivist.getGarrisonSpawned(this.room)) {
+            this.getSupervisor().initiate({
+                'body': [
+                    TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
+                    ATTACK, ATTACK, ATTACK, ATTACK, 
+                    RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                    HEAL, HEAL, HEAL
+                ],
+                'type': 'scavenger',
+                'memory': {'targetRoom': targetRoom}
+            });
+            global.Archivist.setGarrisonSpawned(this.room, true);
+        }
     }
 
     /**
