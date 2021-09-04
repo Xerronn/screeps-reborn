@@ -7,6 +7,7 @@ const Informant = require("./administrators/informant");
 const Vendor = require("./administrators/vendor");
 
 const Traveler = require("./thirdParty/traveler");
+const memHack = require("./thirdParty/memHack");
 
 //init high level entities
 global.TaskMaster = new TaskMaster();
@@ -23,7 +24,7 @@ global.Vendor.appraise();
 global.Vendor.clean();
 console.log("<b>--------Global Reset--------</b>");
 
-module.exports.loop = function() {
+module.exports.loop = memHack(function() {
     let startcpu = Game.cpu.getUsed();
     //refresh all wrapper objects to live objects
     global.Imperator.refresh();
@@ -36,4 +37,4 @@ module.exports.loop = function() {
 
     //map and room visuals
     global.Illustrator.illustrate();
-}
+});
