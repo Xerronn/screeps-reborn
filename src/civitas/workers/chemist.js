@@ -33,7 +33,7 @@ class Chemist extends Civitas {
         //handle boosting of creeps
         if (this.memory.boosting === true) {
             if (this.memory.task === "supplyReagents" || this.memory.task === "awaitingSupply") this.getSupervisor().reserveWorkshop();
-            if (this.prepareBoosts(this.memory.boostType, this.memory.boostAmount)) return true;
+            if (this.prepareBoosts()) return true;
         }
 
         //handle chemical production
@@ -99,19 +99,14 @@ class Chemist extends Civitas {
         //idle
         if (this.pos.x != this.idleSpot.x || this.pos.y != this.idleSpot.y) {
             let roomPosIdle = new RoomPosition(this.idleSpot.x, this.idleSpot.y, this.room);
-            this.liveObj.moveTo(roomPosIdle);
+            this.liveObj.travelTo(roomPosIdle);
         }
     }
 
     /**
      * Method that locks a workshop down and fills it up with the proper boost chemicals
      */
-    prepareBoosts(boostTypes, boostCounts) {
-        if (this.memory.boosting === undefined || this.memory.boosting === false) {
-            this.memory.boosting = true;
-            this.memory.boostTypes = boostTypes;
-            this.memory.boostCounts = boostCounts;
-        }
+    prepareBoosts() {
         let boost = this.memory.boostTypes[0];
         let amount = this.memory.boostCounts[0];
 
@@ -126,6 +121,7 @@ class Chemist extends Civitas {
                     selectedWorkshop = workshop;
                 }
             }
+            if (selectedWorkshop === undefined) return false;
             this.memory.boostingLab = selectedWorkshop.id;
             selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
         }
@@ -168,7 +164,7 @@ class Chemist extends Civitas {
             if (this.pos.inRangeTo(selectedWorkshop.liveObj, 1)) {
                 this.liveObj.transfer(selectedWorkshop.liveObj, boost, tripAmount);
             } else {
-                this.liveObj.moveTo(selectedWorkshop.liveObj);
+                this.liveObj.travelTo(selectedWorkshop.liveObj);
             }
             return true;
         }
@@ -208,7 +204,7 @@ class Chemist extends Civitas {
                 if (this.pos.inRangeTo(this.reagentWorkshops[i].liveObj, 1)) {
                     this.liveObj.transfer(this.reagentWorkshops[i].liveObj, targetReagents[i], tripAmount);
                 } else {
-                    this.liveObj.moveTo(this.reagentWorkshops[i].liveObj);
+                    this.liveObj.travelTo(this.reagentWorkshops[i].liveObj);
                 }
                 return true;
             }
@@ -257,7 +253,7 @@ class Chemist extends Civitas {
                 if (this.pos.inRangeTo(workshop.liveObj, 1)) {
                     this.liveObj.transfer(workshop.liveObj, RESOURCE_ENERGY);
                 } else {
-                    this.liveObj.moveTo(workshop.liveObj);
+                    this.liveObj.travelTo(workshop.liveObj);
                 }
                 return true;
             }
@@ -288,7 +284,7 @@ class Chemist extends Civitas {
                     global.Vendor.balances[this.room][res] -= amount;
                 }
             } else {
-                this.liveObj.moveTo(target);
+                this.liveObj.travelTo(target);
             }
             return true;
         } else if (this.ticksToLive < 30) {
@@ -316,7 +312,7 @@ class Chemist extends Civitas {
             if (this.pos.inRangeTo(target, 1)) {
                 this.liveObj.transfer(target, res);
             } else {
-                this.liveObj.moveTo(target);
+                this.liveObj.travelTo(target);
             }
             return true;
         }
@@ -334,7 +330,7 @@ class Chemist extends Civitas {
             if (this.pos.inRangeTo(target, 1)) {
                 this.liveObj.withdraw(target, res);
             } else {
-                this.liveObj.moveTo(target);
+                this.liveObj.travelTo(target);
             }
             return true;
         }
