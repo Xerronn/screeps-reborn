@@ -126,6 +126,7 @@ class Supervisor {
         //refresh the live game object reference for every creep
         for (var type of Object.keys(this.civitates)) {
             for (var pro of this.civitates[type]) {
+                if (pro.liveObj.spawning) continue;
                 pro.update();
             }
         }
@@ -146,6 +147,7 @@ class Supervisor {
             //first all creeps
             for (var type of Object.keys(this.civitates)) {
                 for (var pro of this.civitates[type]) {
+                    if (pro.liveObj.spawning) continue;
                     let startcpu = Game.cpu.getUsed()
                     pro.run();
                     let usedCpu = Game.cpu.getUsed() - startcpu;
