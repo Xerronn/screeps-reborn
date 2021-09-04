@@ -406,7 +406,8 @@ class Traveler {
         if (!this.structureMatrixCache[room.name] || (freshMatrix && Game.time !== this.structureMatrixTick)) {
             this.structureMatrixTick = Game.time;
             let matrix = new PathFinder.CostMatrix();
-            this.structureMatrixCache[room.name] = Traveler.addStructuresToMatrix(room, matrix, 1);
+            let noArbiter = Traveler.addStructuresToMatrix(room, matrix, 1);
+            this.structureMatrixCache[room.name] = Traveler.addArbiterToMatrix(room, noArbiter.clone());
         }
         return this.structureMatrixCache[room.name];
     }
@@ -467,6 +468,20 @@ class Traveler {
      */
     static addCreepsToMatrix(room, matrix) {
         room.find(FIND_CREEPS).forEach((creep) => matrix.set(creep.pos.x, creep.pos.y, 0xff));
+        return matrix;
+    }
+    /**
+     * add arbiter to matrix so that it will be avoided by other creeps
+     * @param room
+     * @param matrix
+     * @returns {CostMatrix}
+     */
+    static addArbiterToMatrix(room, matrix) {
+        room.find(FIND_CREEPS).forEach(function (creep) {
+            if (creep.memory && creep.memory.type == "arbiter") {
+                matrix.set(creep.pos.x, creep.pos.y, 0xff);
+            }
+        });
         return matrix;
     }
     /**
