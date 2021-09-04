@@ -86,7 +86,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(controller, 3)) {
             this.liveObj.upgradeController(controller);
         } else {
-            this.liveObj.moveTo(controller);
+            this.liveObj.travelTo(controller);
         }
     }
 
@@ -107,7 +107,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(liveClosestSite, 3)) {
             this.liveObj.build(liveClosestSite);
         } else {
-            this.liveObj.moveTo(liveClosestSite);
+            this.liveObj.travelTo(liveClosestSite);
         }
     }
 
@@ -118,7 +118,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(this.source, 1)) {
             this.liveObj.harvest(this.source);
         } else {
-            this.liveObj.moveTo(this.source);
+            this.liveObj.travelTo(this.source);
         }
     }
 
@@ -147,7 +147,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(liveClosestExt, 1)) {
             this.liveObj.transfer(liveClosestExt, RESOURCE_ENERGY);
         } else {
-            this.liveObj.moveTo(liveClosestExt);
+            this.liveObj.travelTo(liveClosestExt);
         }
     }
 
@@ -175,7 +175,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(liveClosestTower, 1)) {
             this.liveObj.transfer(liveClosestTower, RESOURCE_ENERGY);
         } else {
-            this.liveObj.moveTo(liveClosestTower);
+            this.liveObj.travelTo(liveClosestTower);
         }
     }
 
@@ -186,7 +186,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(storage, 1)) {
             this.liveObj.withdraw(storage, RESOURCE_ENERGY);
         } else {
-            this.liveObj.moveTo(storage);
+            this.liveObj.travelTo(storage);
         }
     }
 
@@ -235,7 +235,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(target, 1)) {
             this.liveObj.withdraw(target, RESOURCE_ENERGY);
         } else {
-            this.liveObj.moveTo(target);
+            this.liveObj.travelTo(target);
         }
         return true;
     }

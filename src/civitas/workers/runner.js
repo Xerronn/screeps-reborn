@@ -37,7 +37,7 @@ class Runner extends Worker {
             this.memory.task = "idle";
             if (this.pos.x != this.idleSpot.x || this.pos.y != this.idleSpot.y) {
                 let roomPosIdle = new RoomPosition(this.idleSpot.x, this.idleSpot.y, this.room);
-                this.liveObj.moveTo(roomPosIdle);
+                this.liveObj.travelTo(roomPosIdle);
             }
         }
     }
@@ -94,7 +94,7 @@ class Runner extends Worker {
             if (this.pos.inRangeTo(renewSpawn, 1)) {
                 renewSpawn.renewCreep(this.liveObj);
             } else {
-                this.liveObj.moveTo(renewSpawn);
+                this.liveObj.travelTo(renewSpawn);
             }
         }
 
