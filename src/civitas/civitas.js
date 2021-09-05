@@ -89,7 +89,7 @@ class Civitas extends GameObj {
                 global.Archivist.setBoostingWorkshops(this.room, old);
                 continue;
             } else {
-                this.liveObj.moveTo(workshop.liveObj);
+                this.liveObj.travelTo(workshop.liveObj);
             }
             return true;
         }
