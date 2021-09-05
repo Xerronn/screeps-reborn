@@ -146,6 +146,7 @@ class Supervisor {
             //first all creeps
             for (var type of Object.keys(this.civitates)) {
                 for (var pro of this.civitates[type]) {
+                    if (pro.liveObj.spawning) continue;
                     let startcpu = Game.cpu.getUsed()
                     pro.run();
                     let usedCpu = Game.cpu.getUsed() - startcpu;
@@ -256,6 +257,7 @@ class Supervisor {
                 break;
             case 'executioner':
                 boostTypes = [RESOURCE_CATALYZED_GHODIUM_ALKALIDE, RESOURCE_CATALYZED_LEMERGIUM_ALKALIDE];
+                break;
         }
         if (boostTypes === undefined) {
             return undefined;
@@ -281,7 +283,7 @@ class Supervisor {
         }
 
         this.getExecutive().prepareBoosts(boostTypes, boostCounts);
-        return boostTypes;
+        return [...boostTypes];
     }
 
     /**
