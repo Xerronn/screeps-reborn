@@ -82,8 +82,8 @@ class Chemist extends Civitas {
         }
         if (this.memory.task == "awaitingSupply") {
             this.getSupervisor().reserveWorkshop();
-            if (this.getChemicalAmount(this.memory.targetReagents[0]) > this.store.getFreeCapacity(this.memory.targetReagents[0]) && 
-                this.getChemicalAmount(this.memory.targetReagents[1]) > this.store.getFreeCapacity(this.memory.targetReagents[1])) {
+            if (this.getChemicalAmount(this.memory.targetReagents[0]) > this.store.getCapacity(this.memory.targetReagents[0]) && 
+                this.getChemicalAmount(this.memory.targetReagents[1]) > this.store.getCapacity(this.memory.targetReagents[1])) {
                     this.memory.task = "supplyReagents";
             }
         }
