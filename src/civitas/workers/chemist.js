@@ -38,7 +38,7 @@ class Chemist extends Civitas {
         }
         //handle boosting of creeps
         if (this.memory.boosting === true) {
-            if (this.memory.task === "supplyReagents" || this.memory.task === "awaitingSupply") this.getSupervisor().reserveWorkshop();
+            if (this.memory.task === "supplyReagents" || this.memory.task === "awaitingSupply") this.getSupervisor().reserveWorkshops();
             if (this.prepareBoosts()) return true;
         }
 
@@ -79,15 +79,17 @@ class Chemist extends Civitas {
         }
         if (this.memory.task === "supplyReagents") {
             //stop any reactions from running while they are being filled
-            this.getSupervisor().reserveWorkshop();
+            this.getSupervisor().reserveWorkshops();
             let tripAmount = Math.min(3000, productTargetAmount);
             if (this.supplyReagents(this.memory.targetReagents, tripAmount)) return true;
 
             //done supplying labs
             this.memory.task = "idle";
+            //end the reservation
+            this.getSupervisor().reserveWorkshops(0);
         }
         if (this.memory.task == "awaitingSupply") {
-            this.getSupervisor().reserveWorkshop();
+            this.getSupervisor().reserveWorkshops();
             if (this.getChemicalAmount(this.memory.targetReagents[0]) >= this.store.getCapacity(this.memory.targetReagents[0]) && 
                 this.getChemicalAmount(this.memory.targetReagents[1]) >= this.store.getCapacity(this.memory.targetReagents[1])) {
                     this.memory.task = "supplyReagents";
@@ -275,7 +277,7 @@ class Chemist extends Civitas {
         } else {
             target = Game.rooms[this.room].storage;
         }
-        if (target.store.getUsedCapacity(res) >= this.store.getFreeCapacity(res)) {
+        if (target.store.getUsedCapacity(res) >= targetAmount) {
             if (this.pos.inRangeTo(target, 1)) {
                 let amount = Math.min(this.store.getFreeCapacity(res), targetAmount);
                 let result = this.liveObj.withdraw(target, res, amount);

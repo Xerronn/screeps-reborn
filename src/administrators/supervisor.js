@@ -337,8 +337,8 @@ class Supervisor {
     /**
      * Method to block workshops for 5 ticks
      */
-    reserveWorkshop() {
-        this.reservedTickWorkshop = Game.time + 5;
+    reserveWorkshops(numTicks = 1000) {
+        this.reservedTickWorkshop = Game.time + numTicks;
     }
 
     /**
