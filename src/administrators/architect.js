@@ -209,7 +209,7 @@ class Architect {
         if (!dry) {
             //clear out any buildings left by enemies
             let enemyBuildings = Game.rooms[room].find(FIND_STRUCTURES, {
-                filter: (struc) => {return struc.my == false && struc.structureType != STRUCTURE_STORAGE && struc.structureType != STRUCTURE_TERMINAL}});
+                filter: (struc) => {return (struc.my === false || struc.my === undefined) && struc.structureType != STRUCTURE_STORAGE && struc.structureType != STRUCTURE_TERMINAL}});
             for (var struct of enemyBuildings) {
                 struct.destroy();
             }
