@@ -30,6 +30,12 @@ class Chemist extends Civitas {
     }
 
     run() {
+        //prevent chemist from losing any minerals to death
+        if (this.ticksToLive < 30) {
+            if (this.depositStore()) return true;
+            this.liveObj.suicide();
+            return false;
+        }
         //handle boosting of creeps
         if (this.memory.boosting === true) {
             if (this.memory.task === "supplyReagents" || this.memory.task === "awaitingSupply") this.getSupervisor().reserveWorkshop();
@@ -82,8 +88,8 @@ class Chemist extends Civitas {
         }
         if (this.memory.task == "awaitingSupply") {
             this.getSupervisor().reserveWorkshop();
-            if (this.getChemicalAmount(this.memory.targetReagents[0]) > this.store.getCapacity(this.memory.targetReagents[0]) && 
-                this.getChemicalAmount(this.memory.targetReagents[1]) > this.store.getCapacity(this.memory.targetReagents[1])) {
+            if (this.getChemicalAmount(this.memory.targetReagents[0]) >= this.store.getCapacity(this.memory.targetReagents[0]) && 
+                this.getChemicalAmount(this.memory.targetReagents[1]) >= this.store.getCapacity(this.memory.targetReagents[1])) {
                     this.memory.task = "supplyReagents";
             }
         }
@@ -143,12 +149,7 @@ class Chemist extends Civitas {
         //empty the workshop of its minerals if it does not contain the boost
         let product = selectedWorkshop.mineralType;
         if (product !== boost && selectedWorkshop.store.getUsedCapacity(product) > 0) {
-            if (this.ticksToLive > 30) {
-                if (this.withdrawWorkshop(selectedWorkshop.liveObj, product)) return true;
-            } else {
-                this.liveObj.suicide();
-            }
-            return true;
+            if (this.withdrawWorkshop(selectedWorkshop.liveObj, product)) return true;
         }
         if (selectedWorkshop.mineralCount < amount) {
             //withdraw the boost we need
@@ -222,12 +223,7 @@ class Chemist extends Civitas {
             if (workshop.mineralCount > 0 && !workshop.boosting) {
                 let product = workshop.mineralType;
                 if (this.store.getFreeCapacity(product) > 0) {
-                    if (this.ticksToLive > 30) {
-                        if (this.withdrawWorkshop(workshop.liveObj, product));
-                    } else {
-                        this.liveObj.suicide();
-                    }
-                    return true;
+                    if (this.withdrawWorkshop(workshop.liveObj, product)) return true;
                 }
             }
         }
@@ -275,7 +271,7 @@ class Chemist extends Civitas {
         } else {
             target = Game.rooms[this.room].storage;
         }
-        if (target.store.getUsedCapacity(res) >= this.store.getFreeCapacity(res) && this.ticksToLive > 30) {
+        if (target.store.getUsedCapacity(res) >= this.store.getFreeCapacity(res)) {
             if (this.pos.inRangeTo(target, 1)) {
                 let amount = Math.min(this.store.getFreeCapacity(res), targetAmount);
                 let result = this.liveObj.withdraw(target, res, amount);
@@ -287,9 +283,6 @@ class Chemist extends Civitas {
                 this.liveObj.travelTo(target);
             }
             return true;
-        } else if (this.ticksToLive < 30) {
-            //prevent losing minerals 
-            this.liveObj.suicide();
         }
         return false;
     }
