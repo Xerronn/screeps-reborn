@@ -116,7 +116,11 @@ class Chemist extends Civitas {
         let boost = this.memory.boostTypes[0];
         let amount = this.memory.boostCounts[0];
 
-        if (boost === undefined) return false;
+        if (boost === undefined) {
+            //there is nothing in the lists
+            this.memory.boosting = false;
+            return false;
+        }
 
         let selectedWorkshop = global.Imperator.getWrapper(this.memory.boostingLab);
         if (!selectedWorkshop) {
