@@ -39,7 +39,7 @@ class Market extends Castrum {
         }
 
         //todo: everything with auto selling. temp solution
-        if (global.Vendor.balances[this.room][RESOURCE_ENERGY] == 0 && Game.rooms[this.room].storage.store.getUsedCapacity(RESOURCE_ENERGY) > 450000) {
+        if (global.Vendor.balances[this.room][RESOURCE_ENERGY] >= 0 && Game.rooms[this.room].storage.store.getUsedCapacity(RESOURCE_ENERGY) > 450000) {
             global.Vendor.merchandise(this.room, [RESOURCE_ENERGY]);
         }
     }

@@ -40,7 +40,7 @@ class Vendor {
      */
     document(room) {
         let liveRoom = Game.rooms[room];
-        if (!liveRoom || !liveRoom.terminal) return false;
+        if (!liveRoom || !liveRoom.terminal || !liveRoom.terminal.my) return false;
         this.balances[room] = {};
         //iterate through all resources of note
         for (let res of this.resources) {
@@ -214,13 +214,13 @@ class Vendor {
         if (resources.length == 0) return false;
 
         for (let res of resources) {
-            if (res !== RESOURCE_ENERGY && this.shortages[res].length > 0) return false;
+            if (res !== RESOURCE_ENERGY && this.shortages[res].length > 0) continue;
             let surplus = this.balances[room][res];
             if (res == RESOURCE_ENERGY) {
                 let storageSurplus = this.balances[room]["storage_energy"];
-                if (storageSurplus > 50000) {
+                if (storageSurplus > 50000 && surplus >= 0) {
                     surplus = 50000;
-                } else continue;
+                }
             }
             if (surplus > 5000) {
                 let marketInfo = this.getTwoWeekAverages(res);
