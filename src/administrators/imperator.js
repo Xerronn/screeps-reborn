@@ -30,11 +30,11 @@ class Imperator {
      * @param {String} room String representing the room
      */
     initRoom(room, originRoom) {
+        this.refreshDominion();
+        global.Archivist.build();
         this.administrators[room] = {};
         this.administrators[room].supervisor = new Supervisor(room);
         this.administrators[room].executive = new Executive(room);
-        global.Archivist.build();
-        this.refreshDominion();
         this.administrators[originRoom].executive.spawnDevelopers(room);
     }
 
@@ -70,7 +70,7 @@ class Imperator {
      */
      getWrapper(id) {
         let liveObj = Game.getObjectById(id);
-        if (!liveObj) {
+        if (!liveObj || !liveObj.my) {
             return undefined;
         }
 
