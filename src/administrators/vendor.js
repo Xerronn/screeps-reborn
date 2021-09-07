@@ -6,6 +6,7 @@ class Vendor {
         this.shortages = {};
 
         this.resources = [
+            "storage_energy",
             RESOURCE_ENERGY,
             RESOURCE_HYDROGEN,
             RESOURCE_OXYGEN,
@@ -15,6 +16,8 @@ class Vendor {
             RESOURCE_ZYNTHIUM,
             RESOURCE_CATALYST
         ]
+
+        this.numTerminalResources = 8;
 
         for (let res of this.resources) {
             this.surpluses[res] = [];
@@ -52,13 +55,18 @@ class Vendor {
             for (let order of buyOrders) {
                 buyAmount += order.amount;
             }
-            //triple the requirement for the room's own mineral type
-            let multiplier = 1;
-            if (liveRoom.find(FIND_MINERALS)[0].mineralType == res) multiplier = 3;
-            this.balances[room][res] = -this.getTarget(res) * multiplier + liveRoom.terminal.store[res] - sellAmount + buyAmount;
 
-            //if it is twice as high as it should be, add the room to the surplus object
-            if (this.balances[room][res] > this.getTarget(res)) {
+            let multiplier = 1;
+            //triple the requirement for the room's own mineral type
+            if (res === "storage_energy") {
+                this.balances[room][res] = -this.getTarget(res) + liveRoom.storage.store[RESOURCE_ENERGY];
+            } else {
+                if (liveRoom.find(FIND_MINERALS)[0].mineralType == res) multiplier = 3;
+                this.balances[room][res] = -this.getTarget(res) * multiplier + liveRoom.terminal.store[res] - sellAmount + buyAmount;
+            }
+            
+            //if it is higher than the target by an extra tenth of the target
+            if (this.balances[room][res] > this.getTarget(res) / 10) {
                 //add to array if it hasn't already been added
                 if (this.surpluses[res].indexOf(room) < 0) {
                     this.surpluses[res].push(room);
@@ -200,14 +208,20 @@ class Vendor {
      * Method to list excess resources on the market
      * @param {String} room 
      */
-    merchandise(room) {
+    merchandise(room, resources=undefined) {
         //check if the room has any surpluses
-        let excess = this.getExcess(room);
-        if (excess.length == 0) return false;
+        if (resources === undefined) resources = this.getExcess(room);
+        if (resources.length == 0) return false;
 
-        for (let res of excess) {
-            if (this.shortages[res].length > 0) return false;
+        for (let res of resources) {
+            if (res !== RESOURCE_ENERGY && this.shortages[res].length > 0) return false;
             let surplus = this.balances[room][res];
+            if (res == RESOURCE_ENERGY) {
+                let storageSurplus = this.balances[room]["storage_energy"];
+                if (storageSurplus > 50000) {
+                    surplus = 50000;
+                } else continue;
+            }
             if (surplus > 5000) {
                 let marketInfo = this.getTwoWeekAverages(res);
                 let price = (marketInfo["avgPrice"] * 0.85).toFixed(3);
@@ -223,7 +237,7 @@ class Vendor {
                     //remove from the surpluses list and reset balances
                     let index = this.surpluses[res].indexOf(room);
                     if (index >= 0) this.surpluses[res].splice(index, 1);
-                    this.balances[room][res] = 0;
+                    this.balances[room][res] -= surplus;
                 }
             }
         }
@@ -233,12 +247,12 @@ class Vendor {
      * Method that clears old outdated buy and sell order
      * @param {String} room 
      */
-    clean() {
+    clean(delAll = false) {
         let allOrders = Game.market.orders;
         for (let id in allOrders) {
             let order = allOrders[id];
             //cancel any orders with no more left to sell
-            if (order.amount == 0) {
+            if (delAll || order.amount == 0) {
                 Game.market.cancelOrder(order.id);
                 continue;
             }
@@ -269,7 +283,7 @@ class Vendor {
                 `<td class='balanceTable'>${room}</td>`;
             for (let res in this.balances[room]) {
                 let color = 'white';
-                if (this.balances[room][res] > this.getTarget(res) * 2) {
+                if (this.balances[room][res] > this.getTarget(res) / 10) {
                     color = 'green';
                 } else if (this.balances[room][res] < 0) {
                     color = 'red';
@@ -330,6 +344,8 @@ class Vendor {
         switch (resourceType) {
             case RESOURCE_ENERGY:
                 return 50000;
+            case "storage_energy":
+                return 350000;
             default:
                 return 10000;
         }
@@ -343,7 +359,11 @@ class Vendor {
     getExcess(room) {
         let excess = [];
         for (let res in this.surpluses) {
-            if (res !== RESOURCE_ENERGY && this.surpluses[res].includes(room)) {
+            if (this.surpluses[res].includes(room)) {
+                if (res === "storage_energy" && !excess.includes(RESOURCE_ENERGY)) {
+                    excess.push(RESOURCE_ENERGY);
+                    continue;
+                }
                 excess.push(res);
             }
         }
