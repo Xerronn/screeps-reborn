@@ -37,10 +37,10 @@ class Remotus extends Civitas {
      * @param {Boolean} shouldFlee if the creep should participate in fleeing
      * @returns if the run function did anything
      */
-    run(shouldMarch = true, shouldFlee = true) {
+    run(shouldMarch = true, shouldFlee = true, offRoad=false) {
         if (shouldMarch && !this.arrived && !this.fleeing) {
             //march to assigned room
-            this.march();
+            this.march(this.targetRoom, offRoad);
             return true;
         }
 
@@ -72,15 +72,10 @@ class Remotus extends Civitas {
      * Method to move the combat creep to their assigned room
      * @param {RoomObject} targetRoom room to march towards
      */
-    march(targetRoom = this.targetRoom) {
-        //if on an edge, path into current room
-        if (this.moveEdge()) return;
+    march(targetRoom = this.targetRoom, offRoad = false) {
+        this.liveObj.travelTo(new RoomPosition(25,25, targetRoom), {offRoad: offRoad});
 
-        if (targetRoom != this.room) {
-            this.liveObj.moveTo(new RoomPosition(25,25, targetRoom));
-        } else {
-            this.arrived = true;
-        }
+        if (this.room == targetRoom) this.arrived = true;
     }
 
     /**
