@@ -13,7 +13,9 @@ class Emissary extends Remotus {
 
     run() {
         //march to room and flee if enemies
-        if (super.run(true, false, true)) return;
+        let doesFlee = true;
+        if (this.memory.task == "claim") doesFlee = false;
+        if (super.run(true, doesFlee, true)) return;
 
         if (this.memory.task == "reserve") {
             this.reserve();
