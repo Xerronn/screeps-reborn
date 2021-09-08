@@ -73,9 +73,14 @@ class Remotus extends Civitas {
      * @param {RoomObject} targetRoom room to march towards
      */
     march(targetRoom = this.targetRoom, offRoad = false) {
-        let options = {};
-        options["offRoad"] = offRoad;
-        if (this.memory.type === "developer") options["preferHighway"] = true;
+        let options = {
+            ensurePath: true,
+            offRoad: offRoad
+        };
+        if (["developer", "emissary"].includes(this.memory.type)) {
+            options["preferHighway"] = true;
+        }
+            
         this.liveObj.travelTo(new RoomPosition(25,25, targetRoom), options);
 
         if (this.room == targetRoom) this.arrived = true;
