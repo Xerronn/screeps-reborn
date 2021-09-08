@@ -181,7 +181,7 @@ class Supervisor {
      * @param {Object} template An object that contains body, type, and memory
      * @param {boolean} rebirth whether or not this is a rebirth
      */
-    initiate(template) {
+    initiate(template, boost=true) {
         //to make sure that we actually find a nexus that can spawn this request.
         let foundNexus = false;
         let generationIncremented = 0;
@@ -208,10 +208,12 @@ class Supervisor {
                         generationIncremented++;
                     }
 
-                    //handle if the creep will be boosted when it spawns
-                    let boostType = this.prepareBoosts(template.type, newBody);
-                    if (boostType !== undefined) {
-                        template.memory.boost = boostType;
+                    if (boost) {
+                        //handle if the creep will be boosted when it spawns
+                        let boostType = this.prepareBoosts(template.type, newBody);
+                        if (boostType !== undefined) {
+                            template.memory.boost = boostType;
+                        }
                     }
 
                     let success = nexus.spawnCreep(newBody, template.type, { ...template.memory });
