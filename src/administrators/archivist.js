@@ -52,6 +52,7 @@ class Archivist {
      */
     refresh(onlyOnce=false) {
         for (let room of global.Imperator.dominion) {
+            if (!Game.rooms[room] || !Game.rooms[room].controller.my) continue;
             Memory.rooms[room].structures = {};
             let sortedStructures = {};
             let allStructures = Game.rooms[room].find(FIND_STRUCTURES);
