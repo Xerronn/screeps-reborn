@@ -305,7 +305,7 @@ class Executive {
     /**
      * Method that spawns an executioner to destroy a low level room <7 rcl
      */
-    spawnExecutioner(targetRoom) {
+    spawnExecutioner(targetRoom, boost=true) {
         this.getSupervisor().initiate({
             'body': [
                 TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
@@ -317,7 +317,7 @@ class Executive {
             ],
             'type': 'executioner',
             'memory': {'targetRoom': targetRoom, 'noRoads': true}
-        });
+        }, boost);
     }
 
     /**
