@@ -251,16 +251,9 @@ class Vendor {
         let allOrders = Game.market.orders;
         for (let id in allOrders) {
             let order = allOrders[id];
-            //cancel any orders with no more left to sell
-            if (delAll || order.amount == 0) {
+            //cancel any orders with no more left to sell or that are too old
+            if (delAll || order.amount == 0 || Game.time - order.created > 50000) {
                 Game.market.cancelOrder(order.id);
-                continue;
-            }
-
-            //cancel orders older than 50000 ticks (~2 days)
-            if (Game.time - order.created > 50000) {
-                Game.market.cancelOrder(order.id);
-                //increment balance back up
                 this.balances[order.roomName][order.resourceType] += order.remainingAmount;
             }
         }
