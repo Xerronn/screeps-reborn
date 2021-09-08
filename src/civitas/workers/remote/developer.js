@@ -68,7 +68,7 @@ class Developer extends Remotus {
 
         //calculate when to spawn a new one
         if (!this.memory.travelTime) {
-            this.memory.travelTime = PathFinder.search(this.pos, Game.rooms[this.memory.spawnRoom].storage.pos).path.length;
+            this.memory.travelTime = 1500 - this.ticksToLive - 25
             this.timeToSpawn = this.memory.travelTime + (this.body.length * CREEP_SPAWN_TIME) + 10;
         }
 
