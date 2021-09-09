@@ -252,11 +252,11 @@ class Executive {
 
 
     /**
-     * Method to spawn a remote engineer
+     * Method to spawn 4 remote engineers to bootstrap a new room
      * @param {String} targetRoom String representing the room
      */
      spawnDevelopers(targetRoom) {
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 4; i++) {
             this.getSupervisor().initiate({
                 'body': [
                     WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
