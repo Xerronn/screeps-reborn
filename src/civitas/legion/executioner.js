@@ -17,7 +17,7 @@ class Executioner extends Legionnaire {
         this.selfHeal(); //self heal no matter what
 
         //march to target room
-        if (this.room !== this.memory.targetRoom) {
+        if (this.room !== this.memory.targetRoom || !this.target) {
             this.liveObj.travelTo(new RoomPosition(25,25, this.targetRoom), {preferHighway:true});
             return true;
         }
@@ -31,7 +31,14 @@ class Executioner extends Legionnaire {
      * Method to acquire an attack target
      */
     acquireTarget() {
-        let targets = Game.rooms[this.room].find(FIND_HOSTILE_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        let targets = Game.rooms[this.room].find(FIND_HOSTILE_CREEPS, {
+            filter: function(object) {
+                return object.getActiveBodyparts(ATTACK) == 0;
+            }
+        });
+        if (!targets || targets.length == 0) {
+            targets = Game.rooms[this.room].find(FIND_HOSTILE_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        }
         if (!targets || targets.length == 0) {
             targets = Game.rooms[this.room].find(FIND_HOSTILE_SPAWNS);
         }
