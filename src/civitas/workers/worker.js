@@ -86,7 +86,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(controller, 3)) {
             this.liveObj.upgradeController(controller);
         } else {
-            this.liveObj.travelTo(controller);
+            this.liveObj.moveTo(controller);
         }
     }
 
@@ -118,7 +118,7 @@ class Worker extends Civitas {
         if (this.pos.inRangeTo(this.source, 1)) {
             this.liveObj.harvest(this.source);
         } else {
-            this.liveObj.travelTo(this.source);
+            this.liveObj.travelTo(this.source, {allowSwap: false});
         }
     }
 
