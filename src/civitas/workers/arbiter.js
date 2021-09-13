@@ -114,7 +114,7 @@ class Arbiter extends Runner {
         /**
          * Keep terminal full of minerals only
          */
-        if (Object.keys(this.terminal.store).length > global.Vendor.numTerminalResources) {
+        if (this.terminal && Object.keys(this.terminal.store).length > global.Vendor.resources.length) {
             for (let res in this.terminal.store) {
                 if (!global.Vendor.resources.includes(res)) {
                     if (this.store.getUsedCapacity(res) == 0 || (this.memory.task == "withdraw" && this.store.getFreeCapacity(res) > 0)) {
