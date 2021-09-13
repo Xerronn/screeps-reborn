@@ -16,11 +16,13 @@ class Jester extends Legionnaire {
         }
         if (!this.memory.travelTime) this.memory.travelTime = 1500 - this.ticksToLive;
 
-        if (this.target) {
+        if (this.target && this.target.x > 1 && this.target.x < 48 && this.target.y > 1 && this.target.y < 48) {
             this.melee();
+        } else {
+            this.acquireTarget();
         }
 
-        if (this.memory.generation !== undefined && this.ticksToLive <= this.memory.travelTime + 20) {
+        if (this.memory.generation !== undefined && this.ticksToLive <= this.memory.travelTime + 100) {
             this.getSupervisor().initiate({
                 'body': [...this.body],
                 'type': this.memory.type,
