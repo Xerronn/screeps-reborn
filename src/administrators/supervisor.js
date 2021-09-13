@@ -23,6 +23,7 @@ const Scutarius = require("../civitas/legion/scutarius");
 const Physician = require("../civitas/legion/physician");
 const Garrison = require("../civitas/legion/garrison");
 const Executioner = require("../civitas/legion/executioner");
+const Jester = require("../civitas/legion/jester");
 
 //castrum
 const Nexus = require("../castrum/nexus");

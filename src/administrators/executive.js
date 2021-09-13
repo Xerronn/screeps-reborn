@@ -321,6 +321,19 @@ class Executive {
     }
 
     /**
+     * Method that spawns a simple harass creep for an enemy's remote mine
+     */
+     spawnJester(targetRoom) {
+        this.getSupervisor().initiate({
+            'body': [
+                ATTACK, MOVE, MOVE
+            ],
+            'type': 'jester',
+            'memory': {'targetRoom': targetRoom, 'noRoads': true}
+        });
+    }
+
+    /**
      * Method that spawns defenders for remote rooms
      * @param {String} targetRoom string representing the room
      */
