@@ -219,7 +219,10 @@ class Courier extends Civitas {
         if (this.ticksToLive < 800) {
             //miners mine 12 energy per tick, and you have to travel both ways
             let travelLength = this.storage.pos.findPathTo(this.container).length * 12 * 2;
-            let carryCount = Math.ceil(travelLength / 50);
+            let targetCarryCount = Math.ceil(travelLength / 50);
+            let maxBody = Game.rooms[this.room].energyCapacityAvailable / 50 / 2;
+
+            let carryCount = Math.min(targetCarryCount, maxBody / 2);
 
             let newBody = [];
             for (let i = 0; i < carryCount; i++) {
