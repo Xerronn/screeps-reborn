@@ -329,7 +329,7 @@ class Executive {
                 ATTACK, MOVE, MOVE
             ],
             'type': 'jester',
-            'memory': {'targetRoom': targetRoom, 'noRoads': true}
+            'memory': {'targetRoom': targetRoom, 'noRoads': true, 'generation': 0}
         });
     }
 
