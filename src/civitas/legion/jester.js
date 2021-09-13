@@ -36,7 +36,11 @@ class Jester extends Legionnaire {
      * Method to acquire an attack target
      */
     acquireTarget() {
-        let targets = Game.rooms[this.room].find(FIND_HOSTILE_CREEPS);
+        let targets = Game.rooms[this.room].find(FIND_HOSTILE_CREEPS, {
+            filter: function(object) {
+                return object.getActiveBodyparts(ATTACK) == 0;
+            }
+        });
         if (targets && targets.length > 0) {
             this.target = this.pos.findClosestByRange(targets);
             this.memory.target = this.target.id;
