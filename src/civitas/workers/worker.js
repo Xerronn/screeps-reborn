@@ -132,7 +132,7 @@ class Worker extends Civitas {
             let spawns = global.Archivist.getStructures(this.room, STRUCTURE_SPAWN);
 
             let fillables = spawns.concat(ext).filter(
-                obj => obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                obj => obj.store && obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             );
             
             if (fillables.length == 0) {
