@@ -55,7 +55,7 @@ class Remotus extends Civitas {
             if (targetRoom) {
                 let hostileCreeps = Game.rooms[this.room].find(FIND_HOSTILE_CREEPS, {
                     filter: function(object) {
-                        return object.getActiveBodyparts(ATTACK) > 0;
+                        return object.getActiveBodyparts(ATTACK) > 0 || object.getActiveBodyparts(RANGED_ATTACK) > 0
                     }
                 });
                 //todo: check for attack parts?

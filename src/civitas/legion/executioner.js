@@ -33,7 +33,7 @@ class Executioner extends Legionnaire {
     acquireTarget() {
         let targets = Game.rooms[this.room].find(FIND_HOSTILE_CREEPS, {
             filter: function(object) {
-                return object.getActiveBodyparts(ATTACK) > 0;
+                return object.getActiveBodyparts(ATTACK) > 0 || object.getActiveBodyparts(RANGED_ATTACK) > 0;
             }
         });
         if (!targets || targets.length == 0) {
