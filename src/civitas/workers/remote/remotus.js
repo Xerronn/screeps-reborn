@@ -53,7 +53,11 @@ class Remotus extends Civitas {
             //check for hostile creeps and if there are, request a garrison and signal all creeps to flee to origin room
             let targetRoom = Game.rooms[this.memory.targetRoom];
             if (targetRoom) {
-                let hostileCreeps = targetRoom.find(FIND_HOSTILE_CREEPS);
+                let hostileCreeps = Game.rooms[this.room].find(FIND_HOSTILE_CREEPS, {
+                    filter: function(object) {
+                        return object.getActiveBodyparts(ATTACK) > 0;
+                    }
+                });
                 //todo: check for attack parts?
                 if (hostileCreeps.length > 0) {
                     this.getExecutive().spawnGarrison(this.memory.targetRoom);
