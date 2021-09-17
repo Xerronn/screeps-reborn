@@ -58,6 +58,9 @@ class Emissary extends Remotus {
             if (!this.memory.travelTime) {
                 this.memory.travelTime = Game.time - this.memory.spawnTime;
             }
+            if (controller.sign.username !== this.liveObj.owner.username) {
+                this.sign();
+            }
             this.liveObj.reserveController(controller);
         } else {
             this.liveObj.moveTo(controller);
