@@ -186,7 +186,7 @@ class Executive {
         `if (global.Imperator.administrators[objArr[0]].supervisor.storageLink) {
             global.Imperator.administrators[objArr[0]].supervisor.initiate(objArr[1])
         } else {
-            global.TaskMaster.schedule(Game.time + 50, objArr[2], objArr);
+            global.TaskMaster.schedule(objArr[0], Game.time + 50, objArr[2], objArr);
         }`
 
         global.TaskMaster.schedule(this.room, Game.time, task, [this.room, arbiter, task]);
