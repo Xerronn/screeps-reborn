@@ -67,6 +67,13 @@ class Prospector extends Remotus {
             }
         }
 
+        if (Game.rooms[this.targetRoom].controller.reservation !== undefined && this.liveObj.owner.username !== Game.rooms[this.targetRoom].controller.reservation.username) {
+            if (!global.Archivist.getGarrisonSpawned(this.memory.spawnRoom)) {
+                this.getExecutive().spawnExecutioner(this.targetRoom, false, 'killInvader');
+                global.Archivist.setGarrisonSpawned(this.memory.spawnRoom, true)
+            }
+        }
+
         //First and foremost, fill up carry parts
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || (this.memory.task == "harvest" && this.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             this.memory.task = "harvest";

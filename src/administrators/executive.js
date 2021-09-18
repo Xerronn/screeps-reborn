@@ -305,18 +305,30 @@ class Executive {
     /**
      * Method that spawns an executioner to destroy a low level room <7 rcl
      */
-    spawnExecutioner(targetRoom, boost=true) {
-        this.getSupervisor().initiate({
-            'body': [
+    spawnExecutioner(targetRoom, boost=true, task='execute') {
+        let executionerBody;
+        if (task == 'execute') {      
+            executionerBody = [
                 TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, 
                 RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, 
                 RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, 
                 HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL,
                 MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
                 MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
-            ],
+            ];
+        } else {
+            if (global.Archivist.getGarrisonSpawned(this.room)) return;
+            executionerBody = [
+                ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK,
+                ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK,
+                MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+            ];
+            global.Archivist.setGarrisonSpawned(this.room, true);
+        }
+        this.getSupervisor().initiate({
+            'body': executionerBody,
             'type': 'executioner',
-            'memory': {'targetRoom': targetRoom, 'noRoads': true}
+            'memory': {'targetRoom': targetRoom, 'noRoads': true, 'task': task}
         }, boost);
     }
 
