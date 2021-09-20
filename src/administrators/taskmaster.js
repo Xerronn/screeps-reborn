@@ -56,20 +56,33 @@ class TaskMaster {
     }
 
     /**
+     * Method to run a specific task based on the task ID
+     * @param {String} room 
+     * @param {String} taskId 
+     * @returns 
+     */
+    runTask(room, taskId) {
+        for (let tick in Memory.scheduler[room]) {
+            for (let id in Memory.scheduler[room][tick]) {
+                if (id === taskId) {
+                    let task = Memory.scheduler[room][tick][id];
+                    let objArr = task.objArr;
+                    eval(task.script);
+                    delete Memory.scheduler[room][tick][id];
+                    return true;
+                }
+            }
+            
+        }
+        return false;
+    }
+
+    /**
      * Delete all instances of tasks using provided script
      * @param {String} script the script to find
      */
     deleteTask(script) {
-        let schedule = Memory.scheduler;
-
-        for (let tick in schedule) {
-            for (let task in tick) {
-                if (tick[task].script == script) {
-                    console.log(tick[task].script)
-                    // tick.splice(task, 1);
-                }
-            }
-        }
+        
     }
 
     /**
