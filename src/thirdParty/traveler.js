@@ -13,6 +13,12 @@ class Traveler {
      * @returns {number}
      */
     static travelTo(creep, destination, options = {}) {
+        if (options.allowSwap === undefined) {
+            options.allowSwap = true;
+            if (['executioner'].includes(creep.memory.type)) {
+                options.allowSwap = false;
+            }
+        }
         // uncomment if you would like to register hostile rooms entered
         // this.updateRoomStatus(creep.room);
         if (!destination) {
@@ -112,14 +118,14 @@ class Traveler {
 
         //swap places with blocking creep
         let nextDirection = parseInt(travelData.path[0], 10);
-        if (nextDirection && state.stuckCount > 0) {
+        if (options.allowSwap && nextDirection && state.stuckCount > 0) {
             let nextPos = Traveler.positionAtDirection(creep.pos, nextDirection);
-            let blockingCreeps = creep.room.lookForAt(LOOK_CREEPS, nextPos.x, nextPos.y);
-            if (blockingCreeps.length > 0) {
-                blockingCreeps[0].move(this.reverseDirection(nextDirection));
+            if (nextPos) {
+                let blockingCreeps = creep.room.lookForAt(LOOK_CREEPS, nextPos.x, nextPos.y);
+                if (blockingCreeps.length > 0 && blockingCreeps[0].my) {
+                    blockingCreeps[0].move(this.reverseDirection(nextDirection));
+                }
             }
-
-
         }
         return creep.move(nextDirection);
     }
@@ -151,7 +157,8 @@ class Traveler {
      * @returns {RoomMemory|number}
      */
     static checkAvoid(roomName) {
-        return Memory.rooms && Memory.rooms[roomName] && Memory.rooms[roomName].avoid;
+        return roomName == "E39N28";
+        //return Memory.rooms && Memory.rooms[roomName] && Memory.rooms[roomName].avoid;
     }
     /**
      * check if a position is an exit
