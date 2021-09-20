@@ -209,7 +209,7 @@ class Supervisor {
                         generationIncremented++;
                     }
 
-                    if (boost) {
+                    if (boost === true) {
                         //handle if the creep will be boosted when it spawns
                         let boostType = this.prepareBoosts(template.type, newBody);
                         if (boostType !== undefined) {
