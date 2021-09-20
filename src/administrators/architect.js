@@ -66,7 +66,7 @@ class Architect {
             //time to start scouting and spawn the excavator
             calculation = "6.3";
         }
-        if (rcl == 6 && currentStage == "6.3" && global.Archivist.getDoneScouting(this.room) == true) {
+        if (rcl == 6 && currentStage == "6.3" && global.Archivist.getDoneScouting(room) == true) {
             //time to build road to the remote
             calculation = "6.4";
         }
@@ -471,6 +471,74 @@ class Architect {
             }
         }
         
+    }
+
+    /**
+     * WIP method to build ramparts in a room
+     */
+     buildRamparts(room) {
+        let liveRoom = Game.rooms[room]
+        let anchor = global.Archivist.getAnchor(room);
+        let center = new RoomPosition(anchor.x + 5, anchor.y + 5, room);
+        
+        let roomExits = Object.keys(Game.map.describeExits(room)).map(x => parseInt(x));
+        let walls = [];
+        //iterate over each of the exits the room has
+        for (let direction of roomExits) {
+            let allExits = liveRoom.find(direction);
+            let goals = [];
+            for (let exit of allExits) {
+                goals.push({
+                        pos: exit,
+                        range : 2
+                });
+            }
+            //keep searching towards this exit until the exit is completely blocked off
+            while(true) {
+                //path find to the exit
+                let pathToExit = PathFinder.search(
+                    center,
+                    goals, 
+                    {
+                        plainCost: 0,
+                        swampCost: 0,
+                        roomCallback: buildCostMatrix,
+                        maxRooms: 1,
+                        maxCost: 255
+                    }
+                );
+
+                //if the path is impossible, we are done with the wall building
+                if (pathToExit.incomplete) break;
+                pathToExit.path.splice(0, 6);
+
+                //push the first pos of the route, then repath
+                walls.push(pathToExit.path[0]);
+                new RoomVisual(room).circle(pathToExit.path[0].x, pathToExit.path[0].y, {fill: 'red', radius: 0.5});
+            }
+        }
+
+        /**
+         * Adds the newly planned walls as impassible, so new pathfindings have to path around them
+         */
+        function buildCostMatrix(room) {
+            let matrix = new PathFinder.CostMatrix;
+            let roomTerrain = Game.rooms[room].getTerrain();
+            for (let x = 0; x < 50; x++) {
+                for (let y = 0; y < 50; y++) {
+                    //set previously built walls as impassible
+                    for (let pos of walls) {
+                        if (pos.x == x && pos.y == y) {
+                            matrix.set(x, y, 0xff);
+                        }
+                    }
+                    if (roomTerrain.get(x, y) === 1) {
+                        matrix.set(x, y, 0xff);
+                    }
+                }
+            }
+            return matrix;
+        }
     }
 
     /**
